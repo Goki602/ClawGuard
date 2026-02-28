@@ -1,0 +1,21 @@
+{
+	"name": "@clawguard/audit",
+	"version": "0.1.0",
+	"description": "ClawGuard OCSF v1.1.0 audit logger",
+	"license": "MIT",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": { ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" } },
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@clawguard/core": "*"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0"
+	}
+}

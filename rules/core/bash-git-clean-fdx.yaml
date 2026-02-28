@@ -1,0 +1,25 @@
+- id: BASH.GIT_CLEAN_FDX
+  match:
+    tool: bash
+    command_regex: 'git\s+clean\s+.*-[fd].*x'
+  risk: high
+  explain:
+    title: "未追跡ファイルの一括削除"
+    what: "Gitで管理されていないファイル（ビルド成果物・設定ファイル等）を一括削除します。"
+    why:
+      - ".env や設定ファイルなど、重要だがGit管理外のファイルも消えます。"
+    check:
+      - "先に `git clean -n` でドライラン（削除対象の確認）した？"
+    alternatives:
+      - "`git clean -n` で確認してから実行"
+    simple:
+      doing: "Gitに登録されていないファイルを全て削除しようとしています"
+      safe_points: ["Gitに登録済みのファイルは残ります"]
+      warning_points: [".envなどの設定ファイルも消える可能性があります"]
+      one_check: "消えるファイルの一覧は確認しましたか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["destructive", "git"]
+    phase: 0

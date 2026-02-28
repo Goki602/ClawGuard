@@ -1,0 +1,26 @@
+- id: BASH.GIT_RESET_HARD
+  match:
+    tool: bash
+    command_regex: 'git\s+reset\s+--hard'
+  risk: high
+  explain:
+    title: "Git履歴の不可逆な巻き戻し"
+    what: "コミットされていない変更を全て捨て、指定した状態に戻します。"
+    why:
+      - "未コミットの作業が全て消えます。"
+    check:
+      - "コミットしていない変更はない？"
+      - "stash で退避済み？"
+    alternatives:
+      - "`git stash` で一時退避してから操作する"
+    simple:
+      doing: "今の作業を全て捨てて、前の状態に戻そうとしています"
+      safe_points: ["コミット済みの変更は残ります"]
+      warning_points: ["まだ保存していない作業は完全に消えます"]
+      one_check: "保存していない作業はありませんか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["destructive", "git"]
+    phase: 0

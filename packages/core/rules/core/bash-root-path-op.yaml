@@ -1,0 +1,25 @@
+- id: BASH.ROOT_PATH_OP
+  match:
+    tool: bash
+    command_regex: '(mv|cp)\s+.*\s+/(\s|$)'
+  risk: high
+  explain:
+    title: "ルートディレクトリへの操作"
+    what: "ルートディレクトリ直下にファイルを移動またはコピーしようとしています。"
+    why:
+      - "システムファイルを壊す可能性があります。"
+    check:
+      - "パスが正しいか再確認"
+    alternatives:
+      - "適切なディレクトリを指定する"
+    simple:
+      doing: "ファイルをシステムの最上位フォルダに移動しようとしています"
+      safe_points: ["正しいパスなら問題ありません"]
+      warning_points: ["間違ったパスだとシステムが壊れる可能性があります"]
+      one_check: "移動先のパスは本当に正しいですか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["destructive", "filesystem"]
+    phase: 0

@@ -1,0 +1,26 @@
+- id: BASH.RM_RISK
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)rm\s+.*(-rf|-fr)\b'
+  risk: high
+  explain:
+    title: "大量削除の可能性"
+    what: "ファイルやフォルダをまとめて削除します。元に戻しにくいです。"
+    why:
+      - "削除対象を間違えると、プロジェクト全体が消えます。"
+    check:
+      - "削除対象のパスは本当に正しい？"
+      - "バックアップ/コミットはある？"
+    alternatives:
+      - "先に `ls` で対象を確認する"
+    simple:
+      doing: "{{target}} フォルダを丸ごと削除しようとしています"
+      safe_points: ["このフォルダのバックアップがあれば復元できます"]
+      warning_points: ["間違ったフォルダを消すと戻せません"]
+      one_check: "消すフォルダは合ってますか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["destructive"]
+    phase: 0

@@ -1,0 +1,26 @@
+- id: BASH.CHMOD_777
+  match:
+    tool: bash
+    command_regex: 'chmod\s+(-R\s+)?777'
+  risk: medium
+  explain:
+    title: "全ファイルに全権限を付与"
+    what: "指定ディレクトリ以下の全ファイルに、誰でも読み書き実行できる権限を付けます。"
+    why:
+      - "セキュリティ上、必要以上の権限は危険です。"
+    check:
+      - "本当に777が必要？"
+      - "対象のパスは正しい？"
+    alternatives:
+      - "必要最小限の権限（例: 755）にする"
+    simple:
+      doing: "フォルダ内の全ファイルの権限を全開放しようとしています"
+      safe_points: ["権限は後から変更できます"]
+      warning_points: ["全開放は誰でもファイルを変更できる状態になります"]
+      one_check: "本当に全開放が必要ですか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["destructive", "permissions"]
+    phase: 0

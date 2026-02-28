@@ -1,0 +1,22 @@
+{
+	"name": "@clawguard/adapter-claude",
+	"version": "0.1.0",
+	"description": "ClawGuard adapter for Claude Code PreToolUse hooks",
+	"license": "MIT",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": { ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" } },
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@clawguard/core": "*",
+		"@clawguard/audit": "*"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0"
+	}
+}

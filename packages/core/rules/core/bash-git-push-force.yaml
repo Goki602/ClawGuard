@@ -1,0 +1,26 @@
+- id: BASH.GIT_PUSH_FORCE
+  match:
+    tool: bash
+    command_regex: 'git\s+push\s+.*--force'
+  risk: high
+  explain:
+    title: "リモート履歴の上書き"
+    what: "リモートリポジトリの履歴を強制的に書き換えます。"
+    why:
+      - "他のメンバーの作業が消える可能性があります。"
+    check:
+      - "チームメンバーに影響はない？"
+      - "main/master ブランチではない？"
+    alternatives:
+      - "`--force-with-lease` で安全に操作する"
+    simple:
+      doing: "リモートの履歴を強制的に上書きしようとしています"
+      safe_points: ["自分だけのブランチなら影響は限定的です"]
+      warning_points: ["チームの共有ブランチだと他の人の作業が消えます"]
+      one_check: "このブランチは自分だけが使っていますか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["destructive", "git"]
+    phase: 0

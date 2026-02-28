@@ -1,0 +1,26 @@
+- id: BASH.PIPE_EXEC_001
+  match:
+    tool: bash
+    command_regex: 'curl\s+.*\|\s*(bash|sh|zsh)'
+  risk: high
+  explain:
+    title: "外部スクリプトの盲目的実行"
+    what: "URLからスクリプトを取得し、内容を確認せずそのまま実行します。"
+    why:
+      - "取得先の内容が実行前に確認できない"
+      - "悪意あるコードが混入していても気づけない"
+    check:
+      - "取得元URLは信頼できる公式サイト？"
+    alternatives:
+      - "先に curl で内容をファイルに保存し、中身を確認してから実行"
+    simple:
+      doing: "インターネットからプログラムをダウンロードして、すぐに実行しようとしています"
+      safe_points: ["公式サイトからなら比較的安全です"]
+      warning_points: ["内容を確認せずに実行するのは危険です"]
+      one_check: "ダウンロード元は信頼できるサイトですか？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["external-script", "network"]
+    phase: 0
