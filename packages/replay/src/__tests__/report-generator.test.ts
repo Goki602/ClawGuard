@@ -8,7 +8,7 @@ function makeEvent(overrides: Record<string, unknown> = {}) {
 		category_uid: 6 as const,
 		category_name: "Application Activity" as const,
 		severity_id: 1,
-		time: "2026-03-01T10:00:00Z",
+		time: new Date().toISOString(),
 		metadata: {
 			product: {
 				name: "ClawGuard",
@@ -32,7 +32,12 @@ function makeEvent(overrides: Record<string, unknown> = {}) {
 	};
 }
 
-function mockReader(events: ReturnType<typeof makeEvent>[] = [], dates: string[] = ["2026-03-01"]) {
+function today(): string {
+	const d = new Date();
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function mockReader(events: ReturnType<typeof makeEvent>[] = [], dates: string[] = [today()]) {
 	return {
 		readDate: vi.fn().mockReturnValue(events),
 		readToday: vi.fn().mockReturnValue(events),

@@ -10,7 +10,7 @@ function makeEvent(overrides: Record<string, unknown> = {}) {
 		severity_id: 2,
 		disposition_id: 1,
 		disposition: "Allowed",
-		time: "2026-03-01T10:00:00Z",
+		time: new Date().toISOString(),
 		actor: { session: { uid: "sess-1" }, app_name: "claude-code" },
 		api: {
 			operation: "PreToolUse",
@@ -35,7 +35,12 @@ function makeEvent(overrides: Record<string, unknown> = {}) {
 	};
 }
 
-function mockReader(events: ReturnType<typeof makeEvent>[] = [], dates: string[] = ["2026-03-01"]) {
+function today(): string {
+	const d = new Date();
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function mockReader(events: ReturnType<typeof makeEvent>[] = [], dates: string[] = [today()]) {
 	return {
 		readDate: vi.fn().mockReturnValue(events),
 		readToday: vi.fn().mockReturnValue(events),
