@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<title>ClawGuard</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#60a5fa"/>
+<stop offset="100%" stop-color="#3b82f6"/>
+</linearGradient>
+</defs>
+<path d="M16 2 L28 8 V16 C28 23.5 22.5 29 16 30 C9.5 29 4 23.5 4 16 V8 Z" fill="url(#g)"/>
+<path d="M16 2 L28 8 V16 C28 23.5 22.5 29 16 30 C9.5 29 4 23.5 4 16 V8 Z" fill="none" stroke="#1e40af" stroke-width="1"/>
+<text x="16" y="20" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fff">CG</text>
+</svg>

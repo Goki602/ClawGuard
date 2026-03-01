@@ -4,38 +4,49 @@
 	"description": "AI agent security companion — defend, audit, update",
 	"type": "module",
 	"license": "MIT",
-	"bin": { "claw-guard": "./dist/index.js" },
-	"files": ["dist"],
+	"bin": {
+		"claw-guard": "./dist/index.js"
+	},
+	"files": ["dist", "rules"],
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
-		"build": "tsc",
-		"clean": "rm -rf dist"
+		"build": "node build.mjs",
+		"clean": "rm -rf dist rules"
 	},
 	"keywords": ["ai", "security", "claude", "agent", "hooks", "audit"],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/clawguard/clawguard.git",
+		"url": "https://github.com/Goki602/ClawGuard.git",
 		"directory": "packages/cli"
 	},
 	"dependencies": {
-		"@clawguard/core": "*",
-		"@clawguard/audit": "*",
+		"better-sqlite3": "^11.0.0",
+		"chalk": "^5.4.0",
+		"commander": "^13.0.0",
+		"yaml": "^2.7.0"
+	},
+	"optionalDependencies": {
+		"vite": "^6.0.0"
+	},
+	"devDependencies": {
 		"@clawguard/adapter-claude": "*",
 		"@clawguard/adapter-codex": "*",
 		"@clawguard/adapter-mcp": "*",
+		"@clawguard/audit": "*",
 		"@clawguard/billing": "*",
+		"@clawguard/core": "*",
+		"@clawguard/enrichment": "*",
 		"@clawguard/feed": "*",
 		"@clawguard/memory": "*",
-		"@clawguard/enrichment": "*",
 		"@clawguard/passport": "*",
 		"@clawguard/replay": "*",
 		"@clawguard/reputation": "*",
 		"@clawguard/skills-av": "*",
 		"@clawguard/team": "*",
-		"commander": "^13.0.0",
-		"chalk": "^5.4.0",
-		"vite": "^6.0.0"
-	},
-	"devDependencies": {
-		"@types/node": "^22.0.0"
+		"@types/better-sqlite3": "^7.6.0",
+		"@types/node": "^22.0.0",
+		"esbuild": "^0.25.12"
 	}
 }

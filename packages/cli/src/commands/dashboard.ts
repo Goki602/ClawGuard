@@ -31,7 +31,14 @@ export async function dashboardCommand(options: {
 	console.log(chalk.dim("  Make sure 'claw-guard serve' is running for live data"));
 	console.log("");
 
-	const { preview } = await import("vite");
+	let preview: typeof import("vite")["preview"];
+	try {
+		({ preview } = await import("vite"));
+	} catch {
+		console.error(chalk.red("Dashboard requires vite. Install with: npm install vite"));
+		process.exit(1);
+	}
+
 	const server = await preview({
 		root: WEB_UI_DIR,
 		preview: {

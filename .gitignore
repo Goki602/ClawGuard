@@ -4,3 +4,4 @@ coverage/
 .clawguard/
 *.tsbuildinfo
 .DS_Store
+packages/cli/rules/

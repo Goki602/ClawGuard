@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+<title>ClawGuard — AI Agent Security Platform</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#0f172a"/>
+<stop offset="100%" stop-color="#1e293b"/>
+</linearGradient>
+<linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#60a5fa"/>
+<stop offset="100%" stop-color="#3b82f6"/>
+</linearGradient>
+<linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/>
+<stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+</linearGradient>
+</defs>
+
+<!-- Background -->
+<rect width="1200" height="630" fill="url(#bg)"/>
+
+<!-- Subtle grid pattern -->
+<g stroke="#334155" stroke-width="0.5" opacity="0.3">
+<line x1="0" y1="0" x2="1200" y2="630"/>
+<line x1="400" y1="0" x2="400" y2="630"/>
+<line x1="800" y1="0" x2="800" y2="630"/>
+<line x1="0" y1="210" x2="1200" y2="210"/>
+<line x1="0" y1="420" x2="1200" y2="420"/>
+</g>
+
+<!-- Glow effect behind shield -->
+<ellipse cx="250" cy="315" rx="150" ry="200" fill="url(#glow)"/>
+
+<!-- Shield icon -->
+<g transform="translate(160, 200)">
+<path d="M90 0 L180 40 V100 C180 155 140 195 90 210 C40 195 0 155 0 100 V40 Z" fill="url(#accent)"/>
+<path d="M90 0 L180 40 V100 C180 155 140 195 90 210 C40 195 0 155 0 100 V40 Z" fill="none" stroke="#93c5fd" stroke-width="2"/>
+<!-- Check mark -->
+<polyline points="55,105 80,130 125,80" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+
+<!-- Title -->
+<text x="420" y="240" font-family="system-ui,-apple-system,sans-serif" font-size="72" font-weight="800" fill="#f8fafc">ClawGuard</text>
+
+<!-- Subtitle -->
+<text x="420" y="300" font-family="system-ui,-apple-system,sans-serif" font-size="28" fill="#94a3b8">AI Agent Security Platform</text>
+
+<!-- Flow diagram -->
+<g transform="translate(420, 360)">
+<!-- Agent box -->
+<rect x="0" y="0" width="120" height="50" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+<text x="60" y="30" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" fill="#e2e8f0">Agent</text>
+
+<!-- Arrow -->
+<line x1="130" y1="25" x2="180" y2="25" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+<!-- Hook box -->
+<rect x="190" y="0" width="120" height="50" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+<text x="250" y="30" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" fill="#e2e8f0">Hook</text>
+
+<!-- Arrow -->
+<line x1="320" y1="25" x2="370" y2="25" stroke="#475569" stroke-width="2"/>
+
+<!-- Policy box (highlighted) -->
+<rect x="380" y="0" width="140" height="50" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+<text x="450" y="30" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" fill="#60a5fa">Policy</text>
+
+<!-- Branching arrows -->
+<line x1="530" y1="15" x2="590" y2="0" stroke="#475569" stroke-width="2"/>
+<line x1="530" y1="25" x2="590" y2="25" stroke="#475569" stroke-width="2"/>
+<line x1="530" y1="35" x2="590" y2="50" stroke="#475569" stroke-width="2"/>
+
+<!-- Result labels -->
+<text x="600" y="5" font-family="ui-monospace,monospace" font-size="14" fill="#4ade80">allow</text>
+<text x="600" y="30" font-family="ui-monospace,monospace" font-size="14" fill="#fbbf24">confirm</text>
+<text x="600" y="55" font-family="ui-monospace,monospace" font-size="14" fill="#f87171">deny</text>
+</g>
+
+<!-- Bottom tagline -->
+<text x="420" y="500" font-family="system-ui,-apple-system,sans-serif" font-size="20" fill="#64748b">Real-time guardrails for Claude Code, Codex, and MCP</text>
+
+<!-- Bottom accent line -->
+<rect x="0" y="620" width="1200" height="10" fill="url(#accent)"/>
+</svg>
