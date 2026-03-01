@@ -1,0 +1,34 @@
+- id: BASH.NPM_AUDIT_FORCE
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)npm\s+audit\s+fix\s+--force'
+  risk: medium
+  explain:
+    title: "npm強制修正"
+    what: "脆弱性のあるパッケージを強制的にバージョン変更しようとしています。"
+    why:
+      - "メジャーバージョンが変わり、アプリが動かなくなる可能性があります。"
+      - "依存関係が壊れて、他のパッケージにも影響する可能性があります。"
+    check:
+      - "`npm audit` で対象パッケージを先に確認した？"
+      - "メジャーバージョン変更の影響を把握している？"
+      - "変更後にテストを実行する予定がある？"
+    alternatives:
+      - "`npm audit` で脆弱性の内容を先に確認する"
+      - "`npm audit fix`（--forceなし）で安全な範囲だけ修正する"
+    simple:
+      doing: "セキュリティ問題があるパッケージを強制的に新しいバージョンに変更しようとしています"
+      safe_points: ["セキュリティ修正自体は良いことです"]
+      warning_points: ["大きなバージョン変更でアプリが動かなくなる場合があります"]
+      one_check: "変更後にテストを実行できる？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["package", "supply-chain"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

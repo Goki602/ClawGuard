@@ -1,0 +1,14 @@
+{
+	"name": "@clawguard/docker",
+	"version": "0.1.0",
+	"description": "ClawGuard Docker 3-container reference implementation",
+	"type": "module",
+	"license": "MIT",
+	"private": true,
+	"scripts": {
+		"build": "echo 'No build step for Docker templates'"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0"
+	}
+}

@@ -1,0 +1,34 @@
+- id: BASH.ENV_DUMP
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)(?:printenv|env)\s*$'
+  risk: medium
+  explain:
+    title: "環境変数の一覧表示"
+    what: "全ての環境変数を一覧表示しようとしています。"
+    why:
+      - "環境変数にはAPIキーやパスワードなどの機密情報が含まれている場合があります。"
+      - "表示された情報がログやチャット履歴に残る可能性があります。"
+    check:
+      - "環境変数の全一覧が本当に必要？"
+      - "特定の変数だけ確認すれば足りない？"
+      - "機密情報がログに残っても問題ない？"
+    alternatives:
+      - "`echo $VARIABLE_NAME` で特定の変数だけ確認する"
+      - "`env | grep KEY_NAME` で必要な変数だけフィルタする"
+    simple:
+      doing: "PCに設定されている全ての環境変数（設定値）を表示しようとしています"
+      safe_points: ["環境変数を見ること自体はシステムを壊しません"]
+      warning_points: ["パスワードやAPIキーが画面やログに表示される場合があります"]
+      one_check: "特定の変数だけ確認すれば足りない？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["secret", "credential"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

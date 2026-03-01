@@ -1,0 +1,33 @@
+- id: BASH.YARN_ADD
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)yarn\s+add\s+(?!-)\S'
+  risk: medium
+  explain:
+    title: "yarn追加"
+    what: "yarnで新しいパッケージをインストールしようとしています。"
+    why:
+      - "悪意あるパッケージがインストール時にスクリプトを実行する可能性があります。"
+      - "typosquatting（名前の似た偽パッケージ）の可能性があります。"
+    check:
+      - "パッケージ名のスペルは正しい？"
+      - "このパッケージは信頼できる？（ダウンロード数・メンテナ）"
+    alternatives:
+      - "`npm info <pkg>` で先にパッケージ情報を確認する"
+      - "`yarn add --ignore-scripts <pkg>` でスクリプト実行なしにインストールする"
+    simple:
+      doing: "yarn（パッケージ管理ツール）で新しいパッケージをインストールしようとしています"
+      safe_points: ["有名なパッケージなら通常は安全です"]
+      warning_points: ["偽パッケージに注意が必要です"]
+      one_check: "パッケージ名は正しい？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["package", "supply-chain"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

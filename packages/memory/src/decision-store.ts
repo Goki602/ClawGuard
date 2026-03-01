@@ -1,0 +1,135 @@
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, join } from "node:path";
+import type { RuleStatsWindowed } from "@clawguard/core";
+import Database from "better-sqlite3";
+import type { DecisionRecord, RuleStats } from "./types.js";
+
+const SCHEMA = `
+CREATE TABLE IF NOT EXISTS decisions (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	rule_id TEXT NOT NULL,
+	action TEXT NOT NULL,
+	content_hash TEXT NOT NULL,
+	user_response TEXT,
+	agent TEXT,
+	session_id TEXT,
+	timestamp TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_decisions_rule ON decisions(rule_id);
+CREATE INDEX IF NOT EXISTS idx_decisions_hash ON decisions(content_hash);
+`;
+
+export class DecisionStore {
+	private db: Database.Database;
+
+	constructor(dbPath?: string) {
+		const path = dbPath ?? join(homedir(), ".clawguard", "memory.db");
+		const dir = dirname(path);
+		if (!existsSync(dir)) {
+			mkdirSync(dir, { recursive: true });
+		}
+		this.db = new Database(path);
+		this.db.pragma("journal_mode = WAL");
+		this.db.exec(SCHEMA);
+	}
+
+	record(entry: DecisionRecord): void {
+		const stmt = this.db.prepare(
+			"INSERT INTO decisions (rule_id, action, content_hash, user_response, agent, session_id, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		);
+		stmt.run(
+			entry.rule_id,
+			entry.action,
+			entry.content_hash,
+			entry.user_response ?? null,
+			entry.agent ?? null,
+			entry.session_id ?? null,
+			entry.timestamp ?? new Date().toISOString(),
+		);
+	}
+
+	getStats(ruleId: string): RuleStats {
+		const row = this.db
+			.prepare(
+				`SELECT
+				COUNT(*) as total,
+				SUM(CASE WHEN action = 'allow' OR action = 'log' THEN 1 ELSE 0 END) as allowed,
+				SUM(CASE WHEN action = 'deny' THEN 1 ELSE 0 END) as denied,
+				SUM(CASE WHEN action = 'confirm' THEN 1 ELSE 0 END) as confirmed
+			FROM decisions WHERE rule_id = ?`,
+			)
+			.get(ruleId) as {
+			total: number;
+			allowed: number;
+			denied: number;
+			confirmed: number;
+		};
+
+		return {
+			total: row.total,
+			allowed: row.allowed,
+			denied: row.denied,
+			confirmed: row.confirmed,
+			override_rate: row.total > 0 ? row.allowed / row.total : 0,
+		};
+	}
+
+	getStatsWindowed(ruleId: string, days: number): RuleStatsWindowed {
+		const row = this.db
+			.prepare(
+				`SELECT
+				COUNT(*) as total,
+				SUM(CASE WHEN action = 'allow' OR action = 'log' THEN 1 ELSE 0 END) as allowed,
+				SUM(CASE WHEN action = 'deny' THEN 1 ELSE 0 END) as denied,
+				SUM(CASE WHEN action = 'confirm' THEN 1 ELSE 0 END) as confirmed
+			FROM decisions WHERE rule_id = ? AND timestamp >= datetime('now', ?)`,
+			)
+			.get(ruleId, `-${days} days`) as {
+			total: number;
+			allowed: number;
+			denied: number;
+			confirmed: number;
+		};
+
+		const period: RuleStatsWindowed["period"] = days <= 7 ? "7d" : days <= 30 ? "30d" : "all";
+
+		return {
+			rule_id: ruleId,
+			period,
+			total: row.total,
+			allowed: row.allowed,
+			denied: row.denied,
+			confirmed: row.confirmed,
+			override_rate: row.total > 0 ? row.allowed / row.total : 0,
+		};
+	}
+
+	getAllRuleIds(): string[] {
+		const rows = this.db.prepare("SELECT DISTINCT rule_id FROM decisions").all() as Array<{
+			rule_id: string;
+		}>;
+		return rows.map((r) => r.rule_id);
+	}
+
+	getRecentByHash(contentHash: string, limit = 10): DecisionRecord[] {
+		return this.db
+			.prepare(
+				"SELECT rule_id, action, content_hash, user_response, agent, session_id, timestamp FROM decisions WHERE content_hash = ? ORDER BY id DESC LIMIT ?",
+			)
+			.all(contentHash, limit) as DecisionRecord[];
+	}
+
+	getOverrideRate(ruleId: string): number {
+		return this.getStats(ruleId).override_rate;
+	}
+
+	close(): void {
+		this.db.close();
+	}
+
+	static hashContent(content: string): string {
+		return createHash("sha256").update(content).digest("hex").slice(0, 16);
+	}
+}

@@ -56,6 +56,16 @@ export function formatExplainTerminal(
 		}
 	}
 
+	if (
+		explain.data?.community_allow_rate != null &&
+		explain.data?.community_sample_size != null &&
+		explain.data.community_sample_size >= 10
+	) {
+		const pct = Math.round(explain.data.community_allow_rate * 100);
+		const count = explain.data.community_sample_size.toLocaleString();
+		lines.push(`\u{1F4CA} コミュニティ: ${pct}%が許可 (${count}件中)`);
+	}
+
 	lines.push("");
 	lines.push(`[ルールID: ${ruleId}]`);
 

@@ -1,0 +1,34 @@
+- id: BASH.SSH_CONNECT
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)ssh\s+(?!-)\S+@\S'
+  risk: medium
+  explain:
+    title: "SSH接続"
+    what: "リモートサーバーにSSH接続しようとしています。"
+    why:
+      - "接続先サーバーでコマンドが実行される可能性があります。"
+      - "接続先が正しくない場合、認証情報が不正なサーバーに送られる可能性があります。"
+    check:
+      - "接続先のホスト名・ユーザー名は正しい？"
+      - "このサーバーに接続する必要がある？"
+      - "初回接続の場合、フィンガープリントを確認できる？"
+    alternatives:
+      - "接続先情報を`~/.ssh/config`に登録して管理する"
+      - "踏み台サーバー経由で接続してセキュリティを高める"
+    simple:
+      doing: "別のサーバー（コンピュータ）にリモート接続しようとしています"
+      safe_points: ["既知のサーバーへの接続は通常安全です"]
+      warning_points: ["接続先が正しいか確認が必要です"]
+      one_check: "接続先のサーバーは正しい？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["network", "remote-access"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

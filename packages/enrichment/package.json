@@ -1,0 +1,27 @@
+{
+	"name": "@clawguard/enrichment",
+	"version": "0.1.0",
+	"description": "ClawGuard data-backed ExplainRisk — npm registry, CVE lookup, decision memory enrichment",
+	"type": "module",
+	"license": "MIT",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@clawguard/core": "*",
+		"@clawguard/memory": "*"
+	},
+	"devDependencies": {
+		"@types/node": "^25.3.2"
+	}
+}

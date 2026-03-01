@@ -1,0 +1,33 @@
+- id: BASH.GIT_CLONE
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)git\s+clone\s+\S'
+  risk: low
+  explain:
+    title: "リポジトリ取得"
+    what: "Gitリポジトリをクローン（ダウンロード）しようとしています。"
+    why:
+      - "クローンしたリポジトリに悪意あるスクリプト（post-checkoutフック等）が含まれている可能性があります。"
+      - "大量のデータをダウンロードする可能性があります。"
+    check:
+      - "クローン元のURLは信頼できるリポジトリ？"
+      - "意図したリポジトリのURLになっている？"
+    alternatives:
+      - "GitHubでリポジトリの内容を先にブラウザで確認する"
+      - "`git clone --depth 1` で最小限の履歴だけ取得する"
+    simple:
+      doing: "Gitリポジトリ（ソースコードの保管場所）をダウンロードしようとしています"
+      safe_points: ["有名なリポジトリからのクローンは通常安全です"]
+      warning_points: ["不明なリポジトリには注意が必要です"]
+      one_check: "クローン元のURLは正しい？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["network", "git"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

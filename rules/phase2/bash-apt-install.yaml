@@ -1,0 +1,34 @@
+- id: BASH.APT_INSTALL
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)(?:apt-get|apt|dnf|yum)\s+install\s+(?!-)\S'
+  risk: medium
+  explain:
+    title: "OSパッケージ追加"
+    what: "OSのパッケージマネージャでソフトウェアをインストールしようとしています。"
+    why:
+      - "システムレベルのパッケージはOS全体に影響します。"
+      - "非公式リポジトリを追加していた場合、未検証のソフトウェアが入る可能性があります。"
+    check:
+      - "パッケージ名は正しい？"
+      - "公式リポジトリからインストールしている？"
+      - "このパッケージは本当に必要？"
+    alternatives:
+      - "`apt show <pkg>` / `dnf info <pkg>` でパッケージ情報を先に確認する"
+      - "Dockerコンテナ内でインストールして、ホストOSに影響しないようにする"
+    simple:
+      doing: "OS（Linux）にソフトウェアをインストールしようとしています"
+      safe_points: ["公式リポジトリからなら通常は安全です"]
+      warning_points: ["システム全体に影響するので慎重に"]
+      one_check: "このパッケージは本当に必要？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["package", "supply-chain"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

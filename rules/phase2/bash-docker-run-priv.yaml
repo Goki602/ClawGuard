@@ -1,0 +1,36 @@
+- id: BASH.DOCKER_RUN_PRIV
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)docker\s+run\s+.*(?:--privileged|-v\s+/[:\s])'
+  risk: high
+  explain:
+    title: "Docker特権実行"
+    what: "Dockerコンテナを特権モードまたはホストのルートディレクトリをマウントして実行しようとしています。"
+    why:
+      - "特権モードではコンテナからホストOSを完全に操作できるため、隔離が無効化されます。"
+      - "ホストの / をマウントすると、コンテナ内からホストの全ファイルにアクセス・変更できます。"
+      - "悪意あるコンテナイメージの場合、ホストOSが乗っ取られる可能性があります。"
+    check:
+      - "特権モードは本当に必要？"
+      - "マウントするパスは最小限になっている？"
+      - "コンテナイメージは信頼できるソースから取得している？"
+    alternatives:
+      - "必要最小限のcapabilityだけ `--cap-add` で追加する"
+      - "ホスト全体ではなく、特定のディレクトリだけマウントする"
+      - "`--read-only` フラグでコンテナのファイルシステムを読み取り専用にする"
+    simple:
+      doing: "Dockerコンテナ（仮想環境）に非常に強い権限を与えて実行しようとしています"
+      safe_points: ["信頼できるイメージで、開発目的なら許容される場合もあります"]
+      warning_points: ["特権モードはセキュリティの壁を完全に取り払います"]
+      one_check: "特権モードは本当に必要？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["exec", "container", "privilege-escalation"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

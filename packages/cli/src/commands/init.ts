@@ -12,7 +12,7 @@ const PRESET_DESCRIPTIONS: Record<PresetName, string> = {
 	expert: "🔧 上級者向け — 最小限の確認（パワーユーザー）",
 };
 
-export async function initCommand(options: { profile?: string }): Promise<void> {
+export async function initCommand(options: { profile?: string; agent?: string }): Promise<void> {
 	let profile: PresetName;
 
 	if (options.profile && isValidPresetName(options.profile)) {
@@ -41,9 +41,24 @@ export async function initCommand(options: { profile?: string }): Promise<void> 
 	writeFileSync(configPath, `profile: ${profile}\n`, "utf-8");
 	console.log(`${chalk.green("✓")} ${configPath} を作成しました（profile: ${profile}）`);
 
-	// Install Claude Code hook
-	const hookResult = installHook();
-	console.log(`${chalk.green("✓")} ${hookResult.message}（${hookResult.path}）`);
+	// Install hooks based on agent type
+	const agentType = options.agent ?? "claude";
+
+	if (agentType === "codex") {
+		try {
+			const { installCodexHook } = await import("@clawguard/adapter-codex");
+			const hookResult = installCodexHook();
+			console.log(`${chalk.green("✓")} ${hookResult.message}（${hookResult.path}）`);
+		} catch {
+			console.error(chalk.yellow("Codex adapter not available"));
+		}
+	} else if (agentType === "mcp") {
+		console.log(`${chalk.green("✓")} MCP adapter configured`);
+		console.log(`  Start MCP proxy: ${chalk.cyan("claw-guard serve --host 0.0.0.0")}`);
+	} else {
+		const hookResult = installHook();
+		console.log(`${chalk.green("✓")} ${hookResult.message}（${hookResult.path}）`);
+	}
 
 	console.log(`${chalk.green("✓")} セットアップ完了！`);
 	console.log("\n次のステップ:");

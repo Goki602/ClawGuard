@@ -13,6 +13,9 @@ export {
 	getCoreRulesDir,
 } from "./config-resolver.js";
 export { formatExplainTerminal } from "./explain-risk.js";
+export { MarketplaceClient } from "./marketplace.js";
+export { RuleCurator } from "./rule-curator.js";
+export type { CurationStore } from "./rule-curator.js";
 export type {
 	ToolType,
 	RiskLevel,
@@ -30,4 +33,32 @@ export type {
 	PolicyDecision,
 	ClawGuardConfig,
 	ProjectOverride,
+	BillingPlan,
+	LicenseInfo,
+	FeedManifest,
+	FeedBundle,
+	ReputationEntry,
+	ReputationData,
+	RulePack,
+	AnonymizedSnapshot,
+	PassportSummary,
+	SecurityPassport,
+	ReplayEvent,
+	CausalLink,
+	SessionTimeline,
+	WeeklyReportData,
+	SkillManifestEntry,
+	SkillManifest,
+	RevocationEntry,
+	RevocationList,
+	SkillScanResult,
+	MemberRole,
+	TeamMember,
+	TeamPolicy,
+	TeamDecisionStats,
+	RuleStatsWindowed,
+	FalsePositiveAlert,
+	PublicSecurityReport,
+	CurationTask,
+	CurationResult,
 } from "./types.js";

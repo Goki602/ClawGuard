@@ -1,0 +1,34 @@
+- id: BASH.CURL_DOWNLOAD
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)curl\s+.*(?:-o\s|-O\s|--output\s)'
+  risk: medium
+  explain:
+    title: "curlダウンロード"
+    what: "curlでファイルをダウンロードして保存しようとしています。"
+    why:
+      - "ダウンロードしたファイルに悪意あるコードが含まれている可能性があります。"
+      - "保存先によっては既存ファイルが上書きされる可能性があります。"
+    check:
+      - "ダウンロード元のURLは信頼できるサイト？"
+      - "保存先のパスは正しい？"
+      - "HTTPSを使っている？"
+    alternatives:
+      - "先にブラウザでURLの内容を確認する"
+      - "ダウンロード後にファイルの中身を確認してから使う"
+    simple:
+      doing: "インターネットからファイルをダウンロードして保存しようとしています"
+      safe_points: ["公式サイトからのダウンロードなら通常は安全です"]
+      warning_points: ["ダウンロードしたファイルの中身は確認が必要です"]
+      one_check: "ダウンロード元は信頼できるサイト？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["network", "download"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

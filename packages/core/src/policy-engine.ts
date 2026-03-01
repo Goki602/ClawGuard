@@ -1,5 +1,11 @@
 import { resolveAction } from "./preset-system.js";
-import type { CompiledRule, PolicyDecision, Preset, ToolRequest } from "./types.js";
+import type {
+	CompiledRule,
+	PolicyDecision,
+	Preset,
+	ProjectOverride,
+	ToolRequest,
+} from "./types.js";
 
 const NO_MATCH_DECISION: PolicyDecision = {
 	action: "allow",
@@ -12,17 +18,43 @@ export class PolicyEngine {
 	private rules: CompiledRule[];
 	private preset: Preset;
 	private feedVersion: string;
+	private overrides: ProjectOverride[];
 
-	constructor(rules: CompiledRule[], preset: Preset, feedVersion = "0.1.0") {
+	constructor(
+		rules: CompiledRule[],
+		preset: Preset,
+		feedVersion = "0.1.0",
+		overrides: ProjectOverride[] = [],
+	) {
 		this.rules = rules;
 		this.preset = preset;
 		this.feedVersion = feedVersion;
+		this.overrides = overrides;
 	}
 
 	evaluate(request: ToolRequest): PolicyDecision {
 		const matchedRule = this.findMatchingRule(request);
 		if (!matchedRule) {
 			return { ...NO_MATCH_DECISION, feed_version: this.feedVersion };
+		}
+
+		if (this.isOverridden(matchedRule.id, request.context.working_dir)) {
+			return {
+				action: "allow",
+				risk: matchedRule.risk,
+				rule_id: matchedRule.id,
+				feed_version: this.feedVersion,
+			};
+		}
+
+		// Recommend mode: new marketplace rules log-only during trial period
+		if (matchedRule.meta?.marketplace?.status === "recommend") {
+			return {
+				action: "log",
+				risk: matchedRule.risk,
+				rule_id: matchedRule.id,
+				feed_version: this.feedVersion,
+			};
 		}
 
 		const action = resolveAction(this.preset, matchedRule.risk);
@@ -39,6 +71,15 @@ export class PolicyEngine {
 		}
 
 		return decision;
+	}
+
+	private isOverridden(ruleId: string, workingDir: string): boolean {
+		for (const override of this.overrides) {
+			if (workingDir.startsWith(override.path) && override.rules?.includes(ruleId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private findMatchingRule(request: ToolRequest): CompiledRule | null {

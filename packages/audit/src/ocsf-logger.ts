@@ -78,6 +78,18 @@ export function createOcsfEvent(
 
 	if (decision.explain) {
 		event.enrichments.push({ name: "explain_title", value: decision.explain.title });
+		if (decision.explain.data) {
+			const d = decision.explain.data;
+			if (d.package_downloads !== undefined) {
+				event.enrichments.push({ name: "package_downloads", value: String(d.package_downloads) });
+			}
+			if (d.cve_count !== undefined) {
+				event.enrichments.push({ name: "cve_count", value: String(d.cve_count) });
+			}
+			if (d.has_postinstall !== undefined) {
+				event.enrichments.push({ name: "has_postinstall", value: String(d.has_postinstall) });
+			}
+		}
 	}
 
 	if (extra) {

@@ -1,0 +1,36 @@
+- id: BASH.SCP_SEND
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)(?:scp|rsync)\s+.*\S+:\S'
+  risk: high
+  explain:
+    title: "リモート送信"
+    what: "ファイルをリモートサーバーに送信しようとしています。"
+    why:
+      - "機密ファイル（秘密鍵・.env等）が外部に送信される可能性があります。"
+      - "送信先が意図しないサーバーの場合、データが漏洩します。"
+      - "一度送信されたデータは取り消せません。"
+    check:
+      - "送信先のサーバーは正しい？"
+      - "送信するファイルに機密情報が含まれていない？"
+      - "このファイル転送は本当に必要？"
+    alternatives:
+      - "送信するファイルの中身を先に確認する"
+      - "機密ファイルは暗号化してから送信する"
+      - "GitHubやクラウドストレージなど、管理された方法でファイルを共有する"
+    simple:
+      doing: "ファイルを別のサーバー（コンピュータ）に送信しようとしています"
+      safe_points: ["自分の管理するサーバーへの送信なら通常は安全です"]
+      warning_points: ["送信されたファイルは取り消せません。機密情報の漏洩に注意"]
+      one_check: "送信先サーバーと送信ファイルは正しい？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["network", "data-exfiltration"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

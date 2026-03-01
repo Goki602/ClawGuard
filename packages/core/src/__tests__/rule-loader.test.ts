@@ -74,20 +74,24 @@ describe("compileRule", () => {
 });
 
 describe("loadRulesFromDir", () => {
-	it("loads all 8 core rules", () => {
+	it("loads all 12 core rules", () => {
 		const dir = resolve(import.meta.dirname, "../../../../rules/core");
 		const rules = loadRulesFromDir(dir);
-		expect(rules.length).toBe(8);
+		expect(rules.length).toBe(12);
 		const ids = rules.map((r) => r.id).sort();
 		expect(ids).toEqual([
 			"BASH.CHMOD_777",
+			"BASH.ENV_FILE_READ",
 			"BASH.GIT_CLEAN_FDX",
 			"BASH.GIT_PUSH_FORCE",
 			"BASH.GIT_RESET_HARD",
+			"BASH.NPM_INSTALL",
 			"BASH.PIPE_EXEC_001",
 			"BASH.PIPE_EXEC_002",
+			"BASH.PIP_INSTALL",
 			"BASH.RM_RISK",
 			"BASH.ROOT_PATH_OP",
+			"BASH.SSH_KEY_READ",
 		]);
 	});
 

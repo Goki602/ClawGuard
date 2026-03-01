@@ -1,0 +1,34 @@
+- id: BASH.BREW_INSTALL
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)brew\s+install\s+\S'
+  risk: medium
+  explain:
+    title: "brew追加"
+    what: "Homebrewでパッケージをインストールしようとしています。"
+    why:
+      - "非公式のtap（外部リポジトリ）からインストールすると、未検証のソフトウェアが入る可能性があります。"
+      - "インストール時にビルドスクリプトが実行される場合があります。"
+    check:
+      - "パッケージ名は正しい？"
+      - "公式のHomebrew formulaから取得している？"
+      - "非公式tap（外部リポジトリ）を使っていない？"
+    alternatives:
+      - "`brew info <pkg>` でパッケージ情報を先に確認する"
+      - "`brew search <pkg>` で正式名称を確認する"
+    simple:
+      doing: "Homebrew（macOS用のパッケージ管理ツール）でソフトウェアをインストールしようとしています"
+      safe_points: ["公式formulaからなら通常は安全です"]
+      warning_points: ["非公式のtapからは注意が必要です"]
+      one_check: "パッケージ名は正しい？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["package", "supply-chain"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

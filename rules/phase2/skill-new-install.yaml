@@ -1,0 +1,34 @@
+- id: SKILL.NEW_INSTALL
+  match:
+    tool: skill_install
+    trigger: "new_skill"
+  risk: medium
+  explain:
+    title: "新規スキル導入"
+    what: "新しいスキル（AIエージェント拡張機能）をインストールしようとしています。"
+    why:
+      - "スキルはエージェントに新しい権限を与えるため、悪意あるスキルはデータを漏洩させる可能性があります。"
+      - "未検証のスキルにはセキュリティの脆弱性が含まれている可能性があります。"
+    check:
+      - "このスキルの作成者は信頼できる？"
+      - "スキルが要求する権限は適切？"
+      - "このスキルのレビューや評価を確認した？"
+    alternatives:
+      - "スキルのソースコードを先に確認する"
+      - "サンドボックス環境で先に試す"
+    simple:
+      doing: "AIエージェントに新しい機能（スキル）を追加しようとしています"
+      safe_points: ["公式や有名な作者のスキルなら通常は安全です"]
+      warning_points: ["スキルはエージェントに新しい権限を与えます"]
+      one_check: "このスキルの作成者は信頼できる？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["skill", "supply-chain"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

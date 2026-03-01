@@ -1,0 +1,34 @@
+- id: BASH.LONG_COMMAND
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)bash\s+-c\s+.{200,}'
+  risk: medium
+  explain:
+    title: "長いコマンド実行"
+    what: "200文字を超える長いコマンドを bash -c で実行しようとしています。"
+    why:
+      - "長いコマンドは中身が確認しづらく、悪意あるコードが紛れ込む可能性があります。"
+      - "エンコードされたペイロード（隠されたプログラム）が含まれている可能性があります。"
+    check:
+      - "コマンドの内容を全て理解している？"
+      - "base64やhexでエンコードされた部分はない？"
+      - "このコマンドをスクリプトファイルにして実行したほうが安全では？"
+    alternatives:
+      - "コマンドをシェルスクリプトファイルに書き出して、内容を確認してから実行する"
+      - "長いワンライナーを複数の短いコマンドに分割する"
+    simple:
+      doing: "非常に長いコマンドを一度に実行しようとしています"
+      safe_points: ["ビルドコマンドなど、長くても安全な場合もあります"]
+      warning_points: ["長いコマンドには悪意あるコードが隠れやすいです"]
+      one_check: "コマンドの中身を全て理解している？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["exec", "obfuscation"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

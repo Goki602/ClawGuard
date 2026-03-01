@@ -1,0 +1,27 @@
+{
+	"name": "@clawguard/passport",
+	"version": "0.1.0",
+	"description": "ClawGuard Security Passport — continuous monitoring attestation and GitHub badges",
+	"type": "module",
+	"license": "MIT",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@clawguard/core": "*",
+		"@clawguard/audit": "*"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0"
+	}
+}

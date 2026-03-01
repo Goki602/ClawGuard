@@ -1,0 +1,36 @@
+- id: SKILL.UPDATE_EXPAND
+  match:
+    tool: skill_install
+    trigger: "update_with_expansion"
+  risk: high
+  explain:
+    title: "スキル権限拡大"
+    what: "スキルの更新により、新しい権限が追加されようとしています。"
+    why:
+      - "更新に見せかけて、元のスキルにはなかった危険な権限が追加される可能性があります。"
+      - "サプライチェーン攻撃（信頼されたソフトウェアを悪用した攻撃）の手口として使われることがあります。"
+      - "権限の拡大により、データ漏洩やシステム破壊のリスクが高まります。"
+    check:
+      - "追加される権限は何？その権限は妥当？"
+      - "なぜこの更新で新しい権限が必要になった？"
+      - "更新のリリースノートを確認した？"
+    alternatives:
+      - "現在のバージョンのまま使い続ける"
+      - "追加権限のリリースノートや変更点を確認してから更新する"
+      - "スキルのソースコード差分を確認してから更新する"
+    simple:
+      doing: "スキル（AIの拡張機能）の更新で、今までなかった新しい権限が追加されようとしています"
+      safe_points: ["正当な機能追加で権限が必要になることもあります"]
+      warning_points: ["権限の拡大は攻撃の手口として悪用されることがあります"]
+      one_check: "追加される権限は妥当？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["skill", "supply-chain", "privilege-escalation"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

@@ -1,0 +1,34 @@
+- id: BASH.NPM_GLOBAL
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)npm\s+(?:install|i)\s+(?:-g|--global)\s+\S'
+  risk: medium
+  explain:
+    title: "npmグローバル追加"
+    what: "npmパッケージをシステム全体にインストールしようとしています。"
+    why:
+      - "グローバルインストールはシステム全体に影響し、他のプロジェクトにも波及する可能性があります。"
+      - "悪意あるパッケージがシステムレベルの権限でスクリプトを実行する可能性があります。"
+    check:
+      - "このパッケージは本当にグローバルに必要？"
+      - "パッケージ名のスペルは正しい？"
+      - "`npx` で代用できない？"
+    alternatives:
+      - "`npx <pkg>` で一時的に実行する"
+      - "プロジェクトのdevDependenciesとしてローカルにインストールする"
+    simple:
+      doing: "パッケージをPC全体で使えるようにインストールしようとしています"
+      safe_points: ["有名なCLIツール（eslintやtypescriptなど）なら通常は安全です"]
+      warning_points: ["PC全体に影響するので、ローカルインストールより慎重に"]
+      one_check: "本当にPC全体にインストールする必要がある？"
+  meta:
+    author: "clawguard"
+    pack: "phase2"
+    version: "1.0.0"
+    tags: ["package", "supply-chain"]
+    phase: 2
+    marketplace:
+      status: "recommend"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

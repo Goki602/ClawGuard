@@ -1,0 +1,28 @@
+- id: BASH.ENV_FILE_READ
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)cat\s+.*\.env(?:\.\w+)?(?:\s|$)'
+  risk: medium
+  explain:
+    title: "環境変数の読み取り"
+    what: ".envファイル（パスワードやAPIキーが入っていることが多いファイル）を表示しようとしています。"
+    why:
+      - "APIキーやパスワードが画面やログに表示される可能性があります。"
+      - "表示された情報がチャット履歴に残る可能性があります。"
+    check:
+      - ".envファイルにAPIキーやパスワードは入っている？"
+      - "特定の変数だけ確認すれば足りない？"
+    alternatives:
+      - "`grep KEY_NAME .env` で特定の変数だけ確認する"
+      - "`cat .env.example` でテンプレートを確認する"
+    simple:
+      doing: ".envファイル（設定ファイル）の中身を表示しようとしています"
+      safe_points: [".env.exampleなら秘密情報は含まれていません"]
+      warning_points: ["APIキーやパスワードが画面に表示されます"]
+      one_check: "このファイルに秘密情報は入っている？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["secret", "credential"]
+    phase: 1

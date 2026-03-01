@@ -1,0 +1,28 @@
+- id: BASH.SSH_KEY_READ
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)cat\s+.*(?:~\/\.ssh\/|\/etc\/ssh\/|\.ssh\/)'
+  risk: high
+  explain:
+    title: "SSH鍵の読み取り"
+    what: "SSH秘密鍵や設定ファイルの内容を表示しようとしています。"
+    why:
+      - "秘密鍵が漏れると、サーバーに不正アクセスされる可能性があります。"
+      - "表示された鍵がログやチャットに残る可能性があります。"
+    check:
+      - "秘密鍵の内容を本当に確認する必要がある？"
+      - "公開鍵(.pub)のほうで足りない？"
+    alternatives:
+      - "`ls ~/.ssh/` でファイル一覧だけ確認する"
+      - "`ssh-keygen -l -f ~/.ssh/id_rsa` で鍵の指紋だけ確認する"
+    simple:
+      doing: "SSH鍵ファイルの中身を表示しようとしています"
+      safe_points: ["公開鍵(.pub)なら表示しても問題ありません"]
+      warning_points: ["秘密鍵が画面やログに残ると悪用される恐れがあります"]
+      one_check: "表示するのは秘密鍵？公開鍵？"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["secret", "credential"]
+    phase: 1
