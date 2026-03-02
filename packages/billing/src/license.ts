@@ -6,7 +6,7 @@ import type { BillingPlan, LicenseInfo } from "@clawguard/core";
 const FREE_LICENSE: LicenseInfo = {
 	plan: "free",
 	features: {
-		max_rules: 12,
+		max_rules: 8,
 		feed_interval: "weekly",
 		reputation_network: false,
 		marketplace: false,

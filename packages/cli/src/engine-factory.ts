@@ -42,11 +42,14 @@ export function findRulesDir(): string {
 }
 
 export function findPhase2RulesDir(): string | null {
-	const repoRoot = resolve(process.cwd(), "rules/phase2");
-	try {
-		if (readdirSync(repoRoot).length > 0) return repoRoot;
-	} catch {
-		// continue
+	const bundled = resolve(getCoreRulesDir(), "..", "phase2");
+	const cwdBased = resolve(process.cwd(), "rules/phase2");
+	for (const dir of [bundled, cwdBased]) {
+		try {
+			if (readdirSync(dir).length > 0) return dir;
+		} catch {
+			// continue
+		}
 	}
 	return null;
 }
@@ -115,9 +118,9 @@ export function createEngineContext(): EngineContext {
 		rules = [...rules, ...marketplace.loadInstalledRules()];
 	}
 
-	// Free plan rule limit
-	if (!gate.canLoadPhase2Rules() && rules.length > gate.getMaxRules()) {
-		rules = rules.slice(0, gate.getMaxRules());
+	// Free plan: only phase 0 rules
+	if (!gate.canLoadPhase2Rules()) {
+		rules = rules.filter(r => (r.meta?.phase ?? 0) === 0);
 	}
 
 	const engine = new PolicyEngine(rules, preset, feedVersion, config.project_overrides);

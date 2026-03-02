@@ -5,8 +5,10 @@ import {
 	loadRulesFromDir,
 	resolveConfig,
 } from "@clawguard/core";
+import { FeatureGate, LicenseManager } from "@clawguard/billing";
 import chalk from "chalk";
-import { findRulesDir } from "../engine-factory.js";
+import { findPhase2RulesDir, findRulesDir } from "../engine-factory.js";
+import { detectLocale } from "../locale.js";
 
 const TEST_CASES = [
 	{ label: "rm -rf /tmp/test", tool: "bash" as const, content: "rm -rf /tmp/test" },
@@ -18,15 +20,49 @@ const TEST_CASES = [
 	{ label: "git status", tool: "bash" as const, content: "git status" },
 ];
 
+const MSG = {
+	ja: {
+		engineOk: (ms: number) => `Policy Engine: OK (${ms}ms)`,
+		rulesLoaded: (n: number) => `ルール: ${n} 件`,
+		plan: (name: string) => `プラン: ${name}`,
+		preset: (name: string) => `プリセット: ${name}`,
+		auditLog: (dir: string) => `監査ログ: ${dir}`,
+		testTitle: "テスト判定:",
+	},
+	en: {
+		engineOk: (ms: number) => `Policy Engine: OK (${ms}ms)`,
+		rulesLoaded: (n: number) => `Rules: ${n} loaded`,
+		plan: (name: string) => `Plan: ${name}`,
+		preset: (name: string) => `Preset: ${name}`,
+		auditLog: (dir: string) => `Audit log: ${dir}`,
+		testTitle: "Test results:",
+	},
+};
+
 export async function testCommand(): Promise<void> {
+	const lang = detectLocale();
+	const m = MSG[lang];
 	const config = resolveConfig({ projectDir: process.cwd() });
 	const preset = getPreset(config.profile);
-	const rulesDir = findRulesDir();
-	const rules = loadRulesFromDir(rulesDir);
+
+	// Load rules (plan-aware)
+	const licenseManager = new LicenseManager();
+	const license = licenseManager.getCurrentLicense();
+	const gate = new FeatureGate(license);
+	const coreRules = loadRulesFromDir(findRulesDir());
+	let rules = coreRules;
+
+	if (gate.canLoadPhase2Rules()) {
+		const phase2Dir = findPhase2RulesDir();
+		if (phase2Dir) {
+			rules = [...coreRules, ...loadRulesFromDir(phase2Dir)];
+		}
+	} else {
+		rules = rules.filter(r => (r.meta?.phase ?? 0) === 0);
+	}
 
 	const start = performance.now();
 	const engine = new PolicyEngine(rules, preset);
-	// Warm up
 	engine.evaluate({
 		tool: "bash",
 		content: "echo test",
@@ -34,12 +70,13 @@ export async function testCommand(): Promise<void> {
 	});
 	const engineTime = Math.round(performance.now() - start);
 
-	console.log(`${chalk.green("✓")} Policy Engine: OK (${engineTime}ms)`);
-	console.log(`${chalk.green("✓")} ルール v0.1: ${rules.length} rules loaded`);
-	console.log(`${chalk.green("✓")} プリセット: ${config.profile}`);
-	console.log(`${chalk.green("✓")} 監査ログ: ${getLogDir()}`);
+	console.log(`${chalk.green("✓")} ${m.engineOk(engineTime)}`);
+	console.log(`${chalk.green("✓")} ${m.rulesLoaded(rules.length)}`);
+	console.log(`${chalk.green("✓")} ${m.plan(license.plan.toUpperCase())}`);
+	console.log(`${chalk.green("✓")} ${m.preset(config.profile)}`);
+	console.log(`${chalk.green("✓")} ${m.auditLog(getLogDir())}`);
 
-	console.log("\nテスト判定:");
+	console.log(`\n${m.testTitle}`);
 	for (const tc of TEST_CASES) {
 		const decision = engine.evaluate({
 			tool: tc.tool,
