@@ -22,11 +22,14 @@ export function AppBar({ content, lang, onToggleLang, onOpenDrawer }: Props) {
 					<nav className="hidden md:flex items-center gap-8">
 						{content.links.map((link) => (
 							<a
-								key={link}
-								href={`#${link.toLowerCase()}`}
+								key={link.href}
+								href={link.href}
 								className="text-sm text-gray-400 hover:text-gray-100 transition-colors"
+								{...(link.href.startsWith("http")
+									? { target: "_blank", rel: "noopener noreferrer" }
+									: {})}
 							>
-								{link}
+								{link.label}
 							</a>
 						))}
 					</nav>

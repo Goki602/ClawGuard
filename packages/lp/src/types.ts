@@ -1,5 +1,5 @@
 export interface LPContent {
-	nav: { brand: string; cta: string; links: string[] };
+	nav: { brand: string; cta: string; links: Array<{ label: string; href: string }> };
 	hero: {
 		headline: string;
 		subheadline: string;

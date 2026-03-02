@@ -4,7 +4,11 @@ export const jp: LPContent = {
 	nav: {
 		brand: "ClawGuard",
 		cta: "\u7121\u6599\u3067\u59CB\u3081\u308B",
-		links: ["\u6A5F\u80FD", "\u6599\u91D1", "\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"],
+		links: [
+			{ label: "機能", href: "#features" },
+			{ label: "料金", href: "#pricing" },
+			{ label: "ドキュメント", href: "https://github.com/Goki602/ClawGuard" },
+		],
 	},
 	hero: {
 		headline:
@@ -171,6 +175,6 @@ export const jp: LPContent = {
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",
-		github: "https://github.com/clawguard",
+		github: "https://github.com/Goki602/ClawGuard",
 	},
 };

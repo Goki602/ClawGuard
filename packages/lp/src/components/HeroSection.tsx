@@ -26,7 +26,7 @@ export function HeroSection({ content }: Props) {
 						{content.cta}
 					</a>
 					<a
-						href="https://github.com/clawguard"
+						href="https://github.com/Goki602/ClawGuard"
 						target="_blank"
 						rel="noopener noreferrer"
 						className="inline-flex items-center rounded-lg border border-gray-700 px-8 py-3.5 text-base font-semibold text-gray-300 hover:border-gray-500 hover:text-gray-100 transition-colors"

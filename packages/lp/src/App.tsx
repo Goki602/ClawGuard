@@ -14,7 +14,7 @@ import type { Lang } from "./types";
 const contentMap = { en, jp } as const;
 
 export function App() {
-	const [lang, setLang] = useState<Lang>("en");
+	const [lang, setLang] = useState<Lang>("jp");
 	const [drawerOpen, setDrawerOpen] = useState(false);
 
 	const content = contentMap[lang];

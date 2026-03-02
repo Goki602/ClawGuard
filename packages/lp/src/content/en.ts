@@ -4,7 +4,11 @@ export const en: LPContent = {
 	nav: {
 		brand: "ClawGuard",
 		cta: "Get Started Free",
-		links: ["Features", "Pricing", "Docs"],
+		links: [
+			{ label: "Features", href: "#features" },
+			{ label: "Pricing", href: "#pricing" },
+			{ label: "Docs", href: "https://github.com/Goki602/ClawGuard" },
+		],
 	},
 	hero: {
 		headline: "Make AI Agents Trustworthy",
@@ -152,6 +156,6 @@ export const en: LPContent = {
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",
-		github: "https://github.com/clawguard",
+		github: "https://github.com/Goki602/ClawGuard",
 	},
 };
