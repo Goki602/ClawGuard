@@ -1,5 +1,5 @@
-import { LegalPage } from "./LegalPage";
 import type { Lang } from "../types";
+import { LegalPage } from "./LegalPage";
 
 const TITLE = { en: "特定商取引法に基づく表示", jp: "特定商取引法に基づく表示" } as const;
 
@@ -11,13 +11,12 @@ const ROWS = [
 	{ label: "メールアドレス", value: "support@clawguard-sec.com", isEmail: true },
 	{
 		label: "販売価格",
-		value: [
-			"Free プラン: 無料",
-			"Pro プラン: $12/月（税込）",
-			"Max プラン: $39/月（税込）",
-		],
+		value: ["Free プラン: 無料", "Pro プラン: $12/月（税込）", "Max プラン: $39/月（税込）"],
 	},
-	{ label: "販売価格以外の必要料金", value: "インターネット接続に必要な通信料はお客様のご負担となります" },
+	{
+		label: "販売価格以外の必要料金",
+		value: "インターネット接続に必要な通信料はお客様のご負担となります",
+	},
 	{ label: "支払方法", value: "クレジットカード（Stripe経由）" },
 	{ label: "支払時期", value: "お申し込み時に即時決済。以降、毎月同日に自動更新されます" },
 	{ label: "サービス提供開始時期", value: "決済完了後、即時ご利用いただけます" },
@@ -30,10 +29,7 @@ const ROWS = [
 	},
 	{
 		label: "動作環境",
-		value: [
-			"Node.js 18以上",
-			"対応OS: macOS / Linux / Windows",
-		],
+		value: ["Node.js 18以上", "対応OS: macOS / Linux / Windows"],
 	},
 ] as const;
 
@@ -65,7 +61,10 @@ export function Tokushoho({ lang }: { lang: Lang }) {
 function CellValue({ row }: { row: (typeof ROWS)[number] }) {
 	if ("isEmail" in row && row.isEmail) {
 		return (
-			<a href={`mailto:${row.value}`} className="text-claw-500 hover:text-claw-400 transition-colors">
+			<a
+				href={`mailto:${row.value}`}
+				className="text-claw-500 hover:text-claw-400 transition-colors"
+			>
 				{row.value as string}
 			</a>
 		);

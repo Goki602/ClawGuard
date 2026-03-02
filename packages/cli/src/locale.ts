@@ -27,7 +27,9 @@ export function detectLocale(options?: { ignoreConfig?: boolean }): CliLang {
 	// 3. macOS: check AppleLocale (LANG is often C.UTF-8 on macOS)
 	if (process.platform === "darwin") {
 		try {
-			const appleLocale = execFileSync("defaults", ["read", "-g", "AppleLocale"], { encoding: "utf-8" }).trim();
+			const appleLocale = execFileSync("defaults", ["read", "-g", "AppleLocale"], {
+				encoding: "utf-8",
+			}).trim();
 			if (appleLocale.startsWith("ja")) return "ja";
 		} catch {
 			// ignore

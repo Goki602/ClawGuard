@@ -43,7 +43,10 @@ const MSG = {
 	},
 };
 
-export async function upgradeCommand(plan?: string, options?: { key?: string; remove?: boolean }): Promise<void> {
+export async function upgradeCommand(
+	plan?: string,
+	options?: { key?: string; remove?: boolean },
+): Promise<void> {
 	const m = MSG[detectLocale()];
 	const manager = new LicenseManager();
 	const onOff = (v: boolean) => (v ? m.enabled : m.disabled);
@@ -59,9 +62,7 @@ export async function upgradeCommand(plan?: string, options?: { key?: string; re
 		if (license.plan === "free") {
 			console.log(chalk.red(m.invalidKey));
 		} else {
-			console.log(
-				`${chalk.green("✓")} ${m.activated(chalk.bold(license.plan.toUpperCase()))}`,
-			);
+			console.log(`${chalk.green("✓")} ${m.activated(chalk.bold(license.plan.toUpperCase()))}`);
 			console.log(
 				`  ${m.dailyFeed}: ${license.features.feed_interval === "daily" ? m.enabled : m.disabled}`,
 			);

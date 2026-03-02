@@ -120,7 +120,7 @@ export function createEngineContext(): EngineContext {
 
 	// Free plan: only phase 0 rules
 	if (!gate.canLoadPhase2Rules()) {
-		rules = rules.filter(r => (r.meta?.phase ?? 0) === 0);
+		rules = rules.filter((r) => (r.meta?.phase ?? 0) === 0);
 	}
 
 	const engine = new PolicyEngine(rules, preset, feedVersion, config.project_overrides);

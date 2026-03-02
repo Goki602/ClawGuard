@@ -1,5 +1,5 @@
-import { LegalPage } from "./LegalPage";
 import type { Lang } from "../types";
+import { LegalPage } from "./LegalPage";
 
 const TITLE = { en: "Privacy Policy", jp: "プライバシーポリシー" } as const;
 
@@ -16,13 +16,21 @@ export function PrivacyPolicy({ lang }: { lang: Lang }) {
 			<Section title="1. 収集する情報">
 				<p>当サービスでは、以下の情報を収集する場合があります。</p>
 				<SubSection title="(a) アカウント情報">
-					<p>有料プランの購入時に、メールアドレスおよび決済に必要な情報を収集します。決済処理はStripe, Inc.が行い、当サービスがクレジットカード番号を直接保持することはありません。</p>
+					<p>
+						有料プランの購入時に、メールアドレスおよび決済に必要な情報を収集します。決済処理はStripe,
+						Inc.が行い、当サービスがクレジットカード番号を直接保持することはありません。
+					</p>
 				</SubSection>
 				<SubSection title="(b) 利用データ">
-					<p>Policy Engineによる判定ログ（ツール名、リスクレベル、判定結果）をローカル環境に保存します。このデータは原則としてユーザーの端末内に留まります。</p>
+					<p>
+						Policy
+						Engineによる判定ログ（ツール名、リスクレベル、判定結果）をローカル環境に保存します。このデータは原則としてユーザーの端末内に留まります。
+					</p>
 				</SubSection>
 				<SubSection title="(c) 評判ネットワークデータ（オプトイン）">
-					<p>Pro/Maxプランで評判ネットワーク機能を有効化した場合、匿名化された判定統計データをサーバーに送信します。この機能は明示的なオプトインが必要であり、デフォルトでは無効です。</p>
+					<p>
+						Pro/Maxプランで評判ネットワーク機能を有効化した場合、匿名化された判定統計データをサーバーに送信します。この機能は明示的なオプトインが必要であり、デフォルトでは無効です。
+					</p>
 				</SubSection>
 			</Section>
 
@@ -68,9 +76,7 @@ export function PrivacyPolicy({ lang }: { lang: Lang }) {
 					<li>評判ネットワークへのデータ送信の停止（オプトアウト）</li>
 					<li>アカウントの削除</li>
 				</ul>
-				<p className="mt-3">
-					これらの請求は、下記のお問い合わせ先までご連絡ください。
-				</p>
+				<p className="mt-3">これらの請求は、下記のお問い合わせ先までご連絡ください。</p>
 			</Section>
 
 			<Section title="7. ポリシーの改定">
@@ -81,11 +87,12 @@ export function PrivacyPolicy({ lang }: { lang: Lang }) {
 			</Section>
 
 			<Section title="8. お問い合わせ">
-				<p>
-					プライバシーに関するお問い合わせは、以下までご連絡ください。
-				</p>
+				<p>プライバシーに関するお問い合わせは、以下までご連絡ください。</p>
 				<p className="mt-3">
-					<a href="mailto:support@clawguard-sec.com" className="text-claw-500 hover:text-claw-400 transition-colors">
+					<a
+						href="mailto:support@clawguard-sec.com"
+						className="text-claw-500 hover:text-claw-400 transition-colors"
+					>
 						support@clawguard-sec.com
 					</a>
 				</p>

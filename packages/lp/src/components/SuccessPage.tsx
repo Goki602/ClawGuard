@@ -30,7 +30,13 @@ export function SuccessPage({ lang }: { lang: Lang }) {
 		<section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto text-center">
 			{/* Check icon */}
 			<div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 ring-1 ring-green-500/30">
-				<svg className="h-10 w-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+				<svg
+					className="h-10 w-10 text-green-400"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					strokeWidth={2.5}
+				>
 					<title>Success</title>
 					<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
 				</svg>
@@ -50,11 +56,15 @@ export function SuccessPage({ lang }: { lang: Lang }) {
 				<h2 className="text-lg font-semibold text-gray-200 mb-4">{m.stepTitle}</h2>
 				<ol className="space-y-4 text-gray-300">
 					<li className="flex gap-3">
-						<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-claw-500/20 text-claw-400 text-sm font-bold">1</span>
+						<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-claw-500/20 text-claw-400 text-sm font-bold">
+							1
+						</span>
 						<span>{m.step1}</span>
 					</li>
 					<li className="flex gap-3">
-						<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-claw-500/20 text-claw-400 text-sm font-bold">2</span>
+						<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-claw-500/20 text-claw-400 text-sm font-bold">
+							2
+						</span>
 						<span>{m.step2}</span>
 					</li>
 				</ol>
@@ -64,10 +74,16 @@ export function SuccessPage({ lang }: { lang: Lang }) {
 			</div>
 
 			<a
-				href="#"
+				href="/"
 				className="inline-flex items-center gap-2 text-claw-500 hover:text-claw-400 transition-colors font-medium"
 			>
-				<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+				<svg
+					className="h-4 w-4"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					strokeWidth={2}
+				>
 					<title>Back</title>
 					<path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
 				</svg>

@@ -18,14 +18,20 @@ const PRESETS_JA: PresetRow[] = [
 	{ name: "observer", label: "（見守りモード）", high: "ログ", medium: "ログ" },
 	{ name: "guardian", label: "（厳格モード）  ", high: "拒否", medium: "確認" },
 	{ name: "balanced", label: "（バランス型）  ", high: "確認", medium: "確認", recommended: true },
-	{ name: "expert",   label: "（上級者向け）  ", high: "確認", medium: "許可" },
+	{ name: "expert", label: "（上級者向け）  ", high: "確認", medium: "許可" },
 ];
 
 const PRESETS_EN: PresetRow[] = [
 	{ name: "observer", label: "(Watch mode)", high: "log    ", medium: "log    " },
 	{ name: "guardian", label: "(Strict)    ", high: "deny   ", medium: "confirm" },
-	{ name: "balanced", label: "(Balanced)  ", high: "confirm", medium: "confirm", recommended: true },
-	{ name: "expert",   label: "(Expert)    ", high: "confirm", medium: "allow  " },
+	{
+		name: "balanced",
+		label: "(Balanced)  ",
+		high: "confirm",
+		medium: "confirm",
+		recommended: true,
+	},
+	{ name: "expert", label: "(Expert)    ", high: "confirm", medium: "allow  " },
 ];
 
 const MSG = {

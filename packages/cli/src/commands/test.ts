@@ -1,3 +1,4 @@
+import { FeatureGate, LicenseManager } from "@clawguard/billing";
 import {
 	PolicyEngine,
 	getLogDir,
@@ -5,7 +6,6 @@ import {
 	loadRulesFromDir,
 	resolveConfig,
 } from "@clawguard/core";
-import { FeatureGate, LicenseManager } from "@clawguard/billing";
 import chalk from "chalk";
 import { findPhase2RulesDir, findRulesDir } from "../engine-factory.js";
 import { detectLocale } from "../locale.js";
@@ -58,7 +58,7 @@ export async function testCommand(): Promise<void> {
 			rules = [...coreRules, ...loadRulesFromDir(phase2Dir)];
 		}
 	} else {
-		rules = rules.filter(r => (r.meta?.phase ?? 0) === 0);
+		rules = rules.filter((r) => (r.meta?.phase ?? 0) === 0);
 	}
 
 	const start = performance.now();
