@@ -79,6 +79,7 @@ export interface EngineContext {
 	teamClient?: unknown;
 	skillsScanner?: unknown;
 	teamMemoryStore?: unknown;
+	vsCodeCompat?: boolean;
 }
 
 export function createEngineContext(overrideLang?: Lang): EngineContext {
@@ -130,7 +131,18 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const store = new DecisionStore();
 
 	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");
-	return { engine, writer, rulesCount: rules.length, lang, store, license, gate, feedClient };
+	const vsCodeCompat = config.vscode_compat;
+	return {
+		engine,
+		writer,
+		rulesCount: rules.length,
+		lang,
+		store,
+		license,
+		gate,
+		feedClient,
+		vsCodeCompat,
+	};
 }
 
 export interface EvalResult {
@@ -161,7 +173,7 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 		});
 	}
 
-	const output = buildHookOutput(decision, ctx.lang);
+	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
 	return { output, skipped: false };
 }
 
@@ -199,6 +211,6 @@ export async function evaluateHookRequestAsync(
 		});
 	}
 
-	const output = buildHookOutput(decision, ctx.lang);
+	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
 	return { output, skipped: false };
 }

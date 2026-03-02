@@ -64,7 +64,15 @@ function createIsolatedContext(): EngineContext & { tmpDir: string } {
 	const writer = new AuditWriter(logDir);
 	const store = new DecisionStore(dbPath);
 
-	return { engine, writer, rulesCount: rules.length, store, tmpDir };
+	return {
+		engine,
+		writer,
+		rulesCount: rules.length,
+		lang: "ja" as const,
+		store,
+		vsCodeCompat: false,
+		tmpDir,
+	};
 }
 
 // ====================================================================
