@@ -78,6 +78,7 @@ export const jp: LPContent = {
 					"\u5358\u4E00\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u5BFE\u5FDC",
 				],
 				cta: "\u7121\u6599\u3067\u59CB\u3081\u308B",
+				href: "#how-it-works",
 			},
 			{
 				name: "Pro",
@@ -92,6 +93,7 @@ export const jp: LPContent = {
 					"\u30B9\u30AD\u30EBAV\u30B9\u30AD\u30E3\u30F3",
 				],
 				cta: "Pro\u3092\u8A66\u3059",
+				href: "https://buy.stripe.com/test_dRmaEWbjp9yC7Kv8hNb3q00",
 				highlighted: true,
 			},
 			{
@@ -107,6 +109,7 @@ export const jp: LPContent = {
 					"\u512A\u5148\u30B5\u30DD\u30FC\u30C8",
 				],
 				cta: "Max\u3092\u8A66\u3059",
+				href: "https://buy.stripe.com/test_8x2eVcfzFaCGaWHdC7b3q01",
 			},
 		],
 	},

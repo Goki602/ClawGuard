@@ -6,7 +6,7 @@ interface Props {
 
 export function HowItWorks({ content }: Props) {
 	return (
-		<section className="py-20 sm:py-28 bg-gray-900/30">
+		<section id="how-it-works" className="py-20 sm:py-28 bg-gray-900/30">
 			<div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 				<h2 className="text-3xl sm:text-4xl font-bold text-center mb-16">{content.title}</h2>
 				<div className="flex flex-col gap-12">

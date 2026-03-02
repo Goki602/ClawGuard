@@ -53,7 +53,10 @@ export function PricingCards({ content }: Props) {
 								))}
 							</ul>
 							<a
-								href="#pricing"
+								href={card.href ?? "#how-it-works"}
+								{...(card.href?.startsWith("http")
+									? { target: "_blank", rel: "noopener noreferrer" }
+									: {})}
 								className={`mt-8 block rounded-lg py-3 text-center text-sm font-semibold transition-colors ${
 									card.highlighted
 										? "bg-claw-500 text-white hover:bg-claw-600 shadow-lg shadow-claw-500/20"

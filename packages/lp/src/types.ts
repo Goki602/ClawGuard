@@ -18,6 +18,7 @@ export interface LPContent {
 			period: string;
 			features: string[];
 			cta: string;
+			href?: string;
 			highlighted?: boolean;
 		}>;
 	};

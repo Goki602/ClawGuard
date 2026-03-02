@@ -73,6 +73,7 @@ export const en: LPContent = {
 					"Single agent support",
 				],
 				cta: "Get Started Free",
+				href: "#how-it-works",
 			},
 			{
 				name: "Pro",
@@ -87,6 +88,7 @@ export const en: LPContent = {
 					"Skills AV scanning",
 				],
 				cta: "Start Pro Trial",
+				href: "https://buy.stripe.com/test_dRmaEWbjp9yC7Kv8hNb3q00",
 				highlighted: true,
 			},
 			{
@@ -102,6 +104,7 @@ export const en: LPContent = {
 					"Priority support",
 				],
 				cta: "Start Max Trial",
+				href: "https://buy.stripe.com/test_8x2eVcfzFaCGaWHdC7b3q01",
 			},
 		],
 	},

@@ -44,7 +44,7 @@ export function AppBar({ content, lang, onToggleLang, onOpenDrawer }: Props) {
 							{lang === "en" ? "JP" : "EN"}
 						</button>
 						<a
-							href="#pricing"
+							href="#how-it-works"
 							className="hidden md:inline-flex items-center rounded-lg bg-claw-500 px-4 py-2 text-sm font-semibold text-white hover:bg-claw-600 transition-colors shadow-lg shadow-claw-500/20"
 						>
 							{content.cta}

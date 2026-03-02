@@ -20,7 +20,7 @@ export function HeroSection({ content }: Props) {
 				</p>
 				<div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
 					<a
-						href="#pricing"
+						href="#how-it-works"
 						className="inline-flex items-center rounded-lg bg-claw-500 px-8 py-3.5 text-base font-semibold text-white hover:bg-claw-600 transition-colors shadow-xl shadow-claw-500/25"
 					>
 						{content.cta}
