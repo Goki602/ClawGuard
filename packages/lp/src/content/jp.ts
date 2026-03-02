@@ -155,7 +155,7 @@ export const jp: LPContent = {
 			},
 			{
 				label: "\u30B9\u30C6\u30FC\u30BF\u30B9",
-				href: "https://status.clawguard.dev",
+				href: "https://status.clawguard-sec.com",
 			},
 			{
 				label: "\u30C1\u30A7\u30F3\u30B8\u30ED\u30B0",

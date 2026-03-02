@@ -51,7 +51,7 @@ export function SecurityBadge({ content }: Props) {
 					<span className="text-gray-500">{" -->"}</span>
 					<br />
 					<span className="text-claw-500">
-						![ClawGuard](https://clawguard.dev/badge/PROJECT_ID)
+						![ClawGuard](https://clawguard-sec.com/badge/PROJECT_ID)
 					</span>
 				</div>
 			</div>

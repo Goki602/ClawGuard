@@ -143,7 +143,7 @@ export const en: LPContent = {
 		devex: [
 			{ label: "API Reference", href: "/docs/api" },
 			{ label: "Getting Started", href: "/docs/getting-started" },
-			{ label: "Status", href: "https://status.clawguard.dev" },
+			{ label: "Status", href: "https://status.clawguard-sec.com" },
 			{ label: "Changelog", href: "/docs/changelog" },
 		],
 		support: [
