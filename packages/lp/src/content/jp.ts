@@ -7,7 +7,7 @@ export const jp: LPContent = {
 		links: [
 			{ label: "機能", href: "#features" },
 			{ label: "料金", href: "#pricing" },
-			{ label: "ドキュメント", href: "https://github.com/Goki602/ClawGuard" },
+			{ label: "ドキュメント", href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md" },
 		],
 	},
 	hero: {
@@ -152,7 +152,7 @@ export const jp: LPContent = {
 			},
 			{
 				label: "\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC",
-				href: "https://github.com/Goki602/ClawGuard",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md",
 			},
 			{
 				label: "\u7279\u5B9A\u5546\u53D6\u5F15\u6CD5\u306B\u57FA\u3065\u304F\u8868\u793A",
@@ -162,7 +162,7 @@ export const jp: LPContent = {
 		devex: [
 			{
 				label: "\u30B9\u30BF\u30FC\u30C8\u30AC\u30A4\u30C9",
-				href: "https://github.com/Goki602/ClawGuard#quick-start",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md#quick-start",
 			},
 			{
 				label: "CLI\u30EA\u30D5\u30A1\u30EC\u30F3\u30B9",
@@ -185,6 +185,6 @@ export const jp: LPContent = {
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",
-		github: "https://github.com/Goki602/ClawGuard",
+		github: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md",
 	},
 };
