@@ -4,6 +4,21 @@ interface Props {
 	content: LPContent["footer"];
 }
 
+function FooterLink({ item }: { item: { label: string; href: string } }) {
+	const isExternal = item.href.startsWith("http") || item.href.startsWith("mailto:");
+	return (
+		<li>
+			<a
+				href={item.href}
+				className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+				{...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+			>
+				{item.label}
+			</a>
+		</li>
+	);
+}
+
 export function FooterSection({ content }: Props) {
 	return (
 		<footer className="border-t border-gray-800 bg-gray-950 py-16">
@@ -15,7 +30,9 @@ export function FooterSection({ content }: Props) {
 							<span className="text-claw-500">Claw</span>
 							<span className="text-gray-100">Guard</span>
 						</span>
-						<p className="mt-4 text-sm text-gray-500 leading-relaxed">AI Agent Security Platform</p>
+						<p className="mt-4 text-sm text-gray-500 leading-relaxed">
+							{content.headings.description}
+						</p>
 						<a
 							href={content.github}
 							target="_blank"
@@ -39,18 +56,11 @@ export function FooterSection({ content }: Props) {
 					{/* Legal */}
 					<div>
 						<h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
-							Legal
+							{content.headings.legal}
 						</h4>
 						<ul className="flex flex-col gap-3">
 							{content.legal.map((item) => (
-								<li key={item.label}>
-									<a
-										href={item.href}
-										className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
-									>
-										{item.label}
-									</a>
-								</li>
+								<FooterLink key={item.label} item={item} />
 							))}
 						</ul>
 					</div>
@@ -58,18 +68,11 @@ export function FooterSection({ content }: Props) {
 					{/* DevEx */}
 					<div>
 						<h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
-							DevEx
+							{content.headings.devex}
 						</h4>
 						<ul className="flex flex-col gap-3">
 							{content.devex.map((item) => (
-								<li key={item.label}>
-									<a
-										href={item.href}
-										className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
-									>
-										{item.label}
-									</a>
-								</li>
+								<FooterLink key={item.label} item={item} />
 							))}
 						</ul>
 					</div>
@@ -77,18 +80,11 @@ export function FooterSection({ content }: Props) {
 					{/* Support */}
 					<div>
 						<h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
-							Support
+							{content.headings.support}
 						</h4>
 						<ul className="flex flex-col gap-3">
 							{content.support.map((item) => (
-								<li key={item.label}>
-									<a
-										href={item.href}
-										className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
-									>
-										{item.label}
-									</a>
-								</li>
+								<FooterLink key={item.label} item={item} />
 							))}
 						</ul>
 					</div>

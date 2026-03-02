@@ -1,10 +1,22 @@
+import { useCallback, useState } from "react";
 import type { LPContent } from "../types";
 
 interface Props {
 	content: LPContent["securityBadge"];
 }
 
+const BADGE_CODE = "![ClawGuard](https://clawguard-sec.com/badge/YOUR_PROJECT)";
+
 export function SecurityBadge({ content }: Props) {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = useCallback(() => {
+		navigator.clipboard.writeText(BADGE_CODE).then(() => {
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		});
+	}, []);
+
 	return (
 		<section className="py-20 sm:py-28 bg-gray-900/30">
 			<div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
@@ -15,7 +27,6 @@ export function SecurityBadge({ content }: Props) {
 
 				{/* Badge visual */}
 				<div className="inline-flex items-center gap-4 rounded-2xl border border-accent-500/30 bg-gray-900/80 px-8 py-6 shadow-xl shadow-accent-500/5">
-					{/* Shield icon */}
 					<div className="flex-shrink-0">
 						<svg
 							className="h-16 w-16 text-accent-500"
@@ -44,15 +55,19 @@ export function SecurityBadge({ content }: Props) {
 					</div>
 				</div>
 
-				{/* Embed code preview */}
-				<div className="mt-8 mx-auto max-w-md rounded-lg border border-gray-800 bg-gray-950 p-4 font-mono text-xs text-left">
-					<span className="text-gray-500">{"<!-- "}</span>
-					<span className="text-gray-400">Add to README.md</span>
-					<span className="text-gray-500">{" -->"}</span>
-					<br />
-					<span className="text-claw-500">
-						![ClawGuard](https://clawguard-sec.com/badge/PROJECT_ID)
-					</span>
+				{/* Embed code */}
+				<div className="mt-8 mx-auto max-w-lg">
+					<p className="text-sm text-gray-500 mb-2">{content.embedLabel}</p>
+					<div className="relative rounded-lg border border-gray-800 bg-gray-950 p-4 font-mono text-xs text-left">
+						<code className="text-claw-500 break-all select-all">{BADGE_CODE}</code>
+						<button
+							type="button"
+							onClick={handleCopy}
+							className="absolute top-2 right-2 rounded-md border border-gray-700 bg-gray-900 px-2.5 py-1 text-xs text-gray-400 hover:text-gray-100 hover:border-gray-600 transition-colors"
+						>
+							{copied ? content.copiedText : content.copyButton}
+						</button>
+					</div>
 				</div>
 			</div>
 		</section>

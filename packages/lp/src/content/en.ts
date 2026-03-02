@@ -130,29 +130,54 @@ export const en: LPContent = {
 		description:
 			"Prove your AI agent sessions are continuously monitored. Embed a verifiable badge in your repository.",
 		badgeText: "Protected by ClawGuard",
+		embedLabel: "Add to your README.md",
+		copyButton: "Copy",
+		copiedText: "Copied!",
 	},
 	footer: {
+		headings: {
+			legal: "Legal",
+			devex: "Developers",
+			support: "Support",
+			description: "AI Agent Security Platform",
+		},
 		legal: [
-			{ label: "Terms of Service", href: "/legal/terms" },
-			{ label: "Privacy Policy", href: "/legal/privacy" },
+			{
+				label: "License (MIT)",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/LICENSE",
+			},
+			{
+				label: "Privacy Policy",
+				href: "https://github.com/Goki602/ClawGuard",
+			},
 			{
 				label: "\u7279\u5B9A\u5546\u53D6\u5F15\u6CD5\u306B\u57FA\u3065\u304F\u8868\u793A",
 				href: "/legal/tokushoho",
 			},
 		],
 		devex: [
-			{ label: "API Reference", href: "/docs/api" },
-			{ label: "Getting Started", href: "/docs/getting-started" },
-			{ label: "Status", href: "https://status.clawguard-sec.com" },
-			{ label: "Changelog", href: "/docs/changelog" },
+			{
+				label: "Getting Started",
+				href: "https://github.com/Goki602/ClawGuard#quick-start",
+			},
+			{
+				label: "CLI Reference",
+				href: "https://github.com/Goki602/ClawGuard/tree/main/packages/cli",
+			},
+			{
+				label: "Changelog",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/CHANGELOG.md",
+			},
 		],
 		support: [
 			{ label: "Pricing", href: "#pricing" },
-			{ label: "FAQ", href: "/support/faq" },
-			{ label: "Contact (Technical)", href: "/support/contact?type=tech" },
 			{
-				label: "Contact (Billing)",
-				href: "/support/contact?type=billing",
+				label: "Issues & FAQ",
+				href: "https://github.com/Goki602/ClawGuard/issues",
+			},
+			{
+				label: "Contact",
+				href: "mailto:support@clawguard-sec.com",
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",

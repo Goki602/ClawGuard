@@ -25,8 +25,16 @@ export interface LPContent {
 		title: string;
 		steps: Array<{ step: string; title: string; description: string }>;
 	};
-	securityBadge: { title: string; description: string; badgeText: string };
+	securityBadge: {
+		title: string;
+		description: string;
+		badgeText: string;
+		embedLabel: string;
+		copyButton: string;
+		copiedText: string;
+	};
 	footer: {
+		headings: { legal: string; devex: string; support: string; description: string };
 		legal: Array<{ label: string; href: string }>;
 		devex: Array<{ label: string; href: string }>;
 		support: Array<{ label: string; href: string }>;

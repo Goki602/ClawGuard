@@ -134,13 +134,25 @@ export const jp: LPContent = {
 		description:
 			"AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30C3\u30B7\u30E7\u30F3\u304C\u7D99\u7D9A\u7684\u306B\u76E3\u8996\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u8A3C\u660E\u3002\u691C\u8A3C\u53EF\u80FD\u306A\u30D0\u30C3\u30B8\u3092\u30EA\u30DD\u30B8\u30C8\u30EA\u306B\u57CB\u3081\u8FBC\u307F\u3002",
 		badgeText: "ClawGuard\u3067\u4FDD\u8B77\u6E08\u307F",
+		embedLabel: "README.md \u306B\u8FFD\u52A0",
+		copyButton: "\u30B3\u30D4\u30FC",
+		copiedText: "\u30B3\u30D4\u30FC\u6E08\u307F\uFF01",
 	},
 	footer: {
+		headings: {
+			legal: "\u6CD5\u7684\u60C5\u5831",
+			devex: "\u958B\u767A\u8005\u5411\u3051",
+			support: "\u30B5\u30DD\u30FC\u30C8",
+			description: "AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30D7\u30E9\u30C3\u30C8\u30D5\u30A9\u30FC\u30E0",
+		},
 		legal: [
-			{ label: "\u5229\u7528\u898F\u7D04", href: "/legal/terms" },
+			{
+				label: "\u30E9\u30A4\u30BB\u30F3\u30B9 (MIT)",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/LICENSE",
+			},
 			{
 				label: "\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC",
-				href: "/legal/privacy",
+				href: "https://github.com/Goki602/ClawGuard",
 			},
 			{
 				label: "\u7279\u5B9A\u5546\u53D6\u5F15\u6CD5\u306B\u57FA\u3065\u304F\u8868\u793A",
@@ -148,30 +160,28 @@ export const jp: LPContent = {
 			},
 		],
 		devex: [
-			{ label: "API\u30EA\u30D5\u30A1\u30EC\u30F3\u30B9", href: "/docs/api" },
 			{
 				label: "\u30B9\u30BF\u30FC\u30C8\u30AC\u30A4\u30C9",
-				href: "/docs/getting-started",
+				href: "https://github.com/Goki602/ClawGuard#quick-start",
 			},
 			{
-				label: "\u30B9\u30C6\u30FC\u30BF\u30B9",
-				href: "https://status.clawguard-sec.com",
+				label: "CLI\u30EA\u30D5\u30A1\u30EC\u30F3\u30B9",
+				href: "https://github.com/Goki602/ClawGuard/tree/main/packages/cli",
 			},
 			{
 				label: "\u30C1\u30A7\u30F3\u30B8\u30ED\u30B0",
-				href: "/docs/changelog",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/CHANGELOG.md",
 			},
 		],
 		support: [
 			{ label: "\u6599\u91D1", href: "#pricing" },
-			{ label: "FAQ", href: "/support/faq" },
 			{
-				label: "\u6280\u8853\u30B5\u30DD\u30FC\u30C8",
-				href: "/support/contact?type=tech",
+				label: "\u8CEA\u554F\u30FB\u4E0D\u5177\u5408\u5831\u544A",
+				href: "https://github.com/Goki602/ClawGuard/issues",
 			},
 			{
-				label: "\u8ACB\u6C42\u30B5\u30DD\u30FC\u30C8",
-				href: "/support/contact?type=billing",
+				label: "\u304A\u554F\u3044\u5408\u308F\u305B",
+				href: "mailto:support@clawguard-sec.com",
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",
