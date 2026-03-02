@@ -7,7 +7,10 @@ export const jp: LPContent = {
 		links: [
 			{ label: "機能", href: "#features" },
 			{ label: "料金", href: "#pricing" },
-			{ label: "ドキュメント", href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md" },
+			{
+				label: "ドキュメント",
+				href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md",
+			},
 		],
 	},
 	hero: {
@@ -143,7 +146,8 @@ export const jp: LPContent = {
 			legal: "\u6CD5\u7684\u60C5\u5831",
 			devex: "\u958B\u767A\u8005\u5411\u3051",
 			support: "\u30B5\u30DD\u30FC\u30C8",
-			description: "AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30D7\u30E9\u30C3\u30C8\u30D5\u30A9\u30FC\u30E0",
+			description:
+				"AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30D7\u30E9\u30C3\u30C8\u30D5\u30A9\u30FC\u30E0",
 		},
 		legal: [
 			{
