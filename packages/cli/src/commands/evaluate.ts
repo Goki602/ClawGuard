@@ -17,7 +17,7 @@ export async function evaluateCommand(options: { json?: boolean }): Promise<void
 		return;
 	}
 
-	const ctx = createEngineContext();
+	const ctx = createEngineContext(detectLocale());
 	const { output, skipped } = evaluateHookRequest(rawInput, ctx);
 
 	if (options.json) {

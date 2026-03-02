@@ -1,7 +1,22 @@
 import { AuditReader } from "@clawguard/audit";
 import chalk from "chalk";
+import { detectLocale } from "../locale.js";
+
+const MSG = {
+	ja: {
+		noLogs: (dateStr: string) => `${dateStr} のログはありません`,
+		availableDates: (dates: string) => `\n利用可能な日付: ${dates}`,
+		header: (dateStr: string, count: number) => `\n📋 監査ログ: ${dateStr} (${count} events)\n`,
+	},
+	en: {
+		noLogs: (dateStr: string) => `No logs for ${dateStr}`,
+		availableDates: (dates: string) => `\nAvailable dates: ${dates}`,
+		header: (dateStr: string, count: number) => `\n📋 Audit Log: ${dateStr} (${count} events)\n`,
+	},
+};
 
 export async function logCommand(options: { today?: boolean; date?: string }): Promise<void> {
+	const m = MSG[detectLocale()];
 	const reader = new AuditReader();
 
 	let dateStr: string;
@@ -15,15 +30,15 @@ export async function logCommand(options: { today?: boolean; date?: string }): P
 	const events = reader.readDate(dateStr);
 
 	if (events.length === 0) {
-		console.log(`${dateStr} のログはありません`);
+		console.log(m.noLogs(dateStr));
 		const dates = reader.listDates();
 		if (dates.length > 0) {
-			console.log(`\n利用可能な日付: ${dates.join(", ")}`);
+			console.log(m.availableDates(dates.join(", ")));
 		}
 		return;
 	}
 
-	console.log(chalk.bold(`\n📋 監査ログ: ${dateStr} (${events.length} events)\n`));
+	console.log(chalk.bold(m.header(dateStr, events.length)));
 
 	for (const event of events) {
 		const time = event.time.split("T")[1]?.split(".")[0] ?? "";

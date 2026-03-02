@@ -11,6 +11,7 @@ import { AuditWriter, createOcsfEvent } from "@clawguard/audit";
 import { FeatureGate, LicenseManager } from "@clawguard/billing";
 import {
 	type CompiledRule,
+	type Lang,
 	type LicenseInfo,
 	MarketplaceClient,
 	PolicyEngine,
@@ -65,6 +66,7 @@ export interface EngineContext {
 	engine: PolicyEngine;
 	writer: AuditWriter;
 	rulesCount: number;
+	lang: Lang;
 	store?: DecisionStore;
 	enricher?: Enricher;
 	reputation?: ReputationAggregator;
@@ -79,7 +81,7 @@ export interface EngineContext {
 	teamMemoryStore?: unknown;
 }
 
-export function createEngineContext(): EngineContext {
+export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const config = resolveConfig();
 	const preset = getPreset(config.profile);
 
@@ -127,7 +129,8 @@ export function createEngineContext(): EngineContext {
 	const writer = new AuditWriter();
 	const store = new DecisionStore();
 
-	return { engine, writer, rulesCount: rules.length, store, license, gate, feedClient };
+	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");
+	return { engine, writer, rulesCount: rules.length, lang, store, license, gate, feedClient };
 }
 
 export interface EvalResult {
@@ -158,7 +161,7 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 		});
 	}
 
-	const output = buildHookOutput(decision);
+	const output = buildHookOutput(decision, ctx.lang);
 	return { output, skipped: false };
 }
 
@@ -196,6 +199,6 @@ export async function evaluateHookRequestAsync(
 		});
 	}
 
-	const output = buildHookOutput(decision);
+	const output = buildHookOutput(decision, ctx.lang);
 	return { output, skipped: false };
 }

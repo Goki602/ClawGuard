@@ -1,10 +1,11 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { Lang } from "@clawguard/core";
 import { getGlobalConfigDir } from "@clawguard/core";
 import { parse } from "yaml";
 
-export type CliLang = "ja" | "en";
+export type CliLang = Lang;
 
 export function detectLocale(options?: { ignoreConfig?: boolean }): CliLang {
 	// 1. Check saved config (skip for init command)

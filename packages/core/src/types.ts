@@ -2,6 +2,7 @@ export type ToolType = "bash" | "file_write" | "network" | "skill_install" | "un
 export type RiskLevel = "low" | "medium" | "high";
 export type Action = "allow" | "confirm" | "deny" | "log";
 export type PresetName = "observer" | "guardian" | "balanced" | "expert";
+export type Lang = "ja" | "en";
 
 export interface ToolRequest {
 	tool: ToolType;
@@ -160,6 +161,7 @@ export interface AnonymizedSnapshot {
 
 export interface ClawGuardConfig {
 	profile: PresetName;
+	lang?: Lang;
 	feed?: {
 		url?: string;
 		key?: string;

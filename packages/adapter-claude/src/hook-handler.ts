@@ -1,4 +1,4 @@
-import type { PolicyDecision } from "@clawguard/core";
+import type { Lang, PolicyDecision } from "@clawguard/core";
 import { formatExplainTerminal } from "@clawguard/core";
 import { mapToToolRequest } from "./mapper.js";
 import type { ClaudeHookInput, ClaudeHookOutput } from "./types.js";
@@ -20,12 +20,21 @@ function decisionToClaudeAction(decision: PolicyDecision): "allow" | "deny" | "a
 	}
 }
 
-function buildReason(decision: PolicyDecision): string | undefined {
+function buildReason(decision: PolicyDecision, lang: Lang = "ja"): string | undefined {
 	if (!decision.explain) return undefined;
-	return formatExplainTerminal(decision.explain, decision.risk, decision.action, decision.rule_id);
+	return formatExplainTerminal(
+		decision.explain,
+		decision.risk,
+		decision.action,
+		decision.rule_id,
+		lang,
+	);
 }
 
-export function buildHookOutput(decision: PolicyDecision): ClaudeHookOutput | null {
+export function buildHookOutput(
+	decision: PolicyDecision,
+	lang: Lang = "ja",
+): ClaudeHookOutput | null {
 	const claudeAction = decisionToClaudeAction(decision);
 
 	// For allow, return null (exit 0 with no stdout = proceed)
@@ -37,7 +46,7 @@ export function buildHookOutput(decision: PolicyDecision): ClaudeHookOutput | nu
 		hookSpecificOutput: {
 			hookEventName: "PreToolUse",
 			permissionDecision: claudeAction,
-			permissionDecisionReason: buildReason(decision),
+			permissionDecisionReason: buildReason(decision, lang),
 		},
 	};
 }

@@ -1,40 +1,97 @@
 import { MarketplaceClient, RuleCurator } from "@clawguard/core";
 import { DecisionStore } from "@clawguard/memory";
 import chalk from "chalk";
+import { detectLocale } from "../locale.js";
+
+const MSG = {
+	ja: {
+		noPacksInstalled: "インストール済みのルールパックはありません。",
+		installedTitle: "インストール済みルールパック",
+		rulesInstalled: (count: number, date: string) => `${count} ルール, インストール日 ${date}`,
+		usageInstall: "使い方: claw-guard marketplace install <ソースディレクトリ>",
+		installedPack: (name: string, count: number) => `パック追加: ${name} (${count} ルール)`,
+		recommendNote: "ルールは2週間 recommend モード（ログのみ）で開始します。",
+		installFailed: "インストール失敗:",
+		usageRemove: "使い方: claw-guard marketplace remove <名前>",
+		removedPack: "パック削除:",
+		packNotFound: "パックが見つかりません:",
+		noCurate: "キュレーション対象のルールはありません。",
+		curationTitle: "ルールキュレーション分析",
+		promote: "昇格",
+		deprecate: "非推奨",
+		keep: "維持",
+		override: "上書き",
+		samples: "サンプル",
+		appliedChanges: (n: number) => `${n}件のステータスを更新しました。`,
+		dryRun: (cmd: string) => `ドライラン。${cmd} で適用できます。`,
+		marketplaceTitle: "ClawGuard ルールマーケットプレイス",
+		commands: "コマンド:",
+		cmdInstalled: "インストール済みパックを表示",
+		cmdInstall: "ディレクトリからインストール",
+		cmdRemove: "パックを削除",
+		cmdCurate: "ルールの昇格/非推奨を分析",
+	},
+	en: {
+		noPacksInstalled: "No rule packs installed.",
+		installedTitle: "Installed Rule Packs",
+		rulesInstalled: (count: number, date: string) => `${count} rules, installed ${date}`,
+		usageInstall: "Usage: claw-guard marketplace install <source-dir>",
+		installedPack: (name: string, count: number) => `Installed pack: ${name} (${count} rules)`,
+		recommendNote: "Rules start in recommend mode (log-only) for 2 weeks.",
+		installFailed: "Install failed:",
+		usageRemove: "Usage: claw-guard marketplace remove <name>",
+		removedPack: "Removed pack:",
+		packNotFound: "Pack not found:",
+		noCurate: "No marketplace rules to curate.",
+		curationTitle: "Rule Curation Analysis",
+		promote: "promote",
+		deprecate: "deprecate",
+		keep: "keep",
+		override: "override",
+		samples: "samples",
+		appliedChanges: (n: number) => `Applied ${n} status changes.`,
+		dryRun: (cmd: string) => `Dry run. Use ${cmd} to apply changes.`,
+		marketplaceTitle: "ClawGuard Rule Marketplace",
+		commands: "Commands:",
+		cmdInstalled: "Show installed packs",
+		cmdInstall: "Install from directory",
+		cmdRemove: "Remove a pack",
+		cmdCurate: "Analyze rules for promotion/deprecation",
+	},
+};
 
 export async function marketplaceCommand(action?: string, source?: string): Promise<void> {
+	const m = MSG[detectLocale()];
 	const client = new MarketplaceClient();
 
 	switch (action) {
 		case "installed": {
 			const packs = client.listInstalled();
 			if (packs.length === 0) {
-				console.log(chalk.dim("No rule packs installed."));
+				console.log(chalk.dim(m.noPacksInstalled));
 				return;
 			}
-			console.log(chalk.bold("Installed Rule Packs"));
+			console.log(chalk.bold(m.installedTitle));
 			for (const pack of packs) {
 				console.log(`  ${chalk.cyan(pack.name)} v${pack.version} by ${pack.author}`);
-				console.log(`    ${pack.rules.length} rules, installed ${pack.installed_at ?? "unknown"}`);
+				console.log(`    ${m.rulesInstalled(pack.rules.length, pack.installed_at ?? "unknown")}`);
 			}
 			break;
 		}
 
 		case "install": {
 			if (!source) {
-				console.error(chalk.red("Usage: claw-guard marketplace install <source-dir>"));
+				console.error(chalk.red(m.usageInstall));
 				process.exit(1);
 			}
 			try {
 				const name = source.split("/").pop() ?? source;
 				const pack = client.installFromDir(source, name);
-				console.log(
-					`${chalk.green("✓")} Installed pack: ${pack.name} (${pack.rules.length} rules)`,
-				);
-				console.log(chalk.dim("  Rules start in recommend mode (log-only) for 2 weeks."));
+				console.log(`${chalk.green("✓")} ${m.installedPack(pack.name, pack.rules.length)}`);
+				console.log(chalk.dim(`  ${m.recommendNote}`));
 			} catch (err) {
 				console.error(
-					chalk.red(`Install failed: ${err instanceof Error ? err.message : String(err)}`),
+					chalk.red(`${m.installFailed} ${err instanceof Error ? err.message : String(err)}`),
 				);
 				process.exit(1);
 			}
@@ -43,13 +100,13 @@ export async function marketplaceCommand(action?: string, source?: string): Prom
 
 		case "remove": {
 			if (!source) {
-				console.error(chalk.red("Usage: claw-guard marketplace remove <name>"));
+				console.error(chalk.red(m.usageRemove));
 				process.exit(1);
 			}
 			if (client.uninstallPack(source)) {
-				console.log(`${chalk.green("✓")} Removed pack: ${source}`);
+				console.log(`${chalk.green("✓")} ${m.removedPack} ${source}`);
 			} else {
-				console.log(chalk.yellow(`Pack not found: ${source}`));
+				console.log(chalk.yellow(`${m.packNotFound} ${source}`));
 			}
 			break;
 		}
@@ -60,14 +117,14 @@ export async function marketplaceCommand(action?: string, source?: string): Prom
 			const result = curator.evaluate();
 
 			if (result.tasks.length === 0) {
-				console.log(chalk.dim("No marketplace rules to curate."));
+				console.log(chalk.dim(m.noCurate));
 				store.close();
 				return;
 			}
 
-			console.log(chalk.bold("Rule Curation Analysis\n"));
+			console.log(chalk.bold(`${m.curationTitle}\n`));
 			console.log(
-				`  ${chalk.green(`${result.promoted.length} promote`)}  ${chalk.red(`${result.deprecated.length} deprecate`)}  ${chalk.dim(`${result.kept.length} keep`)}\n`,
+				`  ${chalk.green(`${result.promoted.length} ${m.promote}`)}  ${chalk.red(`${result.deprecated.length} ${m.deprecate}`)}  ${chalk.dim(`${result.kept.length} ${m.keep}`)}\n`,
 			);
 
 			for (const task of result.tasks) {
@@ -79,19 +136,17 @@ export async function marketplaceCommand(action?: string, source?: string): Prom
 							: chalk.dim("—");
 				const pct = (task.override_rate * 100).toFixed(0);
 				console.log(
-					`  ${icon} ${chalk.cyan(task.rule_id)} [${task.current_status}] — ${pct}% override (${task.sample_size} samples, ${task.days_in_current_status}d)`,
+					`  ${icon} ${chalk.cyan(task.rule_id)} [${task.current_status}] — ${pct}% ${m.override} (${task.sample_size} ${m.samples}, ${task.days_in_current_status}d)`,
 				);
 				console.log(`    ${chalk.dim(task.reason)}`);
 			}
 
 			if (source === "--apply") {
 				const applied = curator.applyPromotions(result);
-				console.log(`\n${chalk.green("✓")} Applied ${applied} status changes.`);
+				console.log(`\n${chalk.green("✓")} ${m.appliedChanges(applied)}`);
 			} else if (result.promoted.length > 0 || result.deprecated.length > 0) {
 				console.log(
-					chalk.dim(
-						`\nDry run. Use ${chalk.cyan("claw-guard marketplace curate --apply")} to apply changes.`,
-					),
+					chalk.dim(`\n${m.dryRun(chalk.cyan("claw-guard marketplace curate --apply"))}`),
 				);
 			}
 
@@ -100,17 +155,13 @@ export async function marketplaceCommand(action?: string, source?: string): Prom
 		}
 
 		default: {
-			console.log(chalk.bold("ClawGuard Rule Marketplace"));
+			console.log(chalk.bold(m.marketplaceTitle));
 			console.log("");
-			console.log("Commands:");
-			console.log(`  ${chalk.cyan("claw-guard marketplace installed")}  — Show installed packs`);
-			console.log(
-				`  ${chalk.cyan("claw-guard marketplace install <dir>")} — Install from directory`,
-			);
-			console.log(`  ${chalk.cyan("claw-guard marketplace remove <name>")} — Remove a pack`);
-			console.log(
-				`  ${chalk.cyan("claw-guard marketplace curate")}     — Analyze rules for promotion/deprecation`,
-			);
+			console.log(`${m.commands}`);
+			console.log(`  ${chalk.cyan("claw-guard marketplace installed")}  — ${m.cmdInstalled}`);
+			console.log(`  ${chalk.cyan("claw-guard marketplace install <dir>")} — ${m.cmdInstall}`);
+			console.log(`  ${chalk.cyan("claw-guard marketplace remove <name>")} — ${m.cmdRemove}`);
+			console.log(`  ${chalk.cyan("claw-guard marketplace curate")}     — ${m.cmdCurate}`);
 			break;
 		}
 	}

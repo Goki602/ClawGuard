@@ -68,7 +68,7 @@ describe("buildErrorResponse", () => {
 		};
 		const output = buildErrorResponse(input, decision);
 		expect(output.error?.message).toContain("大量削除の可能性");
-		expect(output.error?.message).toContain("Blocked by ClawGuard");
+		expect(output.error?.message).toContain("ClawGuardによりブロック");
 	});
 });
 

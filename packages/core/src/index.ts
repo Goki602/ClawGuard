@@ -21,6 +21,7 @@ export type {
 	RiskLevel,
 	Action,
 	PresetName,
+	Lang,
 	ToolRequest,
 	ExplainRisk,
 	ExplainSimple,

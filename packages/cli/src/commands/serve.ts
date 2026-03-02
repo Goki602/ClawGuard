@@ -11,8 +11,40 @@ import { CausalAnalyzer, ReportGenerator, SessionBuilder } from "@clawguard/repl
 import { ManifestManager, SkillsScanner } from "@clawguard/skills-av";
 import chalk from "chalk";
 import { createEngineContext, evaluateHookRequestAsync } from "../engine-factory.js";
+import { detectLocale } from "../locale.js";
 
 const DEFAULT_PORT = 19280;
+
+const MSG = {
+	ja: {
+		title: "ClawGuard HTTP Hook Server",
+		rules: (n: number) => `ルール: ${n} 件`,
+		preset: (name: string) => `プリセット: ${name}`,
+		port: (p: number) => `ポート: ${p}`,
+		memory: (on: boolean) => `記憶: ${on ? "有効" : "無効"}`,
+		plan: (name: string) => `プラン: ${name}`,
+		feed: (on: boolean) => `フィード: ${on ? "有効" : "無効"}`,
+		enrichment: "エンリッチメント: 有効",
+		listening: (url: string) => `リッスン中: ${url}`,
+		stop: "Ctrl+C で停止",
+		shutting: "シャットダウン中...",
+		invalidPort: "無効なポート番号",
+	},
+	en: {
+		title: "ClawGuard HTTP Hook Server",
+		rules: (n: number) => `Rules: ${n} loaded`,
+		preset: (name: string) => `Preset: ${name}`,
+		port: (p: number) => `Port: ${p}`,
+		memory: (on: boolean) => `Memory: ${on ? "enabled" : "disabled"}`,
+		plan: (name: string) => `Plan: ${name}`,
+		feed: (on: boolean) => `Feed: ${on ? "enabled" : "disabled"}`,
+		enrichment: "Enrichment: enabled",
+		listening: (url: string) => `Listening on ${url}`,
+		stop: "Press Ctrl+C to stop",
+		shutting: "Shutting down...",
+		invalidPort: "Invalid port number",
+	},
+};
 
 function corsHeaders(): Record<string, string> {
 	return {
@@ -28,9 +60,10 @@ function jsonResponse(res: ServerResponse, status: number, data: unknown): void 
 }
 
 export async function serveCommand(options: { port?: string; host?: string }): Promise<void> {
+	const m = MSG[detectLocale()];
 	const port = options.port ? Number.parseInt(options.port, 10) : DEFAULT_PORT;
 	if (Number.isNaN(port) || port < 1 || port > 65535) {
-		console.error("Invalid port number");
+		console.error(m.invalidPort);
 		process.exit(1);
 	}
 	const host = options.host ?? "127.0.0.1";
@@ -49,14 +82,14 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	ctx.reportGenerator = reportGenerator;
 	ctx.passportGenerator = passportGenerator;
 
-	console.log(chalk.bold("ClawGuard HTTP Hook Server"));
-	console.log(`  Rules: ${ctx.rulesCount} loaded`);
-	console.log(`  Preset: ${ctx.engine.getPreset().name}`);
-	console.log(`  Port: ${port}`);
-	console.log(`  Memory: ${ctx.store ? "enabled" : "disabled"}`);
-	console.log(`  Plan: ${ctx.license?.plan ?? "free"}`);
-	console.log(`  Feed: ${ctx.feedClient ? "enabled" : "disabled"}`);
-	console.log("  Enrichment: enabled");
+	console.log(chalk.bold(m.title));
+	console.log(`  ${m.rules(ctx.rulesCount)}`);
+	console.log(`  ${m.preset(ctx.engine.getPreset().name)}`);
+	console.log(`  ${m.port(port)}`);
+	console.log(`  ${m.memory(Boolean(ctx.store))}`);
+	console.log(`  ${m.plan(ctx.license?.plan ?? "free")}`);
+	console.log(`  ${m.feed(Boolean(ctx.feedClient))}`);
+	console.log(`  ${m.enrichment}`);
 	console.log(`  Hook:      POST http://localhost:${port}/hook`);
 	console.log(`  Dashboard: GET  http://localhost:${port}/api/logs/today`);
 	console.log("");
@@ -394,12 +427,12 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	});
 
 	server.listen(port, host, () => {
-		console.log(chalk.green(`Listening on http://${host}:${port}`));
-		console.log(chalk.dim("Press Ctrl+C to stop"));
+		console.log(chalk.green(m.listening(`http://${host}:${port}`)));
+		console.log(chalk.dim(m.stop));
 	});
 
 	const shutdown = () => {
-		console.log("\nShutting down...");
+		console.log(`\n${m.shutting}`);
 		ctx.store?.close();
 		server.close(() => process.exit(0));
 		setTimeout(() => process.exit(0), 3000);

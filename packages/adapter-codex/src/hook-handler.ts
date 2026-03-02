@@ -1,4 +1,4 @@
-import type { PolicyDecision } from "@clawguard/core";
+import type { Lang, PolicyDecision } from "@clawguard/core";
 import { formatExplainTerminal } from "@clawguard/core";
 import { mapToToolRequest } from "./mapper.js";
 import type { CodexApprovalInput, CodexApprovalOutput } from "./types.js";
@@ -20,12 +20,21 @@ function decisionToCodexAction(decision: PolicyDecision): "approve" | "reject" |
 	}
 }
 
-function buildReason(decision: PolicyDecision): string | undefined {
+function buildReason(decision: PolicyDecision, lang: Lang = "ja"): string | undefined {
 	if (!decision.explain) return undefined;
-	return formatExplainTerminal(decision.explain, decision.risk, decision.action, decision.rule_id);
+	return formatExplainTerminal(
+		decision.explain,
+		decision.risk,
+		decision.action,
+		decision.rule_id,
+		lang,
+	);
 }
 
-export function buildOutput(decision: PolicyDecision): CodexApprovalOutput | null {
+export function buildOutput(
+	decision: PolicyDecision,
+	lang: Lang = "ja",
+): CodexApprovalOutput | null {
 	const codexAction = decisionToCodexAction(decision);
 
 	if (codexAction === "approve") {
@@ -34,7 +43,7 @@ export function buildOutput(decision: PolicyDecision): CodexApprovalOutput | nul
 
 	return {
 		action: codexAction,
-		reason: buildReason(decision),
+		reason: buildReason(decision, lang),
 	};
 }
 
