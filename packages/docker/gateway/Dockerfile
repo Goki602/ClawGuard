@@ -1,6 +1,6 @@
 FROM node:22-slim
 
-RUN npm install -g claw-guard
+RUN npm install -g @clawguard-sec/cli
 
 EXPOSE 19280
 

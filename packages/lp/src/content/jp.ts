@@ -109,7 +109,7 @@ export const jp: LPContent = {
 			{
 				step: "1",
 				title: "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB",
-				description: "npm install -g claw-guard && claw-guard init",
+				description: "npm install -g @clawguard-sec/cli && claw-guard init",
 			},
 			{
 				step: "2",

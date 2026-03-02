@@ -107,7 +107,7 @@ export const en: LPContent = {
 			{
 				step: "1",
 				title: "Install",
-				description: "npm install -g claw-guard && claw-guard init",
+				description: "npm install -g @clawguard-sec/cli && claw-guard init",
 			},
 			{
 				step: "2",

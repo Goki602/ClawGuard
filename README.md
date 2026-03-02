@@ -20,7 +20,7 @@ ClawGuard doesn't promise "complete security." It reduces probability of damage,
 
 ```bash
 # Install
-npm install -g claw-guard
+npm install -g @clawguard-sec/cli
 
 # Initialize (sets up hooks for your AI agent)
 claw-guard init

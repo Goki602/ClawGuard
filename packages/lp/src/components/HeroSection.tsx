@@ -45,7 +45,7 @@ export function HeroSection({ content }: Props) {
 					</div>
 					<div className="p-4 font-mono text-sm text-left">
 						<p className="text-gray-500">$</p>
-						<p className="text-accent-500">npm install -g claw-guard</p>
+						<p className="text-accent-500">npm install -g @clawguard-sec/cli</p>
 						<p className="text-gray-500 mt-2">$</p>
 						<p className="text-accent-500">claw-guard init</p>
 						<p className="text-gray-400 mt-2">

@@ -1,5 +1,5 @@
 {
-	"name": "claw-guard",
+	"name": "@clawguard-sec/cli",
 	"version": "0.1.0",
 	"description": "AI agent security companion — defend, audit, update",
 	"type": "module",
