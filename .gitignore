@@ -5,3 +5,9 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 packages/cli/rules/
+
+# Internal / private files
+docs/
+tasks/
+.claude/
+.vscode/
