@@ -159,11 +159,11 @@ export const jp: LPContent = {
 			},
 			{
 				label: "\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC",
-				href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md",
+				href: "#privacy",
 			},
 			{
 				label: "\u7279\u5B9A\u5546\u53D6\u5F15\u6CD5\u306B\u57FA\u3065\u304F\u8868\u793A",
-				href: "/legal/tokushoho",
+				href: "#tokushoho",
 			},
 		],
 		devex: [
@@ -185,10 +185,6 @@ export const jp: LPContent = {
 			{
 				label: "\u8CEA\u554F\u30FB\u4E0D\u5177\u5408\u5831\u544A",
 				href: "https://github.com/Goki602/ClawGuard/issues",
-			},
-			{
-				label: "\u304A\u554F\u3044\u5408\u308F\u305B",
-				href: "mailto:support@clawguard-sec.com",
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",

@@ -151,11 +151,11 @@ export const en: LPContent = {
 			},
 			{
 				label: "Privacy Policy",
-				href: "https://github.com/Goki602/ClawGuard",
+				href: "#privacy",
 			},
 			{
 				label: "\u7279\u5B9A\u5546\u53D6\u5F15\u6CD5\u306B\u57FA\u3065\u304F\u8868\u793A",
-				href: "/legal/tokushoho",
+				href: "#tokushoho",
 			},
 		],
 		devex: [
@@ -177,10 +177,6 @@ export const en: LPContent = {
 			{
 				label: "Issues & FAQ",
 				href: "https://github.com/Goki602/ClawGuard/issues",
-			},
-			{
-				label: "Contact",
-				href: "mailto:support@clawguard-sec.com",
 			},
 		],
 		copyright: "\u00A9 2026 ClawGuard. All rights reserved.",
