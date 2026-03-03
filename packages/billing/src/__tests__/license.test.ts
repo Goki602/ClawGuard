@@ -44,7 +44,7 @@ describe("LicenseManager", () => {
 	it("returns free license when no key exists", () => {
 		const license = manager.getCurrentLicense();
 		expect(license.plan).toBe("free");
-		expect(license.features.max_rules).toBe(8);
+		expect(license.features.max_rules).toBe(12);
 		expect(license.features.reputation_network).toBe(false);
 	});
 

@@ -11,3 +11,4 @@ docs/
 tasks/
 .claude/
 .vscode/
+.wrangler/

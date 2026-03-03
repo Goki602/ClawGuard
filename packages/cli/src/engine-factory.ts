@@ -26,7 +26,7 @@ import { FeedClient } from "@clawguard/feed";
 import { DecisionStore } from "@clawguard/memory";
 import type { PassportGenerator } from "@clawguard/passport";
 import type { ReportGenerator, SessionBuilder } from "@clawguard/replay";
-import type { ReputationAggregator } from "@clawguard/reputation";
+import { ReputationAggregator, TelemetryUploader } from "@clawguard/reputation";
 
 export function findRulesDir(): string {
 	const coreBundled = getCoreRulesDir();
@@ -76,6 +76,7 @@ export interface EngineContext {
 	passportGenerator?: PassportGenerator;
 	sessionBuilder?: SessionBuilder;
 	reportGenerator?: ReportGenerator;
+	telemetryUploader?: TelemetryUploader;
 	teamClient?: unknown;
 	skillsScanner?: unknown;
 	teamMemoryStore?: unknown;
@@ -130,6 +131,11 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const writer = new AuditWriter();
 	const store = new DecisionStore();
 
+	const reputation = new ReputationAggregator(store, feedBundle?.reputation);
+	const telemetryUploader = new TelemetryUploader({
+		enabled: gate.canUseReputation(),
+	});
+
 	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");
 	const vsCodeCompat = config.vscode_compat;
 	return {
@@ -138,6 +144,8 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 		rulesCount: rules.length,
 		lang,
 		store,
+		reputation,
+		telemetryUploader,
 		license,
 		gate,
 		feedClient,

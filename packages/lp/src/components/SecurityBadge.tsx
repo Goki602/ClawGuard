@@ -5,7 +5,7 @@ interface Props {
 	content: LPContent["securityBadge"];
 }
 
-const BADGE_CODE = "![ClawGuard](https://clawguard-sec.com/badge/YOUR_PROJECT)";
+const BADGE_CODE = "![ClawGuard](https://api.clawguard-sec.com/badge/YOUR_PROJECT)";
 
 export function SecurityBadge({ content }: Props) {
 	const [copied, setCopied] = useState(false);

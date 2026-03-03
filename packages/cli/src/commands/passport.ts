@@ -3,6 +3,8 @@ import { BadgeGenerator, PassportGenerator } from "@clawguard/passport";
 import chalk from "chalk";
 import { detectLocale } from "../locale.js";
 
+const DEFAULT_API_URL = "https://api.clawguard-sec.com";
+
 const MSG = {
 	ja: {
 		generating: "セキュリティパスポートを生成中...",
@@ -26,6 +28,10 @@ const MSG = {
 		signature: "署名:",
 		signed: "署名済み",
 		unsigned: "未署名",
+		publishing: "パスポートを公開中...",
+		published: "パスポートを公開しました",
+		publishFailed: "公開に失敗しました",
+		noLicenseKey: "ライセンスキーが必要です。--key オプションで指定してください。",
 	},
 	en: {
 		generating: "Generating security passport...",
@@ -49,6 +55,10 @@ const MSG = {
 		signature: "Signature:",
 		signed: "signed",
 		unsigned: "unsigned",
+		publishing: "Publishing passport...",
+		published: "Passport published",
+		publishFailed: "Failed to publish",
+		noLicenseKey: "License key required. Use --key option.",
 	},
 };
 
@@ -56,10 +66,46 @@ export async function passportCommand(options: {
 	generate?: boolean;
 	repo?: string;
 	badge?: boolean;
+	publish?: boolean;
+	key?: string;
 }): Promise<void> {
 	const m = MSG[detectLocale()];
 	const reader = new AuditReader();
 	const gen = new PassportGenerator(reader);
+
+	if (options.publish) {
+		const passport = gen.load();
+		if (!passport) {
+			console.log(chalk.yellow(m.noPassportGenerate));
+			return;
+		}
+		if (!options.key) {
+			console.log(chalk.red(m.noLicenseKey));
+			return;
+		}
+		console.log(m.publishing);
+		const projectId = passport.repository.replace(/\//g, "-");
+		try {
+			const res = await fetch(`${DEFAULT_API_URL}/api/passport/${encodeURIComponent(projectId)}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${options.key}`,
+				},
+				body: JSON.stringify(passport),
+			});
+			if (res.ok) {
+				console.log(`${chalk.green("✓")} ${m.published}`);
+			} else {
+				console.log(`${chalk.red("✗")} ${m.publishFailed}: ${res.status}`);
+			}
+		} catch (e) {
+			console.log(
+				`${chalk.red("✗")} ${m.publishFailed}: ${e instanceof Error ? e.message : String(e)}`,
+			);
+		}
+		return;
+	}
 
 	if (options.generate) {
 		const repo = options.repo ?? "unknown/repo";

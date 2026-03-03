@@ -2,6 +2,10 @@ import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { type IncomingMessage, type Server, type ServerResponse, createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
+// Isolate tests from user's global config
+const _origConfigDir = process.env.CLAWGUARD_CONFIG_DIR;
+process.env.CLAWGUARD_CONFIG_DIR = join(tmpdir(), "clawguard-test-nonexistent");
 import {
 	buildHookOutput,
 	mapToToolRequest,

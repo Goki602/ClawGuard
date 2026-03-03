@@ -4,11 +4,15 @@ import { join } from "node:path";
 import { loadRulesFromDir } from "./rule-loader.js";
 import type { CompiledRule, RulePack } from "./types.js";
 
+const DEFAULT_API_URL = "https://api.clawguard-sec.com";
+
 export class MarketplaceClient {
 	private packsDir: string;
+	private apiUrl: string;
 
-	constructor(config?: { packsDir?: string }) {
+	constructor(config?: { packsDir?: string; apiUrl?: string }) {
 		this.packsDir = config?.packsDir ?? join(homedir(), ".clawguard", "packs");
+		this.apiUrl = config?.apiUrl ?? DEFAULT_API_URL;
 	}
 
 	listInstalled(): RulePack[] {
@@ -132,5 +136,72 @@ export class MarketplaceClient {
 		if (!existsSync(packDir)) return false;
 		rmSync(packDir, { recursive: true, force: true });
 		return true;
+	}
+
+	async searchRemote(query?: string): Promise<
+		Array<{
+			name: string;
+			description: string;
+			author: string;
+			version: string;
+			rules_count: number;
+			downloads: number;
+		}>
+	> {
+		const params = new URLSearchParams();
+		if (query) params.set("q", query);
+		const res = await fetch(`${this.apiUrl}/api/marketplace/search?${params}`);
+		if (!res.ok) return [];
+		const data = (await res.json()) as {
+			packs: Array<{
+				name: string;
+				description: string;
+				author: string;
+				version: string;
+				rules_count: number;
+				downloads: number;
+			}>;
+		};
+		return data.packs;
+	}
+
+	async installFromRegistry(name: string): Promise<RulePack | null> {
+		const res = await fetch(`${this.apiUrl}/api/marketplace/pack/${encodeURIComponent(name)}`);
+		if (!res.ok) return null;
+		const data = (await res.json()) as {
+			name: string;
+			description: string;
+			author: string;
+			version: string;
+			pack_json: string;
+		};
+
+		if (!existsSync(this.packsDir)) mkdirSync(this.packsDir, { recursive: true });
+		const destDir = join(this.packsDir, name);
+		if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
+		mkdirSync(destDir, { recursive: true });
+
+		// Write pack data
+		const packContent = data.pack_json ? JSON.parse(data.pack_json) : { rules: [] };
+		const packMeta = {
+			name: data.name,
+			description: data.description ?? "",
+			author: data.author ?? "community",
+			version: data.version,
+			source: "registry",
+			installed_at: new Date().toISOString(),
+		};
+		writeFileSync(join(destDir, "pack.json"), JSON.stringify(packMeta, null, "\t"), "utf-8");
+
+		// Write rules as YAML if available
+		if (Array.isArray(packContent.rules)) {
+			for (const rule of packContent.rules) {
+				const yaml = JSON.stringify(rule);
+				writeFileSync(join(destDir, `${rule.id ?? "rule"}.json`), yaml, "utf-8");
+			}
+		}
+
+		const rules = loadRulesFromDir(destDir);
+		return { ...packMeta, rules };
 	}
 }

@@ -13,6 +13,7 @@ import { replayCommand } from "./commands/replay.js";
 import { reportCommand } from "./commands/report.js";
 import { serveCommand } from "./commands/serve.js";
 import { skillsCommand } from "./commands/skills.js";
+import { teamCommand } from "./commands/team.js";
 import { testCommand } from "./commands/test.js";
 import { upgradeCommand } from "./commands/upgrade.js";
 
@@ -86,6 +87,8 @@ program
 	.option("--generate", "Generate or update the passport")
 	.option("--repo <repo>", "Repository identifier")
 	.option("--badge", "Show badge Markdown snippet")
+	.option("--publish", "Publish passport to ClawGuard API")
+	.option("--key <key>", "License key for publishing")
 	.action(passportCommand);
 
 program
@@ -123,5 +126,15 @@ program
 	.option("--generate", "Generate new manifest")
 	.option("--dir <dir>", "Skills directory path")
 	.action(skillsCommand);
+
+program
+	.command("team [action] [target]")
+	.description("Team management (serve/add/list/remove/policy)")
+	.option("--admin-key <key>", "Admin key for team server")
+	.option("--port <port>", "Port for team server (default: 19290)")
+	.option("--role <role>", "Member role (admin/member/readonly)")
+	.option("--profile <preset>", "Team policy profile")
+	.option("--enforce", "Enforce team policy")
+	.action(teamCommand);
 
 program.parse();

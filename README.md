@@ -3,7 +3,7 @@
 > AI Agent Security Companion — Defend, Audit, Update
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-372%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-375%20passing-brightgreen)]()
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)]()
 
 [日本語版はこちら](README.ja.md)
@@ -12,7 +12,7 @@
 
 ClawGuard is a real-time security layer for AI coding agents. It intercepts tool calls (shell commands, file writes, network access) before execution, evaluates risk using policy rules, and returns allow/confirm/deny decisions — all in under 100ms.
 
-It works across AI agent platforms: Claude Code, Codex, MCP, and any agent supporting hook-based interception. The community intelligence network aggregates anonymized decision data, making risk evaluation smarter as more developers use it.
+It works across AI agent platforms: Claude Code, Codex, MCP, and any agent supporting hook-based interception. Decision data is stored locally and can be enriched with community reputation data via signed threat feeds.
 
 ClawGuard doesn't promise "complete security." It reduces probability of damage, limits blast radius, and makes every AI agent session auditable and replayable.
 
@@ -61,7 +61,7 @@ AI Agent Tool Call
 
 **Layer 1 — Runtime Defense** (hooks-based, no Docker required)
 - Adapter → Policy Engine → allow/confirm/deny
-- Community reputation data in confirm dialogs
+- Reputation data (local + feed) in confirm dialogs
 - Cross-agent decision memory (SQLite)
 - Security Passport for compliance proof
 
@@ -184,6 +184,7 @@ packages/
 ├── team/           Organization policy & member management
 ├── web-ui/         React dashboard
 ├── lp/             Landing page (EN + JP)
+├── webhook/        Stripe webhook (Cloudflare Worker)
 └── docker/         3-container reference implementation
 rules/
 ├── core/           12 core rules (Phase 0-1)
@@ -199,7 +200,7 @@ npm install
 # Build all packages
 npm run build
 
-# Run tests (372 tests)
+# Run tests (375 tests)
 npm test
 
 # Lint

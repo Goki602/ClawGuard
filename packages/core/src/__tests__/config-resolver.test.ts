@@ -1,10 +1,25 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getGlobalConfigDir, getLogDir, resolveConfig } from "../config-resolver.js";
 
 describe("resolveConfig", () => {
+	const originalConfigDir = process.env.CLAWGUARD_CONFIG_DIR;
+
+	beforeAll(() => {
+		// Isolate tests from user's global config
+		process.env.CLAWGUARD_CONFIG_DIR = join(tmpdir(), "clawguard-test-nonexistent");
+	});
+
+	afterAll(() => {
+		if (originalConfigDir === undefined) {
+			// biome-ignore lint/performance/noDelete: must remove env var, not set to "undefined"
+			delete process.env.CLAWGUARD_CONFIG_DIR;
+		} else {
+			process.env.CLAWGUARD_CONFIG_DIR = originalConfigDir;
+		}
+	});
 	it("returns balanced as default", () => {
 		const config = resolveConfig();
 		expect(config.profile).toBe("balanced");

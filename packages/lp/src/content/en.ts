@@ -23,7 +23,7 @@ export const en: LPContent = {
 			{
 				title: "Policy Engine",
 				description:
-					"100ms real-time risk evaluation with 8 built-in rules. Block destructive commands before they execute.",
+					"100ms real-time risk evaluation with 12 built-in rules. Block destructive commands before they execute.",
 				icon: "\u{1F6E1}",
 			},
 			{
@@ -35,7 +35,7 @@ export const en: LPContent = {
 			{
 				title: "Community Intelligence",
 				description:
-					"Crowd-sourced safety data from thousands of developers. Reputation network gets smarter with every user.",
+					"Opt-in anonymized decision data helps the community. Reputation network gets smarter with every user.",
 				icon: "\u{1F310}",
 			},
 			{
@@ -53,7 +53,7 @@ export const en: LPContent = {
 			{
 				title: "Threat Feed",
 				description:
-					"Daily signed rule updates, CVE alerts, and revocation lists. Stay ahead of emerging threats.",
+					"Signed rule updates, CVE alerts, and revocation lists. Free: weekly. Pro/Max: daily.",
 				icon: "\u{1F4E1}",
 			},
 		],
@@ -66,10 +66,10 @@ export const en: LPContent = {
 				price: "$0",
 				period: "forever",
 				features: [
-					"8 core security rules",
-					"Weekly threat feed",
+					"12 core security rules",
+					"Weekly threat feed (rules + reputation)",
 					"Basic replay (24h)",
-					"Community read-only",
+					"Community reputation data (read-only)",
 					"Single agent support",
 				],
 				cta: "Get Started Free",
@@ -83,7 +83,7 @@ export const en: LPContent = {
 					"All security rules",
 					"Daily threat feed (rules + reputation + CVE)",
 					"Full incident replay",
-					"Rule Marketplace access",
+					"Rule Marketplace (install & publish)",
 					"Security Passport + badge",
 					"Skills AV scanning",
 				],

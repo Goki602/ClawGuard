@@ -3,7 +3,7 @@
 > AIエージェント・セキュリティ・コンパニオン — 防御・監査・更新
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-372%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-375%20passing-brightgreen)]()
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)]()
 
 [English version](README.md)
@@ -12,7 +12,7 @@
 
 ClawGuardは、AIコーディングエージェントのためのリアルタイム・セキュリティレイヤーです。シェルコマンド・ファイル書き込み・ネットワークアクセスなどのツール呼び出しを実行前にインターセプトし、ポリシールールでリスクを評価して、100ms以内にallow（許可）/ confirm（確認）/ deny（拒否）の判定を返します。
 
-Claude Code、Codex、MCPなど、フックベースのインターセプションに対応するあらゆるAIエージェントプラットフォームで動作します。コミュニティ知性ネットワーク（匿名化された判断データの集約）により、ユーザーが増えるほどリスク評価が賢くなります。
+Claude Code、Codex、MCPなど、フックベースのインターセプションに対応するあらゆるAIエージェントプラットフォームで動作します。判断データはローカルに保存され、署名付き脅威フィードを通じてコミュニティの評判データで強化できます。
 
 ClawGuardは「完全な防御」を約束しません。被害の確率を下げ、影響範囲を小さくし、すべてのAIエージェントセッションを監査・再現可能にします。
 
@@ -61,7 +61,7 @@ AIエージェントのツール呼び出し
 
 **層1 — ランタイム防御**（フックベース、Docker不要）
 - Adapter → Policy Engine → allow/confirm/deny
-- confirm（確認）ダイアログにコミュニティの判断データを表示
+- confirm（確認）ダイアログに評判データ（ローカル＋フィード）を表示
 - クロスエージェント判断記憶（SQLite）
 - セキュリティパスポート（継続監視証明）
 
@@ -184,6 +184,7 @@ packages/
 ├── team/           組織ポリシー＆メンバー管理
 ├── web-ui/         Reactダッシュボード
 ├── lp/             ランディングページ（英語＋日本語）
+├── webhook/        Stripe Webhook（Cloudflare Worker）
 └── docker/         3コンテナ参考実装
 rules/
 ├── core/           12コアルール（Phase 0-1）
@@ -199,7 +200,7 @@ npm install
 # 全パッケージをビルド
 npm run build
 
-# テスト実行（372テスト）
+# テスト実行（375テスト）
 npm test
 
 # リント

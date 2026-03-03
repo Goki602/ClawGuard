@@ -9,6 +9,7 @@ import { FalsePositiveMonitor } from "@clawguard/memory";
 import { BadgeGenerator, PassportGenerator } from "@clawguard/passport";
 import { CausalAnalyzer, ReportGenerator, SessionBuilder } from "@clawguard/replay";
 import { ManifestManager, SkillsScanner } from "@clawguard/skills-av";
+import { MemberStore, TeamAuditStore, TeamMemoryStore } from "@clawguard/team";
 import chalk from "chalk";
 import { createEngineContext, evaluateHookRequestAsync } from "../engine-factory.js";
 import { detectLocale } from "../locale.js";
@@ -81,6 +82,38 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	ctx.sessionBuilder = sessionBuilder;
 	ctx.reportGenerator = reportGenerator;
 	ctx.passportGenerator = passportGenerator;
+
+	// Team stores (Max tier only, always initialized for API but gated)
+	let teamMemberStore: MemberStore | undefined;
+	let teamAuditStore: TeamAuditStore | undefined;
+	let teamMemoryStore: TeamMemoryStore | undefined;
+	const isMaxTier = ctx.gate?.canUseTeamAdmin();
+	if (isMaxTier) {
+		try {
+			teamMemberStore = new MemberStore();
+			teamAuditStore = new TeamAuditStore();
+			teamMemoryStore = new TeamMemoryStore();
+		} catch {
+			// Team DB init failure is non-fatal
+		}
+	}
+
+	// Telemetry auto-submission (every 6 hours)
+	const TELEMETRY_INTERVAL = 6 * 60 * 60 * 1000;
+	let telemetryTimer: ReturnType<typeof setInterval> | undefined;
+	if (ctx.telemetryUploader?.isEnabled() && ctx.reputation && ctx.store) {
+		const submitTelemetry = () => {
+			try {
+				const snapshot = ctx.reputation?.generateTelemetrySnapshot();
+				if (snapshot && snapshot.entries.length > 0) {
+					ctx.telemetryUploader?.submit(snapshot).catch(() => {});
+				}
+			} catch {
+				// Telemetry failure is non-fatal
+			}
+		};
+		telemetryTimer = setInterval(submitTelemetry, TELEMETRY_INTERVAL);
+	}
 
 	console.log(chalk.bold(m.title));
 	console.log(`  ${m.rules(ctx.rulesCount)}`);
@@ -387,17 +420,48 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 
 		// --- Team endpoints ---
 		if (req.method === "GET" && req.url === "/api/team/status") {
-			jsonResponse(res, 200, { connected: false });
+			if (!teamMemberStore) {
+				jsonResponse(res, 200, { connected: false });
+				return;
+			}
+			const members = teamMemberStore.listMembers();
+			jsonResponse(res, 200, {
+				connected: true,
+				member_count: members.length,
+				policy: { profile: ctx.engine.getPreset().name, enforce: true },
+			});
 			return;
 		}
 
 		if (req.method === "GET" && req.url === "/api/team/members") {
-			jsonResponse(res, 200, { members: [] });
+			if (!teamMemberStore) {
+				jsonResponse(res, 200, { members: [] });
+				return;
+			}
+			const members = teamMemberStore.listMembers();
+			jsonResponse(res, 200, { members });
 			return;
 		}
 
 		if (req.method === "GET" && req.url === "/api/team/memory/stats") {
-			jsonResponse(res, 200, { stats: [] });
+			if (!teamMemoryStore) {
+				jsonResponse(res, 200, { stats: [] });
+				return;
+			}
+			const stats = teamMemoryStore.getTeamStats();
+			jsonResponse(res, 200, { stats });
+			return;
+		}
+
+		if (req.method === "GET" && req.url?.startsWith("/api/team/audit/summary")) {
+			if (!teamAuditStore) {
+				jsonResponse(res, 200, { total: 0, by_rule: {}, by_member: {}, by_action: {} });
+				return;
+			}
+			const urlObj = new URL(req.url, "http://localhost");
+			const since = urlObj.searchParams.get("since") ?? undefined;
+			const summary = teamAuditStore.getSummary(since);
+			jsonResponse(res, 200, summary);
 			return;
 		}
 
@@ -433,7 +497,22 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 
 	const shutdown = () => {
 		console.log(`\n${m.shutting}`);
+		if (telemetryTimer) clearInterval(telemetryTimer);
+		// Submit final telemetry on shutdown
+		if (ctx.telemetryUploader?.isEnabled() && ctx.reputation) {
+			try {
+				const snapshot = ctx.reputation.generateTelemetrySnapshot();
+				if (snapshot && snapshot.entries.length > 0) {
+					ctx.telemetryUploader.submit(snapshot).catch(() => {});
+				}
+			} catch {
+				// Non-fatal
+			}
+		}
 		ctx.store?.close();
+		teamMemberStore?.close();
+		teamAuditStore?.close();
+		teamMemoryStore?.close();
 		server.close(() => process.exit(0));
 		setTimeout(() => process.exit(0), 3000);
 	};

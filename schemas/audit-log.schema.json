@@ -1,0 +1,142 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://clawguard-sec.com/schemas/audit-log.schema.json",
+	"title": "ClawGuard Audit Log Event",
+	"description": "OCSF v1.1.0 class_uid 6003 (API Activity) compliant audit log entry",
+	"type": "object",
+	"required": [
+		"class_uid",
+		"class_name",
+		"category_uid",
+		"category_name",
+		"severity_id",
+		"time",
+		"metadata",
+		"actor",
+		"api",
+		"disposition_id",
+		"disposition",
+		"enrichments"
+	],
+	"properties": {
+		"class_uid": {
+			"type": "integer",
+			"const": 6003
+		},
+		"class_name": {
+			"type": "string",
+			"const": "API Activity"
+		},
+		"category_uid": {
+			"type": "integer",
+			"const": 6
+		},
+		"category_name": {
+			"type": "string",
+			"const": "Application Activity"
+		},
+		"severity_id": {
+			"type": "integer",
+			"enum": [1, 3, 4],
+			"description": "1=low, 3=medium, 4=high"
+		},
+		"time": {
+			"type": "string",
+			"format": "date-time"
+		},
+		"metadata": {
+			"type": "object",
+			"required": ["product", "version", "log_name"],
+			"properties": {
+				"product": {
+					"type": "object",
+					"required": ["name", "version", "vendor_name"],
+					"properties": {
+						"name": { "type": "string" },
+						"version": { "type": "string" },
+						"vendor_name": { "type": "string" }
+					}
+				},
+				"version": {
+					"type": "string",
+					"description": "OCSF schema version"
+				},
+				"log_name": {
+					"type": "string"
+				}
+			}
+		},
+		"actor": {
+			"type": "object",
+			"required": ["session", "app_name"],
+			"properties": {
+				"session": {
+					"type": "object",
+					"required": ["uid"],
+					"properties": {
+						"uid": { "type": "string" }
+					}
+				},
+				"app_name": {
+					"type": "string",
+					"description": "AI agent name (e.g. claude, codex)"
+				}
+			}
+		},
+		"api": {
+			"type": "object",
+			"required": ["operation", "request"],
+			"properties": {
+				"operation": {
+					"type": "string",
+					"description": "Tool type (bash, file_write, network, skill_install)"
+				},
+				"request": {
+					"type": "object",
+					"required": ["data"],
+					"properties": {
+						"data": {
+							"type": "object",
+							"required": ["content"],
+							"properties": {
+								"content": {
+									"type": "string",
+									"description": "Command or content being evaluated"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"disposition_id": {
+			"type": "integer",
+			"enum": [1, 2, 5],
+			"description": "1=Allowed, 2=Blocked (confirm), 5=Dropped (deny)"
+		},
+		"disposition": {
+			"type": "string",
+			"enum": ["Allowed", "Blocked", "Dropped"]
+		},
+		"enrichments": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["name", "value"],
+				"properties": {
+					"name": { "type": "string" },
+					"value": { "type": "string" }
+				}
+			}
+		},
+		"unmapped": {
+			"type": "object",
+			"description": "Additional data not part of OCSF schema (user_response, execution_status, exit_code)",
+			"properties": {
+				"user_response": { "type": "string" },
+				"execution_status": { "type": "string" },
+				"exit_code": { "type": "integer" }
+			}
+		}
+	}
+}

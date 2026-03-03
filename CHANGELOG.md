@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Community rule curation pipeline
 
 #### Infrastructure
-- 372 unit + integration tests
+- 375 unit + integration tests
 - CI/CD with GitHub Actions
 - esbuild bundling for npm distribution
 - Biome linting (0 errors)

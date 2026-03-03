@@ -162,3 +162,20 @@ export interface SkillScanResultUI {
 		detail: string;
 	}>;
 }
+
+export interface TeamAuditSummary {
+	total: number;
+	by_rule: Record<string, number>;
+	by_member: Record<string, number>;
+	by_action: Record<string, number>;
+}
+
+export interface TeamMemoryStatsEntry {
+	rule_id: string;
+	team_total: number;
+	team_allowed: number;
+	team_denied: number;
+	member_count: number;
+	team_override_rate: number;
+	updated_at: string;
+}

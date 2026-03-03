@@ -25,7 +25,7 @@ export interface ResolveOptions {
 
 export function resolveConfig(options: ResolveOptions = {}): ClawGuardConfig {
 	// Priority: CLI args > project config > global config > default
-	const globalPath = join(homedir(), ".config", "clawguard", "config.yaml");
+	const globalPath = join(getGlobalConfigDir(), "config.yaml");
 	const globalConfig = tryLoadYaml(globalPath);
 
 	let projectConfig: ClawGuardConfig | null = null;
@@ -49,7 +49,7 @@ export function resolveConfig(options: ResolveOptions = {}): ClawGuardConfig {
 }
 
 export function getGlobalConfigDir(): string {
-	return join(homedir(), ".config", "clawguard");
+	return process.env.CLAWGUARD_CONFIG_DIR ?? join(homedir(), ".config", "clawguard");
 }
 
 export function getLogDir(): string {
