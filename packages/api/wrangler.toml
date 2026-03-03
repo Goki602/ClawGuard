@@ -1,0 +1,15 @@
+name = "clawguard-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+routes = [
+  { pattern = "api.clawguard-sec.com", custom_domain = true }
+]
+
+# Secrets (set via `wrangler secret put`):
+# CLAWGUARD_API_KEY (optional: for admin endpoints)
+
+[[d1_databases]]
+binding = "DB"
+database_name = "clawguard-api"
+database_id = "f5c9ae9c-2868-4ba8-8a57-1d9a084fa481" # Run `npm run db:create` and paste the ID here
