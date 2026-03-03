@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import type { FeedBundle, FeedManifest, ReputationData, Rule } from "@clawguard/core";
 import { FeedCache } from "./feed-cache.js";
 
-const DEFAULT_FEED_URL = "https://github.com/clawguard/feed/releases/latest/download";
+const DEFAULT_FEED_URL = "https://github.com/Goki602/ClawGuard/releases/download/feed-latest";
 const STALE_DAYS = 7;
 const DEGRADED_DAYS = 30;
 
