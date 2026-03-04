@@ -11,49 +11,49 @@ export const en: LPContent = {
 		],
 	},
 	hero: {
-		headline: "Make AI Agents Trustworthy",
+		headline: "Stop AI Agents Before They Break Things",
 		subheadline:
-			"Real-time policy enforcement, community intelligence, and compliance proof for every AI agent session.",
+			"ClawGuard intercepts dangerous commands — rm -rf, git push --force, curl|bash — before your AI agent executes them. One install, real-time protection.",
 		cta: "Get Started Free",
 		secondaryCta: "View on GitHub",
 	},
 	features: {
-		title: "Why ClawGuard?",
+		title: "What ClawGuard Actually Does",
 		cards: [
 			{
-				title: "Policy Engine",
+				title: "Intercepts Dangerous Commands",
 				description:
-					"100ms real-time risk evaluation with 12 built-in rules. Block destructive commands before they execute.",
+					"When your AI agent tries rm -rf /, git push --force, or curl|bash, ClawGuard catches it in under 100ms and asks you to confirm or blocks it. 12 built-in rules cover destructive ops, secret leaks, and untrusted installs.",
 				icon: "\u{1F6E1}",
 			},
 			{
-				title: "Cross-Platform",
+				title: "Works With Any AI Agent",
 				description:
-					"Works with Claude Code, Codex, MCP, and any AI agent. One security layer for all your tools.",
+					"Claude Code, Codex, MCP — ClawGuard hooks into the tool-call layer. No Docker required. Install once, protect every agent in your workflow.",
 				icon: "\u{1F517}",
 			},
 			{
-				title: "Community Intelligence",
+				title: "Smarter With Every User",
 				description:
-					"Anonymized decision data helps the community. Reputation network gets smarter with every user.",
+					'When you allow or deny a command, anonymized data improves detection for everyone. "87% of developers allowed this npm package" — context that helps you decide faster.',
 				icon: "\u{1F310}",
 			},
 			{
-				title: "Security Passport",
+				title: "Prove Your Sessions Are Monitored",
 				description:
-					"Continuous monitoring proof for your projects. Generate GitHub badges that prove compliance.",
+					"Generate a GitHub badge that proves your AI agent sessions are continuously audited. Show clients and teammates that every command was reviewed.",
 				icon: "\u{1F4DC}",
 			},
 			{
-				title: "Incident Replay",
+				title: "Replay Any AI Session",
 				description:
-					"Full decision chain analysis with causal investigation. Replay any AI agent session step by step.",
+					"Something went wrong? Replay the entire decision chain: what the agent tried, what was blocked, what was allowed, and why. Full causal analysis.",
 				icon: "\u{1F50D}",
 			},
 			{
-				title: "Threat Feed",
+				title: "Signed Threat Updates",
 				description:
-					"Signed rule updates, CVE alerts, and revocation lists. Free: weekly. Pro/Max: daily.",
+					"New CVEs, malicious packages, revoked rules — delivered as signed feeds. Free: weekly. Pro/Max: daily. Your rules stay current without manual work.",
 				icon: "\u{1F4E1}",
 			},
 		],
@@ -87,7 +87,7 @@ export const en: LPContent = {
 					"Security Passport + badge",
 					"Skills AV scanning",
 				],
-				cta: "Start Free — Early Access",
+				cta: "Start Free \u2014 Early Access",
 				href: "#how-it-works",
 				highlighted: true,
 			},
@@ -101,9 +101,8 @@ export const en: LPContent = {
 					"Cross-team memory sharing",
 					"Centralized audit dashboard",
 					"Organization-wide passport",
-					"Priority support",
 				],
-				cta: "Start Free — Early Access",
+				cta: "Start Free \u2014 Early Access",
 				href: "#how-it-works",
 			},
 		],
@@ -118,13 +117,15 @@ export const en: LPContent = {
 			},
 			{
 				step: "2",
-				title: "Configure",
-				description: "Choose your preset: observer, guardian, balanced, or expert.",
+				title: "Choose Your Level",
+				description:
+					"Pick a preset: guardian (strict), balanced (recommended), or expert (minimal interruption). One line in clawguard.yaml.",
 			},
 			{
 				step: "3",
 				title: "Protected",
-				description: "Your AI agent now runs with real-time guardrails. Every decision is audited.",
+				description:
+					"Next time your AI agent runs rm -rf or git push --force, ClawGuard intercepts it, explains the risk, and asks you to confirm or deny. Every decision is logged.",
 			},
 		],
 	},

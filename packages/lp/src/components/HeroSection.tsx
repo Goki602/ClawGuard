@@ -45,18 +45,27 @@ export function HeroSection({ content }: Props) {
 					</div>
 					<div className="p-4 font-mono text-sm text-left">
 						<p className="text-gray-500">$</p>
-						<p className="text-accent-500">npm install -g @clawguard-sec/cli</p>
-						<p className="text-gray-500 mt-2">$</p>
 						<p className="text-accent-500">claw-guard init</p>
 						<p className="text-gray-400 mt-2">
 							<span className="text-claw-500">{">"}</span> Profile:{" "}
-							<span className="text-white">balanced</span>
+							<span className="text-white">balanced</span> | Rules:{" "}
+							<span className="text-white">12</span>
 						</p>
-						<p className="text-gray-400">
-							<span className="text-claw-500">{">"}</span> Rules loaded:{" "}
-							<span className="text-white">8</span>
+						<p className="text-accent-500 mt-1">Ready.</p>
+						<p className="text-gray-600 mt-4">--- AI agent session ---</p>
+						<p className="text-gray-500 mt-2">$ rm -rf /tmp/project</p>
+						<p className="text-red-400 mt-1">
+							<span className="text-red-500 font-bold">{"⚠"} CONFIRM</span>{" "}
+							<span className="text-gray-300">Bulk file deletion</span>
 						</p>
-						<p className="text-accent-500 mt-1">Ready. Your AI agent is now protected.</p>
+						<p className="text-gray-500 text-xs mt-1">
+							Wrong path could destroy your entire project.
+						</p>
+						<p className="text-gray-400 text-xs mt-1">
+							[<span className="text-accent-500">allow</span>] [
+							<span className="text-red-400">deny</span>] [
+							<span className="text-claw-500">explain</span>]
+						</p>
 					</div>
 				</div>
 			</div>
