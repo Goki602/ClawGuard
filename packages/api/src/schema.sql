@@ -1,6 +1,6 @@
 -- ClawGuard API D1 Schema
 
--- Telemetry: anonymized decision snapshots from opt-in users
+-- Telemetry: anonymized decision snapshots from all users (anonymous aggregates)
 CREATE TABLE IF NOT EXISTS telemetry_snapshots (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   received_at TEXT NOT NULL DEFAULT (datetime('now')),

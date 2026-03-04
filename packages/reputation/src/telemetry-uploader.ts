@@ -37,9 +37,12 @@ export class TelemetryUploader {
 				body: JSON.stringify(snapshot),
 			});
 			return res.ok;
-		} catch {
+		} catch (err) {
 			// API unreachable — local file saved, will retry next time
-			return true;
+			console.warn(
+				`[clawguard] Telemetry upload failed (saved locally): ${err instanceof Error ? err.message : "unknown error"}`,
+			);
+			return false;
 		}
 	}
 }

@@ -6,12 +6,21 @@ import { handleTelemetry } from "./routes/telemetry.js";
 
 export interface Env {
 	DB: D1Database;
+	LICENSE_DB: D1Database;
 }
 
 const CORS_HEADERS = {
 	"Access-Control-Allow-Origin": "*",
 	"Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
 	"Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+const SECURITY_HEADERS = {
+	"X-Content-Type-Options": "nosniff",
+	"X-Frame-Options": "DENY",
+	"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+	"X-XSS-Protection": "0",
+	"Referrer-Policy": "strict-origin-when-cross-origin",
 };
 
 export default {
@@ -25,7 +34,7 @@ export default {
 
 		try {
 			const response = await route(request, env, path);
-			for (const [k, v] of Object.entries(CORS_HEADERS)) {
+			for (const [k, v] of Object.entries({ ...CORS_HEADERS, ...SECURITY_HEADERS })) {
 				response.headers.set(k, v);
 			}
 			return response;
@@ -33,7 +42,7 @@ export default {
 			console.error("Unhandled error:", e);
 			return new Response(JSON.stringify({ error: "Internal server error" }), {
 				status: 500,
-				headers: { "Content-Type": "application/json", ...CORS_HEADERS },
+				headers: { "Content-Type": "application/json", ...CORS_HEADERS, ...SECURITY_HEADERS },
 			});
 		}
 	},

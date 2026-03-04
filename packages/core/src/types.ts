@@ -177,6 +177,7 @@ export interface ClawGuardConfig {
 	billing?: {
 		license_key?: string;
 	};
+	/** Set opt_in to false to disable anonymous telemetry upload */
 	reputation?: {
 		opt_in?: boolean;
 	};

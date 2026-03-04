@@ -132,8 +132,10 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const store = new DecisionStore();
 
 	const reputation = new ReputationAggregator(store, feedBundle?.reputation);
+	// Telemetry upload is always enabled (anonymous aggregate stats).
+	// Community data *display* is gated by gate.canUseReputation() in enricher.
 	const telemetryUploader = new TelemetryUploader({
-		enabled: gate.canUseReputation(),
+		enabled: true,
 	});
 
 	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");

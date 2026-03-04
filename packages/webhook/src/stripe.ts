@@ -15,7 +15,7 @@ export interface StripeCheckoutSession {
 	payment_status: string;
 }
 
-const TIMESTAMP_TOLERANCE_SEC = 300;
+const TIMESTAMP_TOLERANCE_SEC = 60;
 
 export async function verifyStripeSignature(
 	payload: string,

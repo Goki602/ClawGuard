@@ -13,3 +13,8 @@ routes = [
 binding = "DB"
 database_name = "clawguard-api"
 database_id = "f5c9ae9c-2868-4ba8-8a57-1d9a084fa481" # Run `npm run db:create` and paste the ID here
+
+[[d1_databases]]
+binding = "LICENSE_DB"
+database_name = "clawguard-licenses"
+database_id = "19aa17ee-de6b-46a5-9cae-aa3c6a286cce"

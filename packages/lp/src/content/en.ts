@@ -35,7 +35,7 @@ export const en: LPContent = {
 			{
 				title: "Community Intelligence",
 				description:
-					"Opt-in anonymized decision data helps the community. Reputation network gets smarter with every user.",
+					"Anonymized decision data helps the community. Reputation network gets smarter with every user.",
 				icon: "\u{1F310}",
 			},
 			{
@@ -87,8 +87,8 @@ export const en: LPContent = {
 					"Security Passport + badge",
 					"Skills AV scanning",
 				],
-				cta: "Start Pro Trial",
-				href: "https://buy.stripe.com/test_dRmaEWbjp9yC7Kv8hNb3q00",
+				cta: "Start Free — Early Access",
+				href: "#how-it-works",
 				highlighted: true,
 			},
 			{
@@ -103,8 +103,8 @@ export const en: LPContent = {
 					"Organization-wide passport",
 					"Priority support",
 				],
-				cta: "Start Max Trial",
-				href: "https://buy.stripe.com/test_8x2eVcfzFaCGaWHdC7b3q01",
+				cta: "Start Free — Early Access",
+				href: "#how-it-works",
 			},
 		],
 	},

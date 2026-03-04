@@ -37,6 +37,19 @@ export async function handlePassportPut(request: Request, env: Env, id: string):
 	}
 
 	const licenseKey = authHeader.slice(7);
+
+	// Validate license key against the licenses database
+	const license = await env.LICENSE_DB.prepare("SELECT plan FROM licenses WHERE license_key = ?")
+		.bind(licenseKey)
+		.first<{ plan: string }>();
+
+	if (!license) {
+		return new Response(JSON.stringify({ error: "Invalid license key" }), {
+			status: 403,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
+
 	let passport: { repository?: string };
 	try {
 		passport = await request.json();
