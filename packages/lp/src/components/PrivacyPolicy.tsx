@@ -90,10 +90,10 @@ export function PrivacyPolicy({ lang }: { lang: Lang }) {
 				<p>プライバシーに関するお問い合わせは、以下までご連絡ください。</p>
 				<p className="mt-3">
 					<a
-						href="mailto:support@clawguard-sec.com"
+						href="mailto:Elejen602@gmail.com"
 						className="text-claw-500 hover:text-claw-400 transition-colors"
 					>
-						support@clawguard-sec.com
+						Elejen602@gmail.com
 					</a>
 				</p>
 			</Section>

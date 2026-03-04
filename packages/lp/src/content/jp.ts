@@ -25,7 +25,8 @@ export const jp: LPContent = {
 			agentSession: "--- AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30C3\u30B7\u30E7\u30F3 ---",
 			command: "$ rm -rf /tmp/project",
 			confirmLabel: "\u4E00\u62EC\u30D5\u30A1\u30A4\u30EB\u524A\u9664",
-			confirmDetail: "\u30D1\u30B9\u3092\u9593\u9055\u3048\u308B\u3068\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u5168\u4F53\u304C\u6D88\u3048\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002",
+			confirmDetail:
+				"\u30D1\u30B9\u3092\u9593\u9055\u3048\u308B\u3068\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u5168\u4F53\u304C\u6D88\u3048\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002",
 		},
 	},
 	features: {
@@ -72,6 +73,8 @@ export const jp: LPContent = {
 	},
 	pricing: {
 		title: "\u30B7\u30F3\u30D7\u30EB\u3067\u900F\u660E\u306A\u6599\u91D1\u4F53\u7CFB",
+		earlyAccessNote:
+			"Early Access\u671F\u9593\u4E2D\u306FPro\u30D7\u30E9\u30F3\u307E\u3067\u7121\u6599 \u2014 \u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u3059\u308B\u3060\u3051\u3067Pro\u6A5F\u80FD\u304C\u4F7F\u3048\u307E\u3059\u3002",
 		cards: [
 			{
 				name: "Free",
@@ -102,6 +105,7 @@ export const jp: LPContent = {
 				cta: "\u7121\u6599\u3067\u59CB\u3081\u308B\uFF08Early Access\uFF09",
 				href: "#how-it-works",
 				highlighted: true,
+				highlightLabel: "\u4EBA\u6C17",
 			},
 			{
 				name: "Max",
@@ -114,8 +118,10 @@ export const jp: LPContent = {
 					"\u4E00\u5143\u7BA1\u7406\u76E3\u67FB\u30C0\u30C3\u30B7\u30E5\u30DC\u30FC\u30C9",
 					"\u7D44\u7E54\u5168\u4F53\u306E\u30D1\u30B9\u30DD\u30FC\u30C8",
 				],
-				cta: "\u7121\u6599\u3067\u59CB\u3081\u308B\uFF08Early Access\uFF09",
+				cta: "\u6E96\u5099\u4E2D",
 				href: "#how-it-works",
+				comingSoon: true,
+				comingSoonLabel: "\u6E96\u5099\u4E2D",
 			},
 		],
 	},
@@ -152,9 +158,26 @@ export const jp: LPContent = {
 		copyButton: "\u30B3\u30D4\u30FC",
 		copiedText: "\u30B3\u30D4\u30FC\u6E08\u307F\uFF01",
 		steps: [
-			{ step: "1", title: "\u751F\u6210", description: "claw-guard passport --generate --repo owner/repo" },
-			{ step: "2", title: "\u516C\u958B", description: "claw-guard passport --publish --key YOUR_KEY" },
-			{ step: "3", title: "\u57CB\u3081\u8FBC\u307F", description: "\u30D0\u30C3\u30B8\u306EMarkdown\u3092README.md\u306B\u8FFD\u52A0" },
+			{
+				step: "1",
+				title: "\u751F\u6210",
+				description:
+					"\u30EA\u30DD\u30B8\u30C8\u30EA\u7528\u306E\u30D1\u30B9\u30DD\u30FC\u30C8\u3092\u30B3\u30DE\u30F3\u30C9\u4E00\u3064\u3067\u4F5C\u6210\u3002",
+				command: "claw-guard passport --generate --repo owner/repo",
+			},
+			{
+				step: "2",
+				title: "\u516C\u958B",
+				description:
+					"\u30D1\u30B9\u30DD\u30FC\u30C8\u3092ClawGuard\u306E\u691C\u8A3C\u30B5\u30FC\u30D0\u30FC\u306B\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3002",
+				command: "claw-guard passport --publish --key YOUR_KEY",
+			},
+			{
+				step: "3",
+				title: "\u57CB\u3081\u8FBC\u307F",
+				description:
+					"\u4E0B\u306E\u30D0\u30C3\u30B8\u7528Markdown\u3092\u30B3\u30D4\u30FC\u3057\u3066\u3001README.md\u306B\u8CBC\u308A\u4ED8\u3051\u3002",
+			},
 		],
 	},
 	footer: {

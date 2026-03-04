@@ -67,6 +67,8 @@ export const en: LPContent = {
 	},
 	pricing: {
 		title: "Simple, Transparent Pricing",
+		earlyAccessNote:
+			"Pro plan is free during Early Access \u2014 install and get full Pro features today.",
 		cards: [
 			{
 				name: "Free",
@@ -97,6 +99,7 @@ export const en: LPContent = {
 				cta: "Start Free \u2014 Early Access",
 				href: "#how-it-works",
 				highlighted: true,
+				highlightLabel: "Popular",
 			},
 			{
 				name: "Max",
@@ -109,8 +112,10 @@ export const en: LPContent = {
 					"Centralized audit dashboard",
 					"Organization-wide passport",
 				],
-				cta: "Start Free \u2014 Early Access",
+				cta: "Coming Soon",
 				href: "#how-it-works",
+				comingSoon: true,
+				comingSoonLabel: "Coming Soon",
 			},
 		],
 	},
@@ -147,9 +152,23 @@ export const en: LPContent = {
 		copyButton: "Copy",
 		copiedText: "Copied!",
 		steps: [
-			{ step: "1", title: "Generate", description: "claw-guard passport --generate --repo owner/repo" },
-			{ step: "2", title: "Publish", description: "claw-guard passport --publish --key YOUR_KEY" },
-			{ step: "3", title: "Embed", description: "Add the badge markdown to your README.md" },
+			{
+				step: "1",
+				title: "Generate",
+				description: "Create a passport for your repository with one command.",
+				command: "claw-guard passport --generate --repo owner/repo",
+			},
+			{
+				step: "2",
+				title: "Publish",
+				description: "Upload your passport to the ClawGuard verification server.",
+				command: "claw-guard passport --publish --key YOUR_KEY",
+			},
+			{
+				step: "3",
+				title: "Embed",
+				description: "Copy the badge markdown below and paste it into your README.md.",
+			},
 		],
 	},
 	footer: {

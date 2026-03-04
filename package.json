@@ -8,6 +8,7 @@
 		"test:watch": "vitest",
 		"lint": "biome check .",
 		"lint:fix": "biome check --fix .",
+		"dev:lp": "npm run dev -w packages/lp",
 		"clean": "npm run clean --workspaces --if-present"
 	},
 	"engines": {

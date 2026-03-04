@@ -5,6 +5,13 @@ export interface LPContent {
 		subheadline: string;
 		cta: string;
 		secondaryCta: string;
+		terminal: {
+			ready: string;
+			agentSession: string;
+			command: string;
+			confirmLabel: string;
+			confirmDetail: string;
+		};
 	};
 	features: {
 		title: string;
@@ -12,6 +19,7 @@ export interface LPContent {
 	};
 	pricing: {
 		title: string;
+		earlyAccessNote?: string;
 		cards: Array<{
 			name: string;
 			price: string;
@@ -20,6 +28,9 @@ export interface LPContent {
 			cta: string;
 			href?: string;
 			highlighted?: boolean;
+			highlightLabel?: string;
+			comingSoon?: boolean;
+			comingSoonLabel?: string;
 		}>;
 	};
 	howItWorks: {
@@ -30,9 +41,12 @@ export interface LPContent {
 		title: string;
 		description: string;
 		badgeText: string;
+		badgeSubtitle: string;
+		badgeStatus: string;
 		embedLabel: string;
 		copyButton: string;
 		copiedText: string;
+		steps: Array<{ step: string; title: string; description: string; command?: string }>;
 	};
 	footer: {
 		headings: { legal: string; devex: string; support: string; description: string };

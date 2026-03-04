@@ -8,7 +8,7 @@ const ROWS = [
 	{ label: "運営統括責任者", value: "請求があった場合に遅滞なく開示いたします" },
 	{ label: "所在地", value: "請求があった場合に遅滞なく開示いたします" },
 	{ label: "電話番号", value: "請求があった場合に遅滞なく開示いたします" },
-	{ label: "メールアドレス", value: "support@clawguard-sec.com", isEmail: true },
+	{ label: "メールアドレス", value: "Elejen602@gmail.com", isEmail: true },
 	{
 		label: "販売価格",
 		value: ["Free プラン: 無料", "Pro プラン: $12/月（税込）", "Max プラン: $39/月（税込）"],

@@ -25,6 +25,27 @@ export function SecurityBadge({ content }: Props) {
 					{content.description}
 				</p>
 
+				{/* Steps */}
+				<div className="flex flex-col gap-6 mb-12 max-w-xl mx-auto text-left">
+					{content.steps.map((s) => (
+						<div key={s.step} className="flex items-start gap-4">
+							<div className="flex-shrink-0 w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center text-accent-500 text-base font-bold">
+								{s.step}
+							</div>
+							<div className="flex-1 pt-1">
+								<p className="text-base font-semibold text-gray-200">{s.title}</p>
+								<p className="text-sm text-gray-400 mt-1 break-keep">{s.description}</p>
+								{s.command && (
+									<div className="mt-2 rounded-md border border-gray-800 bg-gray-950 px-3 py-2 font-mono text-xs">
+										<span className="text-gray-500">$ </span>
+										<span className="text-accent-500">{s.command}</span>
+									</div>
+								)}
+							</div>
+						</div>
+					))}
+				</div>
+
 				{/* Badge visual */}
 				<div className="inline-flex items-center gap-4 rounded-2xl border border-accent-500/30 bg-gray-900/80 px-8 py-6 shadow-xl shadow-accent-500/5">
 					<div className="flex-shrink-0">
@@ -47,10 +68,10 @@ export function SecurityBadge({ content }: Props) {
 					</div>
 					<div className="text-left">
 						<p className="text-lg font-semibold text-accent-500">{content.badgeText}</p>
-						<p className="text-sm text-gray-500 mt-1">Verified &bull; Continuous Monitoring</p>
+						<p className="text-sm text-gray-500 mt-1">{content.badgeSubtitle}</p>
 						<div className="flex items-center gap-2 mt-2">
 							<span className="inline-block w-2 h-2 rounded-full bg-accent-500 animate-pulse" />
-							<span className="text-xs text-gray-500">Active</span>
+							<span className="text-xs text-gray-500">{content.badgeStatus}</span>
 						</div>
 					</div>
 				</div>

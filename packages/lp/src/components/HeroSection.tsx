@@ -12,10 +12,10 @@ export function HeroSection({ content }: Props) {
 			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-claw-500/5 rounded-full blur-3xl pointer-events-none" />
 
 			<div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-				<h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+				<h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight break-keep">
 					{content.headline}
 				</h1>
-				<p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+				<p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed break-keep">
 					{content.subheadline}
 				</p>
 				<div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -51,20 +51,22 @@ export function HeroSection({ content }: Props) {
 							<span className="text-white">balanced</span> | Rules:{" "}
 							<span className="text-white">12</span>
 						</p>
-						<p className="text-accent-500 mt-1">Ready.</p>
-						<p className="text-gray-600 mt-4">--- AI agent session ---</p>
-						<p className="text-gray-500 mt-2">$ rm -rf /tmp/project</p>
+						<p className="text-accent-500 mt-1">{content.terminal.ready}</p>
+						<p className="text-gray-600 mt-4">{content.terminal.agentSession}</p>
+						<p className="text-gray-500 mt-2">{content.terminal.command}</p>
 						<p className="text-red-400 mt-1">
 							<span className="text-red-500 font-bold">{"⚠"} CONFIRM</span>{" "}
-							<span className="text-gray-300">Bulk file deletion</span>
+							<span className="text-gray-300">{content.terminal.confirmLabel}</span>
 						</p>
-						<p className="text-gray-500 text-xs mt-1">
-							Wrong path could destroy your entire project.
-						</p>
-						<p className="text-gray-400 text-xs mt-1">
-							[<span className="text-accent-500">allow</span>] [
-							<span className="text-red-400">deny</span>] [
-							<span className="text-claw-500">explain</span>]
+						<p className="text-gray-500 text-xs mt-1">{content.terminal.confirmDetail}</p>
+						<p className="text-gray-400 text-xs mt-1 flex gap-1">
+							<span>[</span>
+							<span className="text-accent-500">allow</span>
+							<span>] [</span>
+							<span className="text-red-400">deny</span>
+							<span>] [</span>
+							<span className="text-claw-500">explain</span>
+							<span>]</span>
 						</p>
 					</div>
 				</div>
