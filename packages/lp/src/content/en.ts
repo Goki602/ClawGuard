@@ -16,6 +16,13 @@ export const en: LPContent = {
 			"ClawGuard intercepts dangerous commands — rm -rf, git push --force, curl|bash — before your AI agent executes them. One install, real-time protection.",
 		cta: "Get Started Free",
 		secondaryCta: "View on GitHub",
+		terminal: {
+			ready: "Ready.",
+			agentSession: "--- AI agent session ---",
+			command: "$ rm -rf /tmp/project",
+			confirmLabel: "Bulk file deletion",
+			confirmDetail: "Wrong path could destroy your entire project.",
+		},
 	},
 	features: {
 		title: "What ClawGuard Actually Does",
@@ -134,9 +141,16 @@ export const en: LPContent = {
 		description:
 			"Prove your AI agent sessions are continuously monitored. Embed a verifiable badge in your repository.",
 		badgeText: "Protected by ClawGuard",
+		badgeSubtitle: "Verified \u2022 Continuous Monitoring",
+		badgeStatus: "Active",
 		embedLabel: "Add to your README.md",
 		copyButton: "Copy",
 		copiedText: "Copied!",
+		steps: [
+			{ step: "1", title: "Generate", description: "claw-guard passport --generate --repo owner/repo" },
+			{ step: "2", title: "Publish", description: "claw-guard passport --publish --key YOUR_KEY" },
+			{ step: "3", title: "Embed", description: "Add the badge markdown to your README.md" },
+		],
 	},
 	footer: {
 		headings: {
