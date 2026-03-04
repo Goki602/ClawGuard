@@ -9,6 +9,11 @@ class ClawGuard < Formula
 
   def install
     system "npm", "install", *std_npm_args
+    # std_npm_args includes --ignore-scripts which skips native module compilation.
+    # better-sqlite3 requires node-gyp rebuild to produce the .node binding.
+    cd libexec/"lib/node_modules/@clawguard-sec/cli/node_modules/better-sqlite3" do
+      system "npm", "run", "build-release"
+    end
     bin.install_symlink Dir["#{libexec}/bin/*"]
   end
 
