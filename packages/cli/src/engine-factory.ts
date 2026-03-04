@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import type { ClaudeHookOutput } from "@clawguard/adapter-claude";
 import {
 	buildHookOutput,
+	isVscodeEnvironment,
 	mapToToolRequest,
 	parseHookInput,
 	shouldIntervene,
@@ -130,6 +131,7 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const engine = new PolicyEngine(rules, preset, feedVersion, config.project_overrides);
 	const writer = new AuditWriter();
 	const store = new DecisionStore();
+	try { store.cleanExpiredSessions(24); } catch { /* non-fatal */ }
 
 	const reputation = new ReputationAggregator(store, feedBundle?.reputation);
 	// Telemetry upload is always enabled (anonymous aggregate stats).
@@ -169,6 +171,15 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 
 	const request = mapToToolRequest(hookInput);
 	const decision = ctx.engine.evaluate(request);
+	const isVSCode = ctx.vsCodeCompat ?? isVscodeEnvironment();
+	const contentHash = DecisionStore.hashContent(request.content);
+
+	// Session allowlist: if a non-high-risk confirm was already force-denied and user retried, allow it
+	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
+		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
+			decision.action = "allow";
+		}
+	}
 
 	const event = createOcsfEvent(request, decision);
 	ctx.writer.write(event);
@@ -177,13 +188,19 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 		ctx.store.record({
 			rule_id: decision.rule_id,
 			action: decision.action,
-			content_hash: DecisionStore.hashContent(request.content),
+			content_hash: contentHash,
 			agent: request.context.agent,
 			session_id: request.context.session_id,
 		});
 	}
 
 	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
+
+	// Record soft force-deny to session allowlist (non-high-risk confirm in VSCode)
+	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
+		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
+	}
+
 	return { output, skipped: false };
 }
 
@@ -199,12 +216,21 @@ export async function evaluateHookRequestAsync(
 
 	const request = mapToToolRequest(hookInput);
 	let decision = ctx.engine.evaluate(request);
+	const isVSCode = ctx.vsCodeCompat ?? isVscodeEnvironment();
+	const contentHash = DecisionStore.hashContent(request.content);
 
 	if (ctx.enricher && decision.action !== "allow") {
 		try {
 			decision = await ctx.enricher.enrich(decision, request);
 		} catch {
 			// Enrichment failure is non-fatal
+		}
+	}
+
+	// Session allowlist: if a non-high-risk confirm was already force-denied and user retried, allow it
+	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
+		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
+			decision.action = "allow";
 		}
 	}
 
@@ -215,12 +241,18 @@ export async function evaluateHookRequestAsync(
 		ctx.store.record({
 			rule_id: decision.rule_id,
 			action: decision.action,
-			content_hash: DecisionStore.hashContent(request.content),
+			content_hash: contentHash,
 			agent: request.context.agent,
 			session_id: request.context.session_id,
 		});
 	}
 
 	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
+
+	// Record soft force-deny to session allowlist (non-high-risk confirm in VSCode)
+	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
+		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
+	}
+
 	return { output, skipped: false };
 }

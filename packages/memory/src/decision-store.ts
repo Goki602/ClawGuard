@@ -19,6 +19,16 @@ CREATE TABLE IF NOT EXISTS decisions (
 );
 CREATE INDEX IF NOT EXISTS idx_decisions_rule ON decisions(rule_id);
 CREATE INDEX IF NOT EXISTS idx_decisions_hash ON decisions(content_hash);
+
+CREATE TABLE IF NOT EXISTS session_allowlist (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	session_id TEXT NOT NULL,
+	content_hash TEXT NOT NULL,
+	rule_id TEXT NOT NULL,
+	created_at TEXT NOT NULL DEFAULT (datetime('now')),
+	UNIQUE(session_id, content_hash, rule_id)
+);
+CREATE INDEX IF NOT EXISTS idx_sa_session ON session_allowlist(session_id);
 `;
 
 export class DecisionStore {
@@ -123,6 +133,25 @@ export class DecisionStore {
 
 	getOverrideRate(ruleId: string): number {
 		return this.getStats(ruleId).override_rate;
+	}
+
+	isSessionAllowed(sessionId: string, contentHash: string, ruleId: string): boolean {
+		const row = this.db
+			.prepare("SELECT 1 FROM session_allowlist WHERE session_id = ? AND content_hash = ? AND rule_id = ?")
+			.get(sessionId, contentHash, ruleId);
+		return row != null;
+	}
+
+	recordSessionAllow(sessionId: string, contentHash: string, ruleId: string): void {
+		this.db
+			.prepare("INSERT OR IGNORE INTO session_allowlist (session_id, content_hash, rule_id) VALUES (?, ?, ?)")
+			.run(sessionId, contentHash, ruleId);
+	}
+
+	cleanExpiredSessions(maxAgeHours = 24): void {
+		this.db
+			.prepare("DELETE FROM session_allowlist WHERE created_at < datetime('now', ?)")
+			.run(`-${maxAgeHours} hours`);
 	}
 
 	close(): void {

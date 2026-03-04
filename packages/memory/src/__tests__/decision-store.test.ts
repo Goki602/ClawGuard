@@ -94,4 +94,42 @@ describe("DecisionStore", () => {
 		expect(recent[0].agent).toBe("claude");
 		expect(recent[0].session_id).toBe("sess-1");
 	});
+
+	describe("session allowlist", () => {
+		it("returns false when no entry exists", () => {
+			expect(store.isSessionAllowed("s1", "hash1", "BASH.NPM_INSTALL")).toBe(false);
+		});
+
+		it("returns true after recording", () => {
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			expect(store.isSessionAllowed("s1", "hash1", "BASH.NPM_INSTALL")).toBe(true);
+		});
+
+		it("does not match different session", () => {
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			expect(store.isSessionAllowed("s2", "hash1", "BASH.NPM_INSTALL")).toBe(false);
+		});
+
+		it("does not match different content hash", () => {
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			expect(store.isSessionAllowed("s1", "hash2", "BASH.NPM_INSTALL")).toBe(false);
+		});
+
+		it("does not match different rule", () => {
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			expect(store.isSessionAllowed("s1", "hash1", "BASH.PIP_INSTALL")).toBe(false);
+		});
+
+		it("handles duplicate inserts gracefully", () => {
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			expect(store.isSessionAllowed("s1", "hash1", "BASH.NPM_INSTALL")).toBe(true);
+		});
+
+		it("cleanExpiredSessions does not remove recent entries", () => {
+			store.recordSessionAllow("s1", "hash1", "BASH.NPM_INSTALL");
+			store.cleanExpiredSessions(24);
+			expect(store.isSessionAllowed("s1", "hash1", "BASH.NPM_INSTALL")).toBe(true);
+		});
+	});
 });

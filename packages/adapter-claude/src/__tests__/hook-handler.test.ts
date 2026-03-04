@@ -128,7 +128,7 @@ describe("buildHookOutput", () => {
 		);
 	});
 
-	it("returns ask for medium-risk confirm when vsCodeCompat is true", () => {
+	it("returns deny with soft hint for medium-risk confirm when vsCodeCompat is true", () => {
 		const decision: PolicyDecision = {
 			action: "confirm",
 			risk: "medium",
@@ -143,7 +143,12 @@ describe("buildHookOutput", () => {
 		};
 		const output = buildHookOutput(decision, "ja", true);
 		expect(output).not.toBeNull();
-		expect(output?.hookSpecificOutput.permissionDecision).toBe("ask");
+		expect(output?.hookSpecificOutput.permissionDecision).toBe("deny");
+		expect(output?.hookSpecificOutput.permissionDecisionReason).toContain("パッケージ追加");
+		expect(output?.hookSpecificOutput.permissionDecisionReason).toContain("リスクがあるためブロック");
+		expect(output?.hookSpecificOutput.permissionDecisionReason).not.toContain(
+			"claw-guard init --profile expert",
+		);
 	});
 
 	it("returns ask for high-risk confirm when vsCodeCompat is false", () => {

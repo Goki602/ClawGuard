@@ -8,9 +8,14 @@ export function parseHookInput(jsonStr: string): ClaudeHookInput {
 	return JSON.parse(jsonStr) as ClaudeHookInput;
 }
 
-const POLICY_HINT = {
+const POLICY_HINT_HARD = {
 	ja: "\n\n⛔ この操作は高リスクのためブロックされました（その場での許可はできません）。\n許可するには:\n  - プリセットを `expert` に変更: `claw-guard init --profile expert`\n  - または clawguard.yaml にプロジェクト例外を追加",
 	en: "\n\n⛔ This operation was blocked due to high risk (cannot be approved on the spot).\nTo allow it:\n  - Change preset to `expert`: `claw-guard init --profile expert`\n  - Or add a project override in clawguard.yaml",
+} as const;
+
+const POLICY_HINT_SOFT = {
+	ja: "\n\n⚠️ この操作にはリスクがあるためブロックしました。\n上記の内容を確認し、問題なければそのまま指示を続けてください（同じ操作は今回のセッション中は自動で許可されます）。",
+	en: "\n\n⚠️ This operation was blocked due to risk.\nReview the details above. If it looks safe, just tell Claude to proceed (the same operation will be auto-allowed for this session).",
 } as const;
 
 function decisionToClaudeAction(
@@ -21,7 +26,7 @@ function decisionToClaudeAction(
 		case "deny":
 			return "deny";
 		case "confirm":
-			if (forceBlock && decision.risk === "high") return "deny";
+			if (forceBlock) return "deny";
 			return "ask";
 		case "allow":
 		case "log":
@@ -57,7 +62,7 @@ export function buildHookOutput(
 
 	// When confirm was force-blocked to deny (VSCode compat), append policy change hint
 	if (decision.action === "confirm" && claudeAction === "deny" && reason) {
-		reason += POLICY_HINT[lang];
+		reason += decision.risk === "high" ? POLICY_HINT_HARD[lang] : POLICY_HINT_SOFT[lang];
 	}
 
 	return {
