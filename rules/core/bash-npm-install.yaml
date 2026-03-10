@@ -1,7 +1,7 @@
 - id: BASH.NPM_INSTALL
   match:
     tool: bash
-    command_regex: '(?:^|\s|;|&&|\|\|)npm\s+(?:install|i|add)\s+(?!-)[^\s-]'
+    command_regex: '(?:^|\s|;|&&|\|\|)npm\s+(?:install|i|add)\s+\S'
   risk: medium
   explain:
     title: "npm追加"
@@ -14,7 +14,7 @@
       - "このパッケージは信頼できる？（ダウンロード数・メンテナ）"
     alternatives:
       - "`npm info <pkg>` で先にパッケージ情報を確認する"
-      - "`npm install --ignore-scripts <pkg>` でスクリプト実行なしにインストールする"
+      - "npmjs.com でパッケージの信頼性を確認する"
     simple:
       doing: "新しいパッケージ（追加機能）をインストールしようとしています"
       safe_points: ["有名なパッケージなら通常は安全です"]

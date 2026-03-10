@@ -15,7 +15,15 @@ export class AuditReader {
 		if (!existsSync(filePath)) return [];
 
 		const lines = readFileSync(filePath, "utf-8").split("\n").filter(Boolean);
-		return lines.map((line) => JSON.parse(line) as OcsfEvent);
+		const events: OcsfEvent[] = [];
+		for (const line of lines) {
+			try {
+				events.push(JSON.parse(line) as OcsfEvent);
+			} catch {
+				// Skip malformed lines (e.g., truncated writes)
+			}
+		}
+		return events;
 	}
 
 	readToday(): OcsfEvent[] {

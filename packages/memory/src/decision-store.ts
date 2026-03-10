@@ -135,6 +135,13 @@ export class DecisionStore {
 		return this.getStats(ruleId).override_rate;
 	}
 
+	isHistoricallyAllowed(contentHash: string, ruleId: string, minCount = 2): boolean {
+		const row = this.db
+			.prepare("SELECT COUNT(*) as count FROM decisions WHERE content_hash = ? AND rule_id = ? AND action = 'confirm'")
+			.get(contentHash, ruleId) as { count: number };
+		return row.count >= minCount;
+	}
+
 	isSessionAllowed(sessionId: string, contentHash: string, ruleId: string): boolean {
 		const row = this.db
 			.prepare("SELECT 1 FROM session_allowlist WHERE session_id = ? AND content_hash = ? AND rule_id = ?")

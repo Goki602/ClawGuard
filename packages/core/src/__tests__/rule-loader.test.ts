@@ -61,6 +61,18 @@ describe("compileRule", () => {
 		expect(compiled.compiledRegex?.test("ls -la")).toBe(false);
 	});
 
+	it("skips invalid regex without crashing", () => {
+		const rule: Rule = {
+			id: "BAD.REGEX",
+			match: { tool: "bash", command_regex: "(unclosed" },
+			risk: "high",
+			explain: { title: "T", what: "W", why: [], check: [] },
+		};
+		const compiled = compileRule(rule);
+		expect(compiled.compiledRegex).toBeUndefined();
+		expect(compiled.id).toBe("BAD.REGEX");
+	});
+
 	it("handles trigger-based rules (no regex)", () => {
 		const rule: Rule = {
 			id: "SKILL.NEW",

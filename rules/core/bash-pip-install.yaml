@@ -1,7 +1,7 @@
 - id: BASH.PIP_INSTALL
   match:
     tool: bash
-    command_regex: '(?:^|\s|;|&&|\|\|)pip3?\s+install\s+(?!-r\b|-e\b|--)[^\s-]'
+    command_regex: '(?:^|\s|;|&&|\|\|)pip3?\s+install\s+(?!-r\s|-e\s)\S'
   risk: medium
   explain:
     title: "pip追加"
@@ -14,7 +14,7 @@
       - "このパッケージは信頼できる？（PyPIでの情報を確認）"
     alternatives:
       - "`pip show <pkg>` で先にパッケージ情報を確認する"
-      - "`pip install --no-deps <pkg>` で依存関係なしにインストールする"
+      - "PyPI でパッケージの信頼性を確認する"
     simple:
       doing: "新しいPythonパッケージをインストールしようとしています"
       safe_points: ["有名なパッケージなら通常は安全です"]

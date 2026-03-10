@@ -95,6 +95,36 @@ describe("DecisionStore", () => {
 		expect(recent[0].session_id).toBe("sess-1");
 	});
 
+	describe("isHistoricallyAllowed", () => {
+		it("returns false when no past decisions", () => {
+			expect(store.isHistoricallyAllowed("hash1", "BASH.NPM_INSTALL")).toBe(false);
+		});
+
+		it("returns false with only 1 past confirm", () => {
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1" });
+			expect(store.isHistoricallyAllowed("hash1", "BASH.NPM_INSTALL")).toBe(false);
+		});
+
+		it("returns true with 2+ past confirms", () => {
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1", session_id: "s1" });
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1", session_id: "s2" });
+			expect(store.isHistoricallyAllowed("hash1", "BASH.NPM_INSTALL")).toBe(true);
+		});
+
+		it("does not count allow or deny actions", () => {
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "allow", content_hash: "hash1" });
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "deny", content_hash: "hash1" });
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1" });
+			expect(store.isHistoricallyAllowed("hash1", "BASH.NPM_INSTALL")).toBe(false);
+		});
+
+		it("does not match different rule", () => {
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1" });
+			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1" });
+			expect(store.isHistoricallyAllowed("hash1", "BASH.PIP_INSTALL")).toBe(false);
+		});
+	});
+
 	describe("session allowlist", () => {
 		it("returns false when no entry exists", () => {
 			expect(store.isSessionAllowed("s1", "hash1", "BASH.NPM_INSTALL")).toBe(false);

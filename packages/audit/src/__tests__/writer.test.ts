@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PolicyDecision, ToolRequest } from "@clawguard/core";
@@ -70,6 +70,20 @@ describe("AuditReader", () => {
 		const reader = new AuditReader(tmpDir);
 		expect(reader.listDates()).toEqual([]);
 		expect(reader.readDate("2026-01-01")).toEqual([]);
+	});
+
+	it("skips malformed JSONL lines without crashing", () => {
+		const reader = new AuditReader(tmpDir);
+		const writer = new AuditWriter(tmpDir);
+		writer.write(makeEvent());
+		const dates = reader.listDates();
+		// Inject a malformed line into the log file
+		const filePath = join(tmpDir, `${dates[0]}.jsonl`);
+		writeFileSync(filePath, '{"valid":true}\nNOT_JSON\n{"also_valid":true}\n');
+		const events = reader.readDate(dates[0]);
+		expect(events.length).toBe(2);
+		expect(events[0]).toEqual({ valid: true });
+		expect(events[1]).toEqual({ also_valid: true });
 	});
 
 	it("lists available dates", () => {

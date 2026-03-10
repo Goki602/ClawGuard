@@ -6,7 +6,11 @@ import type { CompiledRule, Rule } from "./types.js";
 export function compileRule(rule: Rule): CompiledRule {
 	const compiled: CompiledRule = { ...rule };
 	if (rule.match.command_regex) {
-		compiled.compiledRegex = new RegExp(rule.match.command_regex);
+		try {
+			compiled.compiledRegex = new RegExp(rule.match.command_regex);
+		} catch {
+			console.warn(`[ClawGuard] Invalid regex in rule ${rule.id}: ${rule.match.command_regex}`);
+		}
 	}
 	return compiled;
 }

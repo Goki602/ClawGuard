@@ -28,6 +28,11 @@ import type { PassportGenerator } from "@clawguard/passport";
 import type { ReportGenerator, SessionBuilder } from "@clawguard/replay";
 import { ReputationAggregator, TelemetryUploader } from "@clawguard/reputation";
 
+const RETRY_HINT = {
+	ja: "\n\n🔄 上記のリスクをユーザーに説明し、実行してよいか確認してください。許可された場合のみ、コマンドを変更せずに再実行してください。",
+	en: "\n\n🔄 Explain the above risks to the user and ask for permission. Only retry the command without modification if the user approves.",
+} as const;
+
 export function findRulesDir(): string {
 	const coreBundled = getCoreRulesDir();
 	const repoRoot = resolve(process.cwd(), "rules/core");
@@ -80,7 +85,6 @@ export interface EngineContext {
 	teamClient?: unknown;
 	skillsScanner?: unknown;
 	teamMemoryStore?: unknown;
-	vsCodeCompat?: boolean;
 }
 
 export function createEngineContext(overrideLang?: Lang): EngineContext {
@@ -131,7 +135,6 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	});
 
 	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");
-	const vsCodeCompat = config.vscode_compat;
 	return {
 		engine,
 		writer,
@@ -143,7 +146,6 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 		license,
 		gate,
 		feedClient,
-		vsCodeCompat,
 	};
 }
 
@@ -164,12 +166,14 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 
 	const contentHash = DecisionStore.hashContent(request.content);
 
-	// Session allowlist: auto-allow if the same non-high-risk operation was already approved in this session
-	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
+	// Auto-allow: session allowlist only (same session, same content, same rule)
+	if (decision.action === "confirm" && ctx.store) {
 		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
 			decision.action = "allow";
 		}
 	}
+
+	const output = buildHookOutput(decision, ctx.lang);
 
 	const event = createOcsfEvent(request, decision);
 	ctx.writer.write(event);
@@ -184,11 +188,21 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 		});
 	}
 
-	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
-
-	// Record confirm decisions to session allowlist for future auto-allow (all environments)
-	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
+	// Non-high confirm: pre-register session allowlist, return deny with retry hint
+	// (deny reason is shown to Claude, who relays explanation to user then retries)
+	if (decision.action === "confirm" && ctx.store && output) {
 		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
+		const reason = output.hookSpecificOutput.permissionDecisionReason ?? "";
+		return {
+			output: {
+				hookSpecificOutput: {
+					hookEventName: "PreToolUse",
+					permissionDecision: "deny",
+					permissionDecisionReason: reason + RETRY_HINT[ctx.lang],
+				},
+			},
+			skipped: false,
+		};
 	}
 
 	return { output, skipped: false };
@@ -217,12 +231,14 @@ export async function evaluateHookRequestAsync(
 		}
 	}
 
-	// Session allowlist: auto-allow if the same non-high-risk operation was already approved in this session
-	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
+	// Auto-allow: session allowlist only (same session, same content, same rule)
+	if (decision.action === "confirm" && ctx.store) {
 		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
 			decision.action = "allow";
 		}
 	}
+
+	const output = buildHookOutput(decision, ctx.lang);
 
 	const event = createOcsfEvent(request, decision);
 	ctx.writer.write(event);
@@ -237,11 +253,20 @@ export async function evaluateHookRequestAsync(
 		});
 	}
 
-	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
-
-	// Record confirm decisions to session allowlist for future auto-allow (all environments)
-	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
+	// Non-high confirm: pre-register session allowlist, return deny with retry hint
+	if (decision.action === "confirm" && ctx.store && output) {
 		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
+		const reason = output.hookSpecificOutput.permissionDecisionReason ?? "";
+		return {
+			output: {
+				hookSpecificOutput: {
+					hookEventName: "PreToolUse",
+					permissionDecision: "deny",
+					permissionDecisionReason: reason + RETRY_HINT[ctx.lang],
+				},
+			},
+			skipped: false,
+		};
 	}
 
 	return { output, skipped: false };

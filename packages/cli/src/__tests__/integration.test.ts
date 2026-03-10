@@ -74,7 +74,6 @@ function createIsolatedContext(): EngineContext & { tmpDir: string } {
 		rulesCount: rules.length,
 		lang: "ja" as const,
 		store,
-		vsCodeCompat: false,
 		tmpDir,
 	};
 }
@@ -132,10 +131,10 @@ describe("Integration: Evaluate Pipeline", () => {
 		rmSync(ctx.tmpDir, { recursive: true, force: true });
 	});
 
-	it("rm -rf → non-null output with confirm", () => {
+	it("rm -rf → non-null output with deny (deny+retry for explanation visibility)", () => {
 		const result = evaluateHookRequest(hookInput("rm -rf /tmp/test"), ctx);
 		expect(result.output).not.toBeNull();
-		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("ask");
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("deny");
 		expect(result.skipped).toBe(false);
 	});
 
@@ -321,7 +320,7 @@ describe("Integration: HTTP Server", () => {
 		});
 		const data = await res.json();
 		expect(data.hookSpecificOutput).toBeDefined();
-		expect(data.hookSpecificOutput.permissionDecision).toBe("ask");
+		expect(data.hookSpecificOutput.permissionDecision).toBe("deny");
 	});
 
 	it("POST /hook with safe command returns explicit allow", async () => {
