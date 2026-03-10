@@ -137,21 +137,27 @@ export class DecisionStore {
 
 	isHistoricallyAllowed(contentHash: string, ruleId: string, minCount = 2): boolean {
 		const row = this.db
-			.prepare("SELECT COUNT(*) as count FROM decisions WHERE content_hash = ? AND rule_id = ? AND action = 'confirm'")
+			.prepare(
+				"SELECT COUNT(*) as count FROM decisions WHERE content_hash = ? AND rule_id = ? AND action = 'confirm'",
+			)
 			.get(contentHash, ruleId) as { count: number };
 		return row.count >= minCount;
 	}
 
 	isSessionAllowed(sessionId: string, contentHash: string, ruleId: string): boolean {
 		const row = this.db
-			.prepare("SELECT 1 FROM session_allowlist WHERE session_id = ? AND content_hash = ? AND rule_id = ?")
+			.prepare(
+				"SELECT 1 FROM session_allowlist WHERE session_id = ? AND content_hash = ? AND rule_id = ?",
+			)
 			.get(sessionId, contentHash, ruleId);
 		return row != null;
 	}
 
 	recordSessionAllow(sessionId: string, contentHash: string, ruleId: string): void {
 		this.db
-			.prepare("INSERT OR IGNORE INTO session_allowlist (session_id, content_hash, rule_id) VALUES (?, ?, ?)")
+			.prepare(
+				"INSERT OR IGNORE INTO session_allowlist (session_id, content_hash, rule_id) VALUES (?, ?, ?)",
+			)
 			.run(sessionId, contentHash, ruleId);
 	}
 
@@ -168,13 +174,20 @@ export class DecisionStore {
 				.get(sessionId) as { count: number };
 			return row.count;
 		}
-		const row = this.db
-			.prepare("SELECT COUNT(*) as count FROM session_allowlist")
-			.get() as { count: number };
+		const row = this.db.prepare("SELECT COUNT(*) as count FROM session_allowlist").get() as {
+			count: number;
+		};
 		return row.count;
 	}
 
-	getStatsSummary(): { total: number; allowed: number; denied: number; confirmed: number; autoAllowed: number; agents: number } {
+	getStatsSummary(): {
+		total: number;
+		allowed: number;
+		denied: number;
+		confirmed: number;
+		autoAllowed: number;
+		agents: number;
+	} {
 		const decisions = this.db
 			.prepare(
 				`SELECT
@@ -192,7 +205,13 @@ export class DecisionStore {
 		return { ...decisions, autoAllowed, agents: agents.count };
 	}
 
-	getTodayStats(): { total: number; allowed: number; denied: number; confirmed: number; autoAllowed: number } {
+	getTodayStats(): {
+		total: number;
+		allowed: number;
+		denied: number;
+		confirmed: number;
+		autoAllowed: number;
+	} {
 		const decisions = this.db
 			.prepare(
 				`SELECT

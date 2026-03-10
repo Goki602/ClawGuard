@@ -23,4 +23,17 @@ await build({
 // Copy rules into package root (included via "files" in package.json)
 cpSync("../../rules", "./rules", { recursive: true });
 
-console.log("Build complete: dist/index.js + rules/");
+// Copy docker templates (docker-compose.yml, Dockerfiles, scripts)
+rmSync("docker", { recursive: true, force: true });
+cpSync("../docker", "./docker", {
+	recursive: true,
+	filter: (src) =>
+		!src.includes("node_modules") &&
+		!/\/src(\/|$)/.test(src) &&
+		!/\/dist(\/|$)/.test(src) &&
+		!src.includes("tsconfig") &&
+		!src.includes("package.json") &&
+		!src.includes("__tests__"),
+});
+
+console.log("Build complete: dist/index.js + rules/ + docker/");

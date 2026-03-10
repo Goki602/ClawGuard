@@ -55,7 +55,9 @@ export function HeroSection({ content }: Props) {
 						<p className="text-gray-600 mt-4">{content.terminal.agentSession}</p>
 						<p className="text-gray-500 mt-2">{content.terminal.command}</p>
 						<p className="text-green-400 mt-1">
-							<span className="text-green-500 font-bold">{"✓"} {content.terminal.confirmLabel}</span>{" "}
+							<span className="text-green-500 font-bold">
+								{"✓"} {content.terminal.confirmLabel}
+							</span>{" "}
 						</p>
 						<p className="text-gray-500 text-xs mt-1">{content.terminal.confirmDetail}</p>
 					</div>

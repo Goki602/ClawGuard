@@ -17,7 +17,6 @@ import { statsCommand } from "./commands/stats.js";
 import { teamCommand } from "./commands/team.js";
 import { testCommand } from "./commands/test.js";
 
-
 const program = new Command();
 
 program

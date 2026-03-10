@@ -1,9 +1,7 @@
 {
 	"name": "claw-guard-monorepo",
 	"private": true,
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"build": "npm run build -w packages/core -w packages/memory && npm run build -w packages/audit -w packages/billing -w packages/enrichment -w packages/feed -w packages/reputation -w packages/skills-av -w packages/team && npm run build -w packages/adapter-claude -w packages/adapter-codex -w packages/adapter-mcp -w packages/passport -w packages/replay && npm run build -w packages/cli -w packages/web-ui -w packages/lp -w packages/docker",
 		"test": "vitest run",

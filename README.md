@@ -3,7 +3,7 @@
 > AI Agent Memory — Fewer Prompts, Smarter Decisions
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-369%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-380%20passing-brightgreen)]()
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)]()
 
 [日本語版はこちら](README.ja.md)
@@ -12,7 +12,7 @@
 
 AI agents ask too many questions. Every `npm install`, every `git push` — confirm, confirm, confirm. You said yes 5 minutes ago; now it's asking again.
 
-ClawGuard remembers. When you approve an operation, it's stored. Next time the same pattern appears — in this session, another agent, or a different tool — auto-allowed. Your trust decisions travel across Claude Code, Codex, Cursor, and any hook-compatible agent.
+ClawGuard remembers. When you approve an operation, it's stored. Next time the same pattern appears — in this session, another agent, or a different tool — auto-allowed. Your trust decisions travel across Claude Code and other hook-compatible agents.
 
 Dangerous operations (`rm -rf`, `git push --force`, `curl|bash`) are still caught automatically. But that's not why you install ClawGuard — you install it because your agents get faster and quieter.
 
@@ -39,7 +39,7 @@ Second time:    Agent tries `npm install foo`
                     → Auto-allowed (no interruption) ✓
 
 Dangerous:      Agent tries `rm -rf /`
-                    → Always blocked, always explained ✗
+                    → Caught, explained, requires your OK ✗
 ```
 
 ## Choose How Quiet
@@ -69,11 +69,12 @@ CLI args > Project (`.clawguard.yaml`) > Global (`~/.config/clawguard/`) > Defau
 
 **Layer 1 — Smart Approval** (hooks-based, no Docker required)
 - Cross-agent decision memory (SQLite) — remembers what you approved
-- Community reputation data in confirm dialogs — see what others decided
+- Community reputation data in confirm dialogs (coming soon)
 - Adapter → Policy Engine → allow/confirm/deny (under 100ms)
 - Security Passport for compliance proof
 
-**Layer 2 — Infrastructure Isolation** (Docker, optional)
+**Layer 2 — Infrastructure Isolation** (Docker, optional reference implementation)
+- `claw-guard docker init` to get docker-compose templates
 - 3 containers: gateway / fetcher / agent
 - Network segmentation (agent cannot reach external)
 
@@ -93,7 +94,7 @@ ClawGuard silently catches dangerous operations. You don't need to configure any
 | `BASH.ROOT_PATH_OP` | bash | high | Operations targeting `/` |
 | `BASH.PIPE_EXEC_001` | bash | high | `curl \| bash` pipe execution |
 | `BASH.PIPE_EXEC_002` | bash | high | `wget \| sh` pipe execution |
-| `BASH.SSH_KEY_READ` | bash | medium | SSH key file access |
+| `BASH.SSH_KEY_READ` | bash | high | SSH key file access |
 | `BASH.ENV_FILE_READ` | bash | medium | `.env` file access |
 | `BASH.NPM_INSTALL` | bash | medium | `npm install <package>` |
 | `BASH.PIP_INSTALL` | bash | medium | `pip install <package>` |
@@ -125,7 +126,7 @@ ClawGuard silently catches dangerous operations. You don't need to configure any
 | `claw-guard evaluate --json` | Evaluate a tool request (hook entry point) |
 | `claw-guard test` | Validate rules, engine, and configuration |
 | `claw-guard stats` | View auto-allow count and decision summary |
-| `claw-guard serve` | HTTP hook server (1-3ms latency) |
+| `claw-guard serve` | HTTP hook server (low-latency) |
 | `claw-guard log` | View audit log |
 | `claw-guard dashboard` | Open web dashboard |
 | `claw-guard feed` | Manage threat feed (`--update`, `--status`) |
@@ -136,6 +137,7 @@ ClawGuard silently catches dangerous operations. You don't need to configure any
 | `claw-guard monitor` | False positive monitoring |
 | `claw-guard docker` | Docker deployment (`init`, `up`, `down`) |
 | `claw-guard skills` | Skills AV scanning |
+| `claw-guard team` | Team management (serve/add/list/remove/policy) |
 
 ### Rule Format (YAML)
 
@@ -189,7 +191,10 @@ packages/
 ├── web-ui/         React dashboard
 ├── lp/             Landing page (EN + JP)
 ├── webhook/        Stripe webhook (Cloudflare Worker)
-└── docker/         3-container reference implementation
+├── docker/         3-container reference implementation
+├── api/            REST API server
+├── sdk/            Embedded SDK for integrations
+└── siem/           SIEM connector
 rules/
 ├── core/           12 core rules (Phase 0-1)
 └── phase2/         15 additional rules
@@ -204,7 +209,7 @@ npm install
 # Build all packages
 npm run build
 
-# Run tests (375 tests)
+# Run tests (380 tests)
 npm test
 
 # Lint

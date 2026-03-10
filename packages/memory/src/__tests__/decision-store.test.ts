@@ -106,8 +106,18 @@ describe("DecisionStore", () => {
 		});
 
 		it("returns true with 2+ past confirms", () => {
-			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1", session_id: "s1" });
-			store.record({ rule_id: "BASH.NPM_INSTALL", action: "confirm", content_hash: "hash1", session_id: "s2" });
+			store.record({
+				rule_id: "BASH.NPM_INSTALL",
+				action: "confirm",
+				content_hash: "hash1",
+				session_id: "s1",
+			});
+			store.record({
+				rule_id: "BASH.NPM_INSTALL",
+				action: "confirm",
+				content_hash: "hash1",
+				session_id: "s2",
+			});
 			expect(store.isHistoricallyAllowed("hash1", "BASH.NPM_INSTALL")).toBe(true);
 		});
 

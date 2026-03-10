@@ -377,3 +377,99 @@ describe("Integration: HTTP Server", () => {
 		expect(res.headers.get("access-control-allow-origin")).toBe("*");
 	});
 });
+
+// ====================================================================
+// Group 5: Historical Auto-Allow (Cross-Session Memory)
+// ====================================================================
+
+describe("Integration: Historical Auto-Allow", () => {
+	let ctx: EngineContext & { tmpDir: string };
+
+	beforeAll(() => {
+		ctx = createIsolatedContext();
+	});
+
+	afterAll(() => {
+		ctx.store?.close();
+		rmSync(ctx.tmpDir, { recursive: true, force: true });
+	});
+
+	// Use CHMOD_777 (medium, bundled) and RM_RISK (high, bundled) with unique paths per test
+	// to avoid session allowlist contamination between tests
+
+	it("auto-allows medium-risk operation after 2 historical confirms", () => {
+		const cmd = "chmod 777 /tmp/hist-test-1";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		store.record({
+			rule_id: "BASH.CHMOD_777",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-1",
+		});
+		store.record({
+			rule_id: "BASH.CHMOD_777",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-2",
+		});
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
+	});
+
+	it("does NOT auto-allow high-risk operation with only 2 confirms (needs 5)", () => {
+		const cmd = "rm -rf /tmp/hist-test-2";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		store.record({
+			rule_id: "BASH.RM_RISK",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-1",
+		});
+		store.record({
+			rule_id: "BASH.RM_RISK",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-2",
+		});
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("deny");
+	});
+
+	it("auto-allows high-risk operation after 5 historical confirms", () => {
+		const cmd = "rm -rf /tmp/hist-test-3";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		for (let i = 1; i <= 5; i++) {
+			store.record({
+				rule_id: "BASH.RM_RISK",
+				action: "confirm",
+				content_hash: contentHash,
+				session_id: `past-${i}`,
+			});
+		}
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
+	});
+
+	it("does NOT auto-allow with only 1 confirm (below threshold)", () => {
+		const cmd = "chmod 777 /tmp/hist-test-4";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		store.record({
+			rule_id: "BASH.CHMOD_777",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-1",
+		});
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("deny");
+	});
+});

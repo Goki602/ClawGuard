@@ -7,7 +7,7 @@
 	"bin": {
 		"claw-guard": "./dist/index.js"
 	},
-	"files": ["dist", "rules"],
+	"files": ["dist", "rules", "docker"],
 	"publishConfig": {
 		"access": "public"
 	},

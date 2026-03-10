@@ -3,7 +3,7 @@
 > AIエージェントの記憶 — 確認を減らして、判断を賢く
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-369%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-380%20passing-brightgreen)]()
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)]()
 
 [English version](README.md)
@@ -12,7 +12,7 @@
 
 AIエージェント、確認が多すぎませんか？ `npm install`のたびに確認、`git push`のたびに確認。5分前に「いいよ」って言ったのに、また同じことを聞いてくる。
 
-ClawGuardが覚えておきます。一度OKした操作は記録して、次からは自動で通す。セッションをまたいでも、別のエージェントでも、別のツールでも。Claude Code・Codex・Cursorなど、フック対応のエージェントならどれでも使えます。
+ClawGuardが覚えておきます。一度OKした操作は記録して、次からは自動で通す。セッションをまたいでも、別のエージェントでも、別のツールでも。Claude Codeをはじめ、フック対応のエージェントならどれでも使えます。
 
 危ない操作（`rm -rf`、`git push --force`、`curl|bash`）はもちろん止めます。でもインストールする本当の理由は、エージェントが静かに・速くなるから。
 
@@ -36,7 +36,7 @@ claw-guard test
 
 2回目:      Agent → npm install foo → 自動許可（中断なし） ✓
 
-危険な操作:  Agent → rm -rf / → 常にブロック＋理由説明 ✗
+危険な操作:  Agent → rm -rf / → 検知して理由を説明＋あなたの確認が必要 ✗
 ```
 
 ## 静かさレベルを選ぶ
@@ -66,11 +66,12 @@ CLI引数 > プロジェクト（`.clawguard.yaml`） > グローバル（`~/.co
 
 **層1 — スマート承認**（フックベース、Docker不要）
 - 一度OKした操作を覚えて、次から自動で通す（SQLite）
-- 確認時に「他の開発者はどうしたか」をコミュニティデータで表示
+- 確認時に「他の開発者はどうしたか」をコミュニティデータで表示（準備中）
 - Adapter → Policy Engine → allow/confirm/deny（100ms以内）
 - セキュリティパスポート（継続監視の証明書）
 
-**層2 — インフラ隔離**（Docker、オプション）
+**層2 — インフラ隔離**（Docker、オプション・参考実装）
+- `claw-guard docker init` で docker-compose テンプレートを取得
 - 3コンテナ構成: gateway / fetcher / agent
 - ネットワーク分離（agentから外部へ直接通信できない）
 
@@ -90,7 +91,7 @@ CLI引数 > プロジェクト（`.clawguard.yaml`） > グローバル（`~/.co
 | `BASH.ROOT_PATH_OP` | bash | high | `/`（ルート）への操作 |
 | `BASH.PIPE_EXEC_001` | bash | high | `curl \| bash` パイプ実行 |
 | `BASH.PIPE_EXEC_002` | bash | high | `wget \| sh` パイプ実行 |
-| `BASH.SSH_KEY_READ` | bash | medium | SSH鍵ファイルへのアクセス |
+| `BASH.SSH_KEY_READ` | bash | high | SSH鍵ファイルへのアクセス |
 | `BASH.ENV_FILE_READ` | bash | medium | `.env`ファイルへのアクセス |
 | `BASH.NPM_INSTALL` | bash | medium | `npm install <パッケージ>` |
 | `BASH.PIP_INSTALL` | bash | medium | `pip install <パッケージ>` |
@@ -122,7 +123,7 @@ CLI引数 > プロジェクト（`.clawguard.yaml`） > グローバル（`~/.co
 | `claw-guard evaluate --json` | ツールリクエストの評価（フックエントリポイント） |
 | `claw-guard test` | ルール・エンジン・設定の検証 |
 | `claw-guard stats` | 自動許可カウント＆判断サマリーの表示 |
-| `claw-guard serve` | HTTPフックサーバー（レイテンシ1-3ms） |
+| `claw-guard serve` | HTTPフックサーバー（低レイテンシ） |
 | `claw-guard log` | 監査ログの閲覧 |
 | `claw-guard dashboard` | Webダッシュボードを起動 |
 | `claw-guard feed` | 脅威フィードの管理（`--update`, `--status`） |
@@ -133,6 +134,7 @@ CLI引数 > プロジェクト（`.clawguard.yaml`） > グローバル（`~/.co
 | `claw-guard monitor` | 誤検知モニタリング |
 | `claw-guard docker` | Dockerデプロイ（`init`, `up`, `down`） |
 | `claw-guard skills` | Skills AVスキャン |
+| `claw-guard team` | チーム管理（serve/add/list/remove/policy） |
 
 ### ルール形式（YAML）
 
@@ -186,7 +188,10 @@ packages/
 ├── web-ui/         Reactダッシュボード
 ├── lp/             ランディングページ（英語＋日本語）
 ├── webhook/        Stripe Webhook（Cloudflare Worker）
-└── docker/         3コンテナ参考実装
+├── docker/         3コンテナ参考実装
+├── api/            REST APIサーバー
+├── sdk/            組み込み用SDK
+└── siem/           SIEMコネクター
 rules/
 ├── core/           12コアルール（Phase 0-1）
 └── phase2/         15追加ルール
@@ -201,7 +206,7 @@ npm install
 # 全パッケージをビルド
 npm run build
 
-# テスト実行（375テスト）
+# テスト実行（380テスト）
 npm test
 
 # リント

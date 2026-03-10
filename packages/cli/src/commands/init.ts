@@ -18,17 +18,75 @@ interface PresetRow {
 }
 
 const PRESETS_JA: PresetRow[] = [
-	{ name: "observer", label: "（見るだけ）    ", high: "ログ", medium: "ログ", low: "ログ", desc: "何もブロックせず記録。AIの動きを把握したい時に" },
-	{ name: "guardian", label: "（しっかり）    ", high: "拒否", medium: "確認", low: "許可", desc: "よく確認する。AI初心者に最適" },
-	{ name: "balanced", label: "（バランス）    ", high: "確認", medium: "確認", low: "許可", desc: "時々確認。すぐ学習する。ほとんどの人に最適", recommended: true },
-	{ name: "expert", label: "（静か）        ", high: "確認", medium: "許可", low: "許可", desc: "ほぼ無音。本当に危ない操作だけ確認" },
+	{
+		name: "observer",
+		label: "（見るだけ）    ",
+		high: "ログ",
+		medium: "ログ",
+		low: "ログ",
+		desc: "何もブロックせず記録。AIの動きを把握したい時に",
+	},
+	{
+		name: "guardian",
+		label: "（しっかり）    ",
+		high: "拒否",
+		medium: "確認",
+		low: "許可",
+		desc: "よく確認する。AI初心者に最適",
+	},
+	{
+		name: "balanced",
+		label: "（バランス）    ",
+		high: "確認",
+		medium: "確認",
+		low: "許可",
+		desc: "時々確認。すぐ学習する。ほとんどの人に最適",
+		recommended: true,
+	},
+	{
+		name: "expert",
+		label: "（静か）        ",
+		high: "確認",
+		medium: "許可",
+		low: "許可",
+		desc: "ほぼ無音。本当に危ない操作だけ確認",
+	},
 ];
 
 const PRESETS_EN: PresetRow[] = [
-	{ name: "observer", label: "(Watch only)", high: "log    ", medium: "log    ", low: "log  ", desc: "Logs everything, blocks nothing. See what your agent does." },
-	{ name: "guardian", label: "(Careful)   ", high: "deny   ", medium: "confirm", low: "allow", desc: "Asks often. Best for getting started with AI agents." },
-	{ name: "balanced", label: "(Balanced)  ", high: "confirm", medium: "confirm", low: "allow", desc: "Asks sometimes. Learns fast. Best for most users.", recommended: true },
-	{ name: "expert", label: "(Quiet)     ", high: "confirm", medium: "allow  ", low: "allow", desc: "Almost silent. Only flags truly dangerous operations." },
+	{
+		name: "observer",
+		label: "(Watch only)",
+		high: "log    ",
+		medium: "log    ",
+		low: "log  ",
+		desc: "Logs everything, blocks nothing. See what your agent does.",
+	},
+	{
+		name: "guardian",
+		label: "(Careful)   ",
+		high: "deny   ",
+		medium: "confirm",
+		low: "allow",
+		desc: "Asks often. Best for getting started with AI agents.",
+	},
+	{
+		name: "balanced",
+		label: "(Balanced)  ",
+		high: "confirm",
+		medium: "confirm",
+		low: "allow",
+		desc: "Asks sometimes. Learns fast. Best for most users.",
+		recommended: true,
+	},
+	{
+		name: "expert",
+		label: "(Quiet)     ",
+		high: "confirm",
+		medium: "allow  ",
+		low: "allow",
+		desc: "Almost silent. Only flags truly dangerous operations.",
+	},
 ];
 
 const DEFAULT_INDEX = 2; // balanced (0-based)
@@ -78,7 +136,9 @@ export async function initCommand(options: { profile?: string; agent?: string })
 			const p = presets[i];
 			const num = chalk.bold(`[${i + 1}]`);
 			const rec = p.recommended ? chalk.cyan(` ${m.rec}`) : "";
-			console.log(`  ${num} ${chalk.bold(p.name.padEnd(10))}${p.label}   ${p.high}   ${p.medium}   ${p.low}${rec}`);
+			console.log(
+				`  ${num} ${chalk.bold(p.name.padEnd(10))}${p.label}   ${p.high}   ${p.medium}   ${p.low}${rec}`,
+			);
 			console.log(`              ${chalk.dim(p.desc)}`);
 			console.log("");
 		}

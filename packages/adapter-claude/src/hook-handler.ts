@@ -13,9 +13,7 @@ const ANTI_EVASION_HINT = {
 	en: "\n\n🚫 Do not modify the command to bypass this security check.",
 } as const;
 
-function decisionToClaudeAction(
-	decision: PolicyDecision,
-): "allow" | "deny" | "ask" {
+function decisionToClaudeAction(decision: PolicyDecision): "allow" | "deny" | "ask" {
 	switch (decision.action) {
 		case "deny":
 			return "deny";

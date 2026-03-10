@@ -23,8 +23,7 @@ export const jp: LPContent = {
 			agentSession: "--- AIエージェントセッション ---",
 			command: "$ npm install express",
 			confirmLabel: "自動許可",
-			confirmDetail:
-				"3日前にOK済み。開発者の94%が許可しています。",
+			confirmDetail: "3日前にOK済み。開発者の94%が許可しています。",
 		},
 	},
 	features: {

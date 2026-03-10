@@ -13,7 +13,8 @@ const MSG = {
 		confirmed: "確認要求",
 		denied: "拒否",
 		agents: "エージェント数",
-		noData: "まだ判断データがありません。claw-guard init を実行してAIエージェントを使い始めてください。",
+		noData:
+			"まだ判断データがありません。claw-guard init を実行してAIエージェントを使い始めてください。",
 	},
 	en: {
 		title: "ClawGuard Decision Summary",
@@ -46,11 +47,15 @@ export async function statsCommand(): Promise<void> {
 
 		console.log(chalk.underline(m.today));
 		console.log(`  ${chalk.green(`${today.autoAllowed}`)} ${m.autoAllowed}`);
-		console.log(`  ${today.total} ${m.totalDecisions}  |  ${chalk.green(today.allowed)} ${m.allowed}  |  ${chalk.yellow(today.confirmed)} ${m.confirmed}  |  ${chalk.red(today.denied)} ${m.denied}`);
+		console.log(
+			`  ${today.total} ${m.totalDecisions}  |  ${chalk.green(today.allowed)} ${m.allowed}  |  ${chalk.yellow(today.confirmed)} ${m.confirmed}  |  ${chalk.red(today.denied)} ${m.denied}`,
+		);
 
 		console.log(chalk.underline(`\n${m.allTime}`));
 		console.log(`  ${chalk.green.bold(`${all.autoAllowed}`)} ${m.autoAllowed}`);
-		console.log(`  ${all.total} ${m.totalDecisions}  |  ${chalk.green(all.allowed)} ${m.allowed}  |  ${chalk.yellow(all.confirmed)} ${m.confirmed}  |  ${chalk.red(all.denied)} ${m.denied}`);
+		console.log(
+			`  ${all.total} ${m.totalDecisions}  |  ${chalk.green(all.allowed)} ${m.allowed}  |  ${chalk.yellow(all.confirmed)} ${m.confirmed}  |  ${chalk.red(all.denied)} ${m.denied}`,
+		);
 		if (all.agents > 0) {
 			console.log(`  ${all.agents} ${m.agents}`);
 		}

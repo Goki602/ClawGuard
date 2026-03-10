@@ -1,0 +1,28 @@
+- id: BASH.PIP_INSTALL
+  match:
+    tool: bash
+    command_regex: '(?:^|\s|;|&&|\|\|)pip3?\s+install\s+(?!-r\s|-e\s)\S'
+  risk: medium
+  explain:
+    title: "pip追加"
+    what: "新しいPythonパッケージをインストールしようとしています。"
+    why:
+      - "悪意あるパッケージがインストール時にコードを実行する可能性があります。"
+      - "typosquatting（名前の似た偽パッケージ）の可能性があります。"
+    check:
+      - "パッケージ名のスペルは正しい？"
+      - "このパッケージは信頼できる？（PyPIでの情報を確認）"
+    alternatives:
+      - "`pip show <pkg>` で先にパッケージ情報を確認する"
+      - "PyPI でパッケージの信頼性を確認する"
+  meta:
+    author: "clawguard"
+    pack: "core"
+    version: "1.0.0"
+    tags: ["package", "supply-chain"]
+    phase: 1
+    marketplace:
+      status: "active"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

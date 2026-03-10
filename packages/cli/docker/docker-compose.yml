@@ -1,0 +1,57 @@
+services:
+  gateway:
+    build: ./gateway
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - internal
+      - external
+    volumes:
+      - logs:/var/log/claw-guard:rw
+      - feedcache:/var/lib/claw-guard:rw
+    environment:
+      - CLAWGUARD_PROFILE=${CLAWGUARD_PROFILE:-balanced}
+      - FEED_URL=${FEED_URL:-}
+    ports:
+      - "127.0.0.1:19280:19280"
+    tmpfs:
+      - /tmp:size=64M
+
+  fetcher:
+    build: ./fetcher
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - external
+    tmpfs:
+      - /tmp:size=64M
+
+  agent:
+    image: ${AGENT_IMAGE:-openclaw/openclaw:stable}
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - internal
+    depends_on:
+      - gateway
+    tmpfs:
+      - /tmp:size=256M
+
+networks:
+  internal:
+    internal: true
+  external:
+    internal: false
+
+volumes:
+  logs:
+  feedcache:

@@ -57,7 +57,12 @@ function corsHeaders(req?: IncomingMessage): Record<string, string> {
 	};
 }
 
-function jsonResponse(res: ServerResponse, status: number, data: unknown, req?: IncomingMessage): void {
+function jsonResponse(
+	res: ServerResponse,
+	status: number,
+	data: unknown,
+	req?: IncomingMessage,
+): void {
 	res.writeHead(status, { "Content-Type": "application/json", ...corsHeaders(req) });
 	res.end(JSON.stringify(data));
 }

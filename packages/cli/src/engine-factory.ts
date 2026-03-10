@@ -125,7 +125,11 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const engine = new PolicyEngine(rules, preset, feedVersion, config.project_overrides);
 	const writer = new AuditWriter();
 	const store = new DecisionStore();
-	try { store.cleanExpiredSessions(24); } catch { /* non-fatal */ }
+	try {
+		store.cleanExpiredSessions(24);
+	} catch {
+		/* non-fatal */
+	}
 
 	const reputation = new ReputationAggregator(store, feedBundle?.reputation);
 	// Telemetry upload is always enabled (anonymous aggregate stats).
@@ -165,17 +169,31 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 	const decision = ctx.engine.evaluate(request);
 
 	const contentHash = DecisionStore.hashContent(request.content);
+	let autoAllowReason: string | undefined;
 
-	// Auto-allow: session allowlist only (same session, same content, same rule)
+	// Auto-allow: session allowlist (same session, same content, same rule)
 	if (decision.action === "confirm" && ctx.store) {
 		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
 			decision.action = "allow";
+			autoAllowReason = "session";
+		}
+	}
+
+	// Auto-allow: cross-session historical memory (confirmed 2+ times for same content+rule)
+	if (decision.action === "confirm" && ctx.store) {
+		const minCount = decision.risk === "high" ? 5 : 2;
+		if (ctx.store.isHistoricallyAllowed(contentHash, decision.rule_id, minCount)) {
+			decision.action = "allow";
+			autoAllowReason = "historical";
 		}
 	}
 
 	const output = buildHookOutput(decision, ctx.lang);
 
 	const event = createOcsfEvent(request, decision);
+	if (autoAllowReason) {
+		event.enrichments.push({ name: "auto_allow_reason", value: autoAllowReason });
+	}
 	ctx.writer.write(event);
 
 	if (ctx.store) {
@@ -188,7 +206,7 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 		});
 	}
 
-	// Non-high confirm: pre-register session allowlist, return deny with retry hint
+	// Confirm: pre-register session allowlist, return deny with retry hint
 	// (deny reason is shown to Claude, who relays explanation to user then retries)
 	if (decision.action === "confirm" && ctx.store && output) {
 		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
@@ -231,16 +249,31 @@ export async function evaluateHookRequestAsync(
 		}
 	}
 
-	// Auto-allow: session allowlist only (same session, same content, same rule)
+	let autoAllowReason: string | undefined;
+
+	// Auto-allow: session allowlist (same session, same content, same rule)
 	if (decision.action === "confirm" && ctx.store) {
 		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
 			decision.action = "allow";
+			autoAllowReason = "session";
+		}
+	}
+
+	// Auto-allow: cross-session historical memory (confirmed 2+ times for same content+rule)
+	if (decision.action === "confirm" && ctx.store) {
+		const minCount = decision.risk === "high" ? 5 : 2;
+		if (ctx.store.isHistoricallyAllowed(contentHash, decision.rule_id, minCount)) {
+			decision.action = "allow";
+			autoAllowReason = "historical";
 		}
 	}
 
 	const output = buildHookOutput(decision, ctx.lang);
 
 	const event = createOcsfEvent(request, decision);
+	if (autoAllowReason) {
+		event.enrichments.push({ name: "auto_allow_reason", value: autoAllowReason });
+	}
 	ctx.writer.write(event);
 
 	if (ctx.store) {
@@ -253,7 +286,7 @@ export async function evaluateHookRequestAsync(
 		});
 	}
 
-	// Non-high confirm: pre-register session allowlist, return deny with retry hint
+	// Confirm: pre-register session allowlist, return deny with retry hint
 	if (decision.action === "confirm" && ctx.store && output) {
 		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
 		const reason = output.hookSpecificOutput.permissionDecisionReason ?? "";
