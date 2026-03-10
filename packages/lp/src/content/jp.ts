@@ -3,10 +3,9 @@ import type { LPContent } from "../types";
 export const jp: LPContent = {
 	nav: {
 		brand: "ClawGuard",
-		cta: "\u7121\u6599\u3067\u59CB\u3081\u308B",
+		cta: "\u59CB\u3081\u308B",
 		links: [
 			{ label: "\u6A5F\u80FD", href: "#features" },
-			{ label: "\u6599\u91D1", href: "#pricing" },
 			{
 				label: "\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8",
 				href: "https://github.com/Goki602/ClawGuard/blob/main/README.ja.md",
@@ -14,114 +13,83 @@ export const jp: LPContent = {
 		],
 	},
 	hero: {
-		headline:
-			"AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u306E\u5371\u967A\u306A\u64CD\u4F5C\u3092\u3001\u5B9F\u884C\u524D\u306B\u6B62\u3081\u308B",
+		headline: "AIエージェント、聞きすぎじゃない？",
 		subheadline:
-			"rm -rf\u3001git push --force\u3001curl|bash \u2014 ClawGuard\u306FAI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u304C\u5371\u967A\u306A\u30B3\u30DE\u30F3\u30C9\u3092\u5B9F\u884C\u3059\u308B\u524D\u306B\u30A4\u30F3\u30BF\u30FC\u30BB\u30D7\u30C8\uFF08\u6A2A\u53D6\u308A\uFF09\u3057\u3066\u5224\u65AD\u3057\u307E\u3059\u3002\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB1\u56DE\u3067\u3001\u30EA\u30A2\u30EB\u30BF\u30A4\u30E0\u4FDD\u8B77\u3002",
-		cta: "\u7121\u6599\u3067\u59CB\u3081\u308B",
-		secondaryCta: "GitHub\u3067\u898B\u308B",
+			"ClawGuardが覚えておきます。一度OKした操作は、次から自動で通す。セッション、エージェント、ツールをまたいでも。危ない操作はちゃんと止める。でも気づかないくらい静か。",
+		cta: "始める",
+		secondaryCta: "GitHubで見る",
 		terminal: {
-			ready: "\u6E96\u5099\u5B8C\u4E86\u3002",
-			agentSession: "--- AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30C3\u30B7\u30E7\u30F3 ---",
-			command: "$ rm -rf /tmp/project",
-			confirmLabel: "\u4E00\u62EC\u30D5\u30A1\u30A4\u30EB\u524A\u9664",
+			ready: "準備完了。過去の判断47件を読み込みました。",
+			agentSession: "--- AIエージェントセッション ---",
+			command: "$ npm install express",
+			confirmLabel: "自動許可",
 			confirmDetail:
-				"\u30D1\u30B9\u3092\u9593\u9055\u3048\u308B\u3068\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u5168\u4F53\u304C\u6D88\u3048\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002",
+				"3日前にOK済み。開発者の94%が許可しています。",
 		},
 	},
 	features: {
-		title: "ClawGuard\u304C\u5B9F\u969B\u306B\u3084\u308B\u3053\u3068",
+		title: "もっと静かに。もっと賢く。",
 		cards: [
 			{
-				title:
-					"\u5371\u967A\u306A\u30B3\u30DE\u30F3\u30C9\u3092\u30A4\u30F3\u30BF\u30FC\u30BB\u30D7\u30C8",
+				title: "OKした操作を覚えてくれる",
 				description:
-					"AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u304C rm -rf /\u3001git push --force\u3001curl|bash \u3092\u5B9F\u884C\u3057\u3088\u3046\u3068\u3059\u308B\u3068\u3001ClawGuard\u304C100ms\u4EE5\u5185\u306B\u30AD\u30E3\u30C3\u30C1\u3002\u78BA\u8A8D\u3092\u6C42\u3081\u308B\u304B\u3001\u30D6\u30ED\u30C3\u30AF\u3057\u307E\u3059\u300212\u306E\u7D44\u307F\u8FBC\u307F\u30EB\u30FC\u30EB\u304C\u7834\u58CA\u7684\u64CD\u4F5C\u30FB\u79D8\u5BC6\u60C5\u5831\u306E\u6F0F\u6D29\u30FB\u4FE1\u983C\u3067\u304D\u306A\u3044\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u3092\u30AB\u30D0\u30FC\u3002",
-				icon: "\u{1F6E1}",
+					"npm install expressを一度OKしたら、それで終わり。次からは自動で通ります。ポップアップも中断もなし。セッションが変わっても覚えたまま。",
+				icon: "\u{1F9E0}",
 			},
 			{
-				title: "\u3042\u3089\u3086\u308BAI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u306B\u5BFE\u5FDC",
+				title: "どのAIエージェントでも使える",
 				description:
-					"Claude Code\u3001Codex\u3001MCP \u2014 ClawGuard\u306F\u30C4\u30FC\u30EB\u30B3\u30FC\u30EB\u5C64\uFF08AI\u304C\u30B3\u30DE\u30F3\u30C9\u3092\u5B9F\u884C\u3059\u308B\u4ED5\u7D44\u307F\uFF09\u306B\u30D5\u30C3\u30AF\u3057\u307E\u3059\u3002Docker\u4E0D\u8981\u30021\u56DE\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u3059\u308C\u3070\u3001\u5168\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u3092\u4FDD\u8B77\u3002",
+					"Claude Code、Codex、Cursor — OKした判断はどこにでもついていきます。Claudeで許可したものはCodexでもそのまま。エージェントが変わっても、頭脳はひとつ。",
 				icon: "\u{1F517}",
 			},
 			{
-				title: "\u4F7F\u3046\u4EBA\u304C\u5897\u3048\u308B\u307B\u3069\u8CE2\u304F\u306A\u308B",
+				title: "みんなの判断が見える",
 				description:
-					"\u3042\u306A\u305F\u304C\u30B3\u30DE\u30F3\u30C9\u3092\u8A31\u53EF\u30FB\u62D2\u5426\u3059\u308B\u305F\u3073\u306B\u3001\u533F\u540D\u30C7\u30FC\u30BF\u304C\u5168\u4F53\u306E\u691C\u77E5\u7CBE\u5EA6\u3092\u5411\u4E0A\u3055\u305B\u307E\u3059\u3002\u300C\u958B\u767A\u8005\u306E87%\u304C\u3053\u306Enpm\u30D1\u30C3\u30B1\u30FC\u30B8\u3092\u8A31\u53EF\u300D\u2014 \u5224\u65AD\u3092\u52A9\u3051\u308B\u30B3\u30F3\u30C6\u30AD\u30B9\u30C8\u3002",
-				icon: "\u{1F310}",
+					"「開発者の94%がこのパッケージを許可」。確認が出たとき、他の開発者がどうしたかも一緒に表示。迷う時間がぐっと減ります。",
+				icon: "\u{1F465}",
 			},
 			{
-				title: "\u76E3\u8996\u6E08\u307F\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u8A3C\u660E",
+				title: "目立たないけど、しっかり守る",
 				description:
-					"AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30C3\u30B7\u30E7\u30F3\u304C\u7D99\u7D9A\u7684\u306B\u76E3\u67FB\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u8A3C\u660E\u3059\u308BGitHub\u30D0\u30C3\u30B8\u3092\u751F\u6210\u3002\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u3084\u30C1\u30FC\u30E0\u30E1\u30A4\u30C8\u306B\u3001\u5168\u30B3\u30DE\u30F3\u30C9\u304C\u30EC\u30D3\u30E5\u30FC\u6E08\u307F\u3067\u3042\u308B\u3053\u3068\u3092\u793A\u305B\u307E\u3059\u3002",
-				icon: "\u{1F4DC}",
+					"rm -rf、git push --force、curl|bash — 本当にヤバい操作はちゃんと止めます。12のルールが最初から入っていて、取り返しのつかない事故を防ぎます。",
+				icon: "\u{1F6E1}",
 			},
 			{
-				title: "AI\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u4E38\u3054\u3068\u518D\u73FE",
+				title: "全部記録に残る",
 				description:
-					"\u4F55\u304B\u554F\u984C\u304C\u8D77\u304D\u305F\uFF1F\u5224\u65AD\u30C1\u30A7\u30FC\u30F3\u5168\u4F53\u3092\u518D\u73FE\uFF1A\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u304C\u4F55\u3092\u8A66\u307F\u3001\u4F55\u304C\u30D6\u30ED\u30C3\u30AF\u3055\u308C\u3001\u4F55\u304C\u8A31\u53EF\u3055\u308C\u3001\u306A\u305C\u304B\u3002\u5B8C\u5168\u306A\u56E0\u679C\u5206\u6790\u3002",
-				icon: "\u{1F50D}",
+					"自動許可も、確認も、ブロックも — 判断はすべて記録されます。セッションの再生やコマンドの流れも追えるので、何かあったときに「何が起きたか」がすぐわかります。",
+				icon: "\u{1F4CB}",
 			},
 			{
-				title: "\u7F72\u540D\u4ED8\u304D\u8105\u5A01\u30A2\u30C3\u30D7\u30C7\u30FC\u30C8",
+				title: "放っておいても賢くなる",
 				description:
-					"\u65B0\u3057\u3044CVE\uFF08\u8106\u5F31\u6027\u60C5\u5831\uFF09\u3001\u60AA\u610F\u3042\u308B\u30D1\u30C3\u30B1\u30FC\u30B8\u3001\u5931\u52B9\u30EB\u30FC\u30EB \u2014 \u7F72\u540D\u4ED8\u304D\u30D5\u30A3\u30FC\u30C9\u3067\u914D\u4FE1\u3002Free: \u9031\u6B21\u3002Pro/Max: \u6BCE\u65E5\u3002\u624B\u52D5\u4F5C\u696D\u306A\u3057\u3067\u30EB\u30FC\u30EB\u304C\u6700\u65B0\u306B\u3002",
+					"新しい脅威、安全なパッケージ、みんなの判断データ。署名付きで毎日届きます。何もしなくても、エージェントは日々賢くなっていきます。",
 				icon: "\u{1F4E1}",
 			},
 		],
 	},
 	pricing: {
-		title: "\u30B7\u30F3\u30D7\u30EB\u3067\u900F\u660E\u306A\u6599\u91D1\u4F53\u7CFB",
-		earlyAccessNote:
-			"Early Access\u671F\u9593\u4E2D\u306FPro\u30D7\u30E9\u30F3\u307E\u3067\u7121\u6599 \u2014 \u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u3059\u308B\u3060\u3051\u3067Pro\u6A5F\u80FD\u304C\u4F7F\u3048\u307E\u3059\u3002",
+		title: "\u5B8C\u5168\u7121\u6599\u30FB\u30AA\u30FC\u30D7\u30F3\u30BD\u30FC\u30B9",
 		cards: [
 			{
-				name: "Free",
+				name: "ClawGuard",
 				price: "$0",
-				period: "\u6C38\u4E45\u7121\u6599",
+				period: "永久無料",
 				features: [
-					"12\u306E\u30B3\u30A2\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30EB\u30FC\u30EB",
-					"\u9031\u6B21\u8105\u5A01\u30D5\u30A3\u30FC\u30C9",
-					"\u57FA\u672C\u30EA\u30D7\u30EC\u30A4\uFF0824\u6642\u9593\uFF09",
-					"\u30B3\u30DF\u30E5\u30CB\u30C6\u30A3\u95B2\u89A7\u306E\u307F",
-					"\u5358\u4E00\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u5BFE\u5FDC",
+					"ツールをまたいで判断を記憶・自動許可",
+					"みんなの判断データが見える（コミュニティ知性）",
+					"全セーフティルール（コア + コミュニティ）",
+					"毎日届く署名付きアップデート",
+					"セッションの完全な再生と原因分析",
+					"ルールマーケットプレイス（追加も公開も自由）",
+					"セキュリティパスポート + GitHubバッジ",
+					"チーム・組織での一括管理",
+					"スキルのセキュリティスキャン",
 				],
-				cta: "\u7121\u6599\u3067\u59CB\u3081\u308B",
-				href: "#how-it-works",
-			},
-			{
-				name: "Pro",
-				price: "$12",
-				period: "/\u6708",
-				features: [
-					"\u5168\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30EB\u30FC\u30EB",
-					"\u65E5\u6B21\u8105\u5A01\u30D5\u30A3\u30FC\u30C9\uFF08\u30EB\u30FC\u30EB+\u8A55\u5224+CVE\uFF09",
-					"\u5B8C\u5168\u306A\u30A4\u30F3\u30B7\u30C7\u30F3\u30C8\u30EA\u30D7\u30EC\u30A4",
-					"\u30EB\u30FC\u30EB\u30DE\u30FC\u30B1\u30C3\u30C8\u30D7\u30EC\u30A4\u30B9\u30A2\u30AF\u30BB\u30B9",
-					"\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30D1\u30B9\u30DD\u30FC\u30C8 + \u30D0\u30C3\u30B8",
-					"\u30B9\u30AD\u30EBAV\u30B9\u30AD\u30E3\u30F3",
-				],
-				cta: "\u7121\u6599\u3067\u59CB\u3081\u308B\uFF08Early Access\uFF09",
+				cta: "\u59CB\u3081\u308B",
 				href: "#how-it-works",
 				highlighted: true,
-				highlightLabel: "\u4EBA\u6C17",
-			},
-			{
-				name: "Max",
-				price: "$39",
-				period: "/\u6708",
-				features: [
-					"Pro\u306E\u5168\u6A5F\u80FD\u3092\u542B\u3080",
-					"\u30C1\u30FC\u30E0\u30FB\u7D44\u7E54\u7BA1\u7406",
-					"\u30AF\u30ED\u30B9\u30C1\u30FC\u30E0\u30E1\u30E2\u30EA\u5171\u6709",
-					"\u4E00\u5143\u7BA1\u7406\u76E3\u67FB\u30C0\u30C3\u30B7\u30E5\u30DC\u30FC\u30C9",
-					"\u7D44\u7E54\u5168\u4F53\u306E\u30D1\u30B9\u30DD\u30FC\u30C8",
-				],
-				cta: "\u6E96\u5099\u4E2D",
-				href: "#how-it-works",
-				comingSoon: true,
-				comingSoonLabel: "\u6E96\u5099\u4E2D",
+				highlightLabel: "\u5168\u6A5F\u80FD\u7121\u6599",
 			},
 		],
 	},
@@ -135,15 +103,15 @@ export const jp: LPContent = {
 			},
 			{
 				step: "2",
-				title: "\u30EC\u30D9\u30EB\u3092\u9078\u3076",
+				title: "静かさレベルを選ぶ",
 				description:
-					"\u30D7\u30EA\u30BB\u30C3\u30C8\u3092\u9078\u629E: guardian\uFF08\u53B3\u683C\uFF09\u3001balanced\uFF08\u304A\u3059\u3059\u3081\uFF09\u3001expert\uFF08\u6700\u5C0F\u9650\u306E\u4E2D\u65AD\uFF09\u3002clawguard.yaml\u306B1\u884C\u66F8\u304F\u3060\u3051\u3002",
+					"guardian（よく確認）、balanced（おすすめ）、expert（ほぼ無音）から選ぶだけ。設定はclawguard.yamlに1行。",
 			},
 			{
 				step: "3",
-				title: "\u4FDD\u8B77\u958B\u59CB",
+				title: "あとは使うだけ",
 				description:
-					"\u6B21\u306BAI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u304C rm -rf \u3084 git push --force \u3092\u5B9F\u884C\u3057\u3088\u3046\u3068\u3059\u308B\u3068\u3001ClawGuard\u304C\u30A4\u30F3\u30BF\u30FC\u30BB\u30D7\u30C8\u3057\u3066\u30EA\u30B9\u30AF\u3092\u8AAC\u660E\u3057\u3001\u8A31\u53EF\u304B\u62D2\u5426\u304B\u3092\u78BA\u8A8D\u3057\u307E\u3059\u3002\u3059\u3079\u3066\u306E\u5224\u65AD\u304C\u8A18\u9332\u3055\u308C\u307E\u3059\u3002",
+					"いつも通りAIエージェントを使ってください。使うほど賢くなります。1日もすればほとんどの確認は消えて、聞いてくるのは初めての操作や危ない操作だけに。",
 			},
 		],
 	},
@@ -185,8 +153,7 @@ export const jp: LPContent = {
 			legal: "\u6CD5\u7684\u60C5\u5831",
 			devex: "\u958B\u767A\u8005\u5411\u3051",
 			support: "\u30B5\u30DD\u30FC\u30C8",
-			description:
-				"AI\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u30D7\u30E9\u30C3\u30C8\u30D5\u30A9\u30FC\u30E0",
+			description: "AIエージェントの知性レイヤー",
 		},
 		legal: [
 			{
@@ -217,7 +184,6 @@ export const jp: LPContent = {
 			},
 		],
 		support: [
-			{ label: "\u6599\u91D1", href: "#pricing" },
 			{
 				label: "\u8CEA\u554F\u30FB\u4E0D\u5177\u5408\u5831\u544A",
 				href: "https://github.com/Goki602/ClawGuard/issues",

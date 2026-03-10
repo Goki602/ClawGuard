@@ -154,6 +154,54 @@ export class DecisionStore {
 			.run(`-${maxAgeHours} hours`);
 	}
 
+	getAutoAllowCount(sessionId?: string): number {
+		if (sessionId) {
+			const row = this.db
+				.prepare("SELECT COUNT(*) as count FROM session_allowlist WHERE session_id = ?")
+				.get(sessionId) as { count: number };
+			return row.count;
+		}
+		const row = this.db
+			.prepare("SELECT COUNT(*) as count FROM session_allowlist")
+			.get() as { count: number };
+		return row.count;
+	}
+
+	getStatsSummary(): { total: number; allowed: number; denied: number; confirmed: number; autoAllowed: number; agents: number } {
+		const decisions = this.db
+			.prepare(
+				`SELECT
+				COUNT(*) as total,
+				SUM(CASE WHEN action = 'allow' OR action = 'log' THEN 1 ELSE 0 END) as allowed,
+				SUM(CASE WHEN action = 'deny' THEN 1 ELSE 0 END) as denied,
+				SUM(CASE WHEN action = 'confirm' THEN 1 ELSE 0 END) as confirmed
+			FROM decisions`,
+			)
+			.get() as { total: number; allowed: number; denied: number; confirmed: number };
+		const autoAllowed = this.getAutoAllowCount();
+		const agents = this.db
+			.prepare("SELECT COUNT(DISTINCT agent) as count FROM decisions WHERE agent IS NOT NULL")
+			.get() as { count: number };
+		return { ...decisions, autoAllowed, agents: agents.count };
+	}
+
+	getTodayStats(): { total: number; allowed: number; denied: number; confirmed: number; autoAllowed: number } {
+		const decisions = this.db
+			.prepare(
+				`SELECT
+				COUNT(*) as total,
+				SUM(CASE WHEN action = 'allow' OR action = 'log' THEN 1 ELSE 0 END) as allowed,
+				SUM(CASE WHEN action = 'deny' THEN 1 ELSE 0 END) as denied,
+				SUM(CASE WHEN action = 'confirm' THEN 1 ELSE 0 END) as confirmed
+			FROM decisions WHERE timestamp >= date('now')`,
+			)
+			.get() as { total: number; allowed: number; denied: number; confirmed: number };
+		const autoRow = this.db
+			.prepare("SELECT COUNT(*) as count FROM session_allowlist WHERE created_at >= date('now')")
+			.get() as { count: number };
+		return { ...decisions, autoAllowed: autoRow.count };
+	}
+
 	close(): void {
 		this.db.close();
 	}

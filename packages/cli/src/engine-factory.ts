@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import type { ClaudeHookOutput } from "@clawguard/adapter-claude";
 import {
 	buildHookOutput,
-	isVscodeEnvironment,
 	mapToToolRequest,
 	parseHookInput,
 	shouldIntervene,
@@ -96,15 +95,13 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const license = licenseManager.getCurrentLicense();
 	const gate = new FeatureGate(license);
 
-	// Core rules (always loaded)
+	// Core rules
 	let rules = loadRulesFromDir(findRulesDir());
 
-	// Phase 2 rules (pro/max only)
-	if (gate.canLoadPhase2Rules()) {
-		const phase2Dir = findPhase2RulesDir();
-		if (phase2Dir) {
-			rules = [...rules, ...loadRulesFromDir(phase2Dir)];
-		}
+	// Phase 2 rules
+	const phase2Dir = findPhase2RulesDir();
+	if (phase2Dir) {
+		rules = [...rules, ...loadRulesFromDir(phase2Dir)];
 	}
 
 	// Feed rules (overlay)
@@ -117,16 +114,9 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 		rules = mergeRules(rules, feedCompiled);
 	}
 
-	// Marketplace packs (pro/max only)
-	if (gate.canUseMarketplace()) {
-		const marketplace = new MarketplaceClient();
-		rules = [...rules, ...marketplace.loadInstalledRules()];
-	}
-
-	// Free plan: only phase 0 rules
-	if (!gate.canLoadPhase2Rules()) {
-		rules = rules.filter((r) => (r.meta?.phase ?? 0) === 0);
-	}
+	// Marketplace packs
+	const marketplace = new MarketplaceClient();
+	rules = [...rules, ...marketplace.loadInstalledRules()];
 
 	const engine = new PolicyEngine(rules, preset, feedVersion, config.project_overrides);
 	const writer = new AuditWriter();
@@ -171,11 +161,11 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 
 	const request = mapToToolRequest(hookInput);
 	const decision = ctx.engine.evaluate(request);
-	const isVSCode = ctx.vsCodeCompat ?? isVscodeEnvironment();
+
 	const contentHash = DecisionStore.hashContent(request.content);
 
-	// Session allowlist: if a non-high-risk confirm was already force-denied and user retried, allow it
-	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
+	// Session allowlist: auto-allow if the same non-high-risk operation was already approved in this session
+	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
 		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
 			decision.action = "allow";
 		}
@@ -196,8 +186,8 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 
 	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
 
-	// Record soft force-deny to session allowlist (non-high-risk confirm in VSCode)
-	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
+	// Record confirm decisions to session allowlist for future auto-allow (all environments)
+	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
 		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
 	}
 
@@ -216,7 +206,7 @@ export async function evaluateHookRequestAsync(
 
 	const request = mapToToolRequest(hookInput);
 	let decision = ctx.engine.evaluate(request);
-	const isVSCode = ctx.vsCodeCompat ?? isVscodeEnvironment();
+
 	const contentHash = DecisionStore.hashContent(request.content);
 
 	if (ctx.enricher && decision.action !== "allow") {
@@ -227,8 +217,8 @@ export async function evaluateHookRequestAsync(
 		}
 	}
 
-	// Session allowlist: if a non-high-risk confirm was already force-denied and user retried, allow it
-	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
+	// Session allowlist: auto-allow if the same non-high-risk operation was already approved in this session
+	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store) {
 		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
 			decision.action = "allow";
 		}
@@ -249,8 +239,8 @@ export async function evaluateHookRequestAsync(
 
 	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
 
-	// Record soft force-deny to session allowlist (non-high-risk confirm in VSCode)
-	if (isVSCode && decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
+	// Record confirm decisions to session allowlist for future auto-allow (all environments)
+	if (decision.action === "confirm" && decision.risk !== "high" && ctx.store && output) {
 		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
 	}
 

@@ -3,36 +3,25 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import type { BillingPlan, LicenseInfo } from "@clawguard/core";
 
+// All features unlocked — ClawGuard is 100% free
+const ALL_FEATURES: LicenseInfo["features"] = {
+	max_rules: Number.MAX_SAFE_INTEGER,
+	feed_interval: "daily",
+	reputation_network: true,
+	marketplace: true,
+	team: true,
+	team_admin: true,
+};
+
 const FREE_LICENSE: LicenseInfo = {
 	plan: "free",
-	features: {
-		max_rules: 12,
-		feed_interval: "weekly",
-		reputation_network: false,
-		marketplace: false,
-		team: false,
-		team_admin: false,
-	},
+	features: { ...ALL_FEATURES },
 };
 
 const PLAN_FEATURES: Record<BillingPlan, LicenseInfo["features"]> = {
-	free: FREE_LICENSE.features,
-	pro: {
-		max_rules: Number.MAX_SAFE_INTEGER,
-		feed_interval: "daily",
-		reputation_network: true,
-		marketplace: true,
-		team: true,
-		team_admin: false,
-	},
-	max: {
-		max_rules: Number.MAX_SAFE_INTEGER,
-		feed_interval: "daily",
-		reputation_network: true,
-		marketplace: true,
-		team: true,
-		team_admin: true,
-	},
+	free: ALL_FEATURES,
+	pro: ALL_FEATURES,
+	max: ALL_FEATURES,
 };
 
 const KEY_REGEX = /^cg_(free|pro|max)_([0-9a-f]{32})$/;

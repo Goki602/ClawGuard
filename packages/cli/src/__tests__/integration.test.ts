@@ -139,9 +139,10 @@ describe("Integration: Evaluate Pipeline", () => {
 		expect(result.skipped).toBe(false);
 	});
 
-	it("git status → null output (allow)", () => {
+	it("git status → explicit allow (suppress Claude dialog)", () => {
 		const result = evaluateHookRequest(hookInput("git status"), ctx);
-		expect(result.output).toBeNull();
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
 		expect(result.skipped).toBe(false);
 	});
 
@@ -156,8 +157,10 @@ describe("Integration: Evaluate Pipeline", () => {
 		const hasEnvRule = ctx.engine.getRules().some((r) => r.id === "BASH.ENV_FILE_READ");
 		if (hasEnvRule) {
 			expect(result.output).not.toBeNull();
+			expect(result.output?.hookSpecificOutput.permissionDecision).not.toBe("allow");
 		} else {
-			expect(result.output).toBeNull();
+			expect(result.output).not.toBeNull();
+			expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
 		}
 	});
 
@@ -167,9 +170,10 @@ describe("Integration: Evaluate Pipeline", () => {
 		expect(result.skipped).toBe(true);
 	});
 
-	it("unknown tool → allow", () => {
+	it("unknown tool → explicit allow", () => {
 		const result = evaluateHookRequest(hookInputTool("CustomTool", { data: "test" }), ctx);
-		expect(result.output).toBeNull();
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
 		expect(result.skipped).toBe(false);
 	});
 });
@@ -320,14 +324,15 @@ describe("Integration: HTTP Server", () => {
 		expect(data.hookSpecificOutput.permissionDecision).toBe("ask");
 	});
 
-	it("POST /hook with safe command returns empty object", async () => {
+	it("POST /hook with safe command returns explicit allow", async () => {
 		const res = await fetch(`${baseUrl}/hook`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: hookInput("git status"),
 		});
 		const data = await res.json();
-		expect(data).toEqual({});
+		expect(data.hookSpecificOutput).toBeDefined();
+		expect(data.hookSpecificOutput.permissionDecision).toBe("allow");
 	});
 
 	it("GET /health returns status ok and rules count", async () => {

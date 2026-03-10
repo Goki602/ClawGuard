@@ -48,17 +48,19 @@ describe("shouldIntervene", () => {
 });
 
 describe("buildHookOutput", () => {
-	it("returns null for allow", () => {
+	it("returns explicit allow for allow action", () => {
 		const decision: PolicyDecision = {
 			action: "allow",
 			risk: "low",
 			rule_id: "NO_MATCH",
 			feed_version: "0.1.0",
 		};
-		expect(buildHookOutput(decision)).toBeNull();
+		const output = buildHookOutput(decision);
+		expect(output).not.toBeNull();
+		expect(output?.hookSpecificOutput.permissionDecision).toBe("allow");
 	});
 
-	it("returns null for log", () => {
+	it("returns null for log (observer mode)", () => {
 		const decision: PolicyDecision = {
 			action: "log",
 			risk: "high",

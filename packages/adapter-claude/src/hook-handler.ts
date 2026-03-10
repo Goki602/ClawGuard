@@ -53,9 +53,18 @@ export function buildHookOutput(
 	const forceBlock = vsCodeCompat ?? isVscodeEnvironment();
 	const claudeAction = decisionToClaudeAction(decision, forceBlock);
 
-	// For allow, return null (exit 0 with no stdout = proceed)
-	if (claudeAction === "allow") {
+	// observer mode (log): don't affect Claude's behavior — just observe
+	if (decision.action === "log") {
 		return null;
+	}
+	// Explicit allow: tell Claude to auto-approve (suppress permission dialog)
+	if (claudeAction === "allow") {
+		return {
+			hookSpecificOutput: {
+				hookEventName: "PreToolUse",
+				permissionDecision: "allow",
+			},
+		};
 	}
 
 	let reason = buildReason(decision, lang);

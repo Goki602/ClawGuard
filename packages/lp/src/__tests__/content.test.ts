@@ -30,7 +30,7 @@ describe("LP content", () => {
 
 	it("EN and JP have same number of pricing plans", () => {
 		expect(en.pricing.cards.length).toBe(jp.pricing.cards.length);
-		expect(en.pricing.cards.length).toBe(3);
+		expect(en.pricing.cards.length).toBe(1);
 	});
 
 	it("all pricing plans have CTA", () => {

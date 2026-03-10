@@ -23,7 +23,6 @@ const MSG = {
 		preset: (name: string) => `プリセット: ${name}`,
 		port: (p: number) => `ポート: ${p}`,
 		memory: (on: boolean) => `記憶: ${on ? "有効" : "無効"}`,
-		plan: (name: string) => `プラン: ${name}`,
 		feed: (on: boolean) => `フィード: ${on ? "有効" : "無効"}`,
 		enrichment: "エンリッチメント: 有効",
 		listening: (url: string) => `リッスン中: ${url}`,
@@ -37,7 +36,6 @@ const MSG = {
 		preset: (name: string) => `Preset: ${name}`,
 		port: (p: number) => `Port: ${p}`,
 		memory: (on: boolean) => `Memory: ${on ? "enabled" : "disabled"}`,
-		plan: (name: string) => `Plan: ${name}`,
 		feed: (on: boolean) => `Feed: ${on ? "enabled" : "disabled"}`,
 		enrichment: "Enrichment: enabled",
 		listening: (url: string) => `Listening on ${url}`,
@@ -83,19 +81,16 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	ctx.reportGenerator = reportGenerator;
 	ctx.passportGenerator = passportGenerator;
 
-	// Team stores (Max tier only, always initialized for API but gated)
+	// Team stores
 	let teamMemberStore: MemberStore | undefined;
 	let teamAuditStore: TeamAuditStore | undefined;
 	let teamMemoryStore: TeamMemoryStore | undefined;
-	const isMaxTier = ctx.gate?.canUseTeamAdmin();
-	if (isMaxTier) {
-		try {
-			teamMemberStore = new MemberStore();
-			teamAuditStore = new TeamAuditStore();
-			teamMemoryStore = new TeamMemoryStore();
-		} catch {
-			// Team DB init failure is non-fatal
-		}
+	try {
+		teamMemberStore = new MemberStore();
+		teamAuditStore = new TeamAuditStore();
+		teamMemoryStore = new TeamMemoryStore();
+	} catch {
+		// Team DB init failure is non-fatal
 	}
 
 	// Telemetry auto-submission (every 6 hours)
@@ -120,7 +115,6 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	console.log(`  ${m.preset(ctx.engine.getPreset().name)}`);
 	console.log(`  ${m.port(port)}`);
 	console.log(`  ${m.memory(Boolean(ctx.store))}`);
-	console.log(`  ${m.plan(ctx.license?.plan ?? "free")}`);
 	console.log(`  ${m.feed(Boolean(ctx.feedClient))}`);
 	console.log(`  ${m.enrichment}`);
 	console.log(`  Hook:      POST http://localhost:${port}/hook`);

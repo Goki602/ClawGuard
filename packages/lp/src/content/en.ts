@@ -3,119 +3,89 @@ import type { LPContent } from "../types";
 export const en: LPContent = {
 	nav: {
 		brand: "ClawGuard",
-		cta: "Get Started Free",
+		cta: "Get Started",
 		links: [
 			{ label: "Features", href: "#features" },
-			{ label: "Pricing", href: "#pricing" },
 			{ label: "Docs", href: "https://github.com/Goki602/ClawGuard" },
 		],
 	},
 	hero: {
-		headline: "Stop AI Agents Before They Break Things",
+		headline: "Your AI Agents Ask Too Many Questions",
 		subheadline:
-			"ClawGuard intercepts dangerous commands — rm -rf, git push --force, curl|bash — before your AI agent executes them. One install, real-time protection.",
-		cta: "Get Started Free",
+			"ClawGuard remembers what's safe. Once you approve an operation, it's auto-allowed — across sessions, across agents, across tools. Dangerous commands still get caught. But you'll barely notice.",
+		cta: "Get Started",
 		secondaryCta: "View on GitHub",
 		terminal: {
-			ready: "Ready.",
+			ready: "Ready. 47 past decisions loaded.",
 			agentSession: "--- AI agent session ---",
-			command: "$ rm -rf /tmp/project",
-			confirmLabel: "Bulk file deletion",
-			confirmDetail: "Wrong path could destroy your entire project.",
+			command: "$ npm install express",
+			confirmLabel: "Auto-allowed",
+			confirmDetail: "You approved this 3 days ago. 94% of developers allow it.",
 		},
 	},
 	features: {
-		title: "What ClawGuard Actually Does",
+		title: "Less Noise. Smarter Agents.",
 		cards: [
 			{
-				title: "Intercepts Dangerous Commands",
+				title: "Remembers What's Safe",
 				description:
-					"When your AI agent tries rm -rf /, git push --force, or curl|bash, ClawGuard catches it in under 100ms and asks you to confirm or blocks it. 12 built-in rules cover destructive ops, secret leaks, and untrusted installs.",
-				icon: "\u{1F6E1}",
+					"You said yes to npm install express once. ClawGuard remembers. Next time — auto-allowed. No popup, no interruption. Your approval decisions persist across sessions.",
+				icon: "\u{1F9E0}",
 			},
 			{
-				title: "Works With Any AI Agent",
+				title: "Works Across Every AI Agent",
 				description:
-					"Claude Code, Codex, MCP — ClawGuard hooks into the tool-call layer. No Docker required. Install once, protect every agent in your workflow.",
+					"Claude Code, Codex, Cursor — your trust decisions travel with you. Approve something in Claude, it's remembered in Codex. One brain for all your agents.",
 				icon: "\u{1F517}",
 			},
 			{
-				title: "Smarter With Every User",
+				title: "Community Intelligence",
 				description:
-					'When you allow or deny a command, anonymized data improves detection for everyone. "87% of developers allowed this npm package" — context that helps you decide faster.',
-				icon: "\u{1F310}",
+					'"94% of developers allowed this npm package." When ClawGuard does ask, it shows you what the community decided. Makes the remaining confirmations take 2 seconds.',
+				icon: "\u{1F465}",
 			},
 			{
-				title: "Prove Your Sessions Are Monitored",
+				title: "Safety Net Built In",
 				description:
-					"Generate a GitHub badge that proves your AI agent sessions are continuously audited. Show clients and teammates that every command was reviewed.",
-				icon: "\u{1F4DC}",
+					"rm -rf, git push --force, curl|bash — the truly dangerous stuff is always caught. 12 built-in rules protect against irreversible damage. Security isn't the headline, but it's always there.",
+				icon: "\u{1F6E1}",
 			},
 			{
-				title: "Replay Any AI Session",
+				title: "Full Session History",
 				description:
-					"Something went wrong? Replay the entire decision chain: what the agent tried, what was blocked, what was allowed, and why. Full causal analysis.",
-				icon: "\u{1F50D}",
+					"Every decision — auto-allowed, confirmed, or blocked — is logged. Replay any session, trace any command chain. When something goes wrong, you can see exactly what happened.",
+				icon: "\u{1F4CB}",
 			},
 			{
-				title: "Signed Threat Updates",
+				title: "Always Up to Date",
 				description:
-					"New CVEs, malicious packages, revoked rules — delivered as signed feeds. Free: weekly. Pro/Max: daily. Your rules stay current without manual work.",
+					"New threats, new safe packages, community decisions — delivered daily as signed updates. Your agent gets smarter without you doing anything.",
 				icon: "\u{1F4E1}",
 			},
 		],
 	},
 	pricing: {
-		title: "Simple, Transparent Pricing",
-		earlyAccessNote:
-			"Pro plan is free during Early Access \u2014 install and get full Pro features today.",
+		title: "100% Free & Open Source",
 		cards: [
 			{
-				name: "Free",
+				name: "ClawGuard",
 				price: "$0",
 				period: "forever",
 				features: [
-					"12 core security rules",
-					"Weekly threat feed (rules + reputation)",
-					"Basic replay (24h)",
-					"Community reputation data (read-only)",
-					"Single agent support",
-				],
-				cta: "Get Started Free",
-				href: "#how-it-works",
-			},
-			{
-				name: "Pro",
-				price: "$12",
-				period: "/month",
-				features: [
-					"All security rules",
-					"Daily threat feed (rules + reputation + CVE)",
-					"Full incident replay",
+					"Cross-agent decision memory (auto-allow across tools)",
+					"Community intelligence (see what others approved)",
+					"All safety rules (core + community)",
+					"Daily signed updates (new threats + community data)",
+					"Full session replay with causal analysis",
 					"Rule Marketplace (install & publish)",
-					"Security Passport + badge",
-					"Skills AV scanning",
+					"Security Passport + GitHub badge",
+					"Team & org management",
+					"Skills security scanning",
 				],
-				cta: "Start Free \u2014 Early Access",
+				cta: "Get Started",
 				href: "#how-it-works",
 				highlighted: true,
-				highlightLabel: "Popular",
-			},
-			{
-				name: "Max",
-				price: "$39",
-				period: "/month",
-				features: [
-					"Everything in Pro",
-					"Team & org management",
-					"Cross-team memory sharing",
-					"Centralized audit dashboard",
-					"Organization-wide passport",
-				],
-				cta: "Coming Soon",
-				href: "#how-it-works",
-				comingSoon: true,
-				comingSoonLabel: "Coming Soon",
+				highlightLabel: "All Features Included",
 			},
 		],
 	},
@@ -129,15 +99,15 @@ export const en: LPContent = {
 			},
 			{
 				step: "2",
-				title: "Choose Your Level",
+				title: "Choose How Quiet",
 				description:
-					"Pick a preset: guardian (strict), balanced (recommended), or expert (minimal interruption). One line in clawguard.yaml.",
+					"Pick a preset: guardian (asks often), balanced (recommended), or expert (almost silent). One line in clawguard.yaml.",
 			},
 			{
 				step: "3",
-				title: "Protected",
+				title: "It Learns",
 				description:
-					"Next time your AI agent runs rm -rf or git push --force, ClawGuard intercepts it, explains the risk, and asks you to confirm or deny. Every decision is logged.",
+					"Use your AI agent normally. ClawGuard learns from every decision you make. Within a day, most confirmations disappear — only new or dangerous operations still ask.",
 			},
 		],
 	},
@@ -176,7 +146,7 @@ export const en: LPContent = {
 			legal: "Legal",
 			devex: "Developers",
 			support: "Support",
-			description: "AI Agent Security Platform",
+			description: "AI Agent Intelligence Layer",
 		},
 		legal: [
 			{
@@ -207,7 +177,6 @@ export const en: LPContent = {
 			},
 		],
 		support: [
-			{ label: "Pricing", href: "#pricing" },
 			{
 				label: "Issues & FAQ",
 				href: "https://github.com/Goki602/ClawGuard/issues",

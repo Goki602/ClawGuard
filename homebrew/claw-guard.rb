@@ -1,5 +1,5 @@
 class ClawGuard < Formula
-  desc "AI agent security companion — defend, audit, update"
+  desc "AI agent memory — fewer prompts, smarter decisions"
   homepage "https://github.com/Goki602/ClawGuard"
   url "https://registry.npmjs.org/@clawguard-sec/cli/-/cli-0.1.0.tgz"
   sha256 "71a408a167d37c6ac8b91e873ffeba5329fdd5532bfd18c998b0ecbff0c5e0bb"
