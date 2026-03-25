@@ -165,9 +165,44 @@ ClawGuard silently catches dangerous operations. You don't need to configure any
     phase: 0
 ```
 
+## Why ClawGuard?
+
+| | Manual hooks | mcp-scan | ClawGuard |
+|---|---|---|---|
+| Cross-agent memory | - | - | **Yes** — approve once, auto-allowed everywhere |
+| Works across Claude Code, Codex, MCP | - | MCP only | **All three** |
+| Community intelligence | - | - | **Yes** — see what other devs decided |
+| Setup | Write your own | Install + scan | `claw-guard init` (one command) |
+| Price | Free (DIY) | Free | **Free (MIT, all features)** |
+
+ClawGuard is not a blocker — it's a convenience layer. It reduces confirm fatigue by remembering your trust decisions and sharing community intelligence. Security is a side effect, not the sales pitch.
+
 ## Pricing
 
 Completely free and open source (MIT). All features available to everyone — no license key, no paywalls.
+
+## Telemetry
+
+ClawGuard collects anonymous, aggregated usage statistics to power community intelligence — showing you what other developers decided for the same operation (e.g., "85% of users allowed this").
+
+### What is sent (every 6 hours)
+
+- Rule IDs and aggregate counts (allowed / denied / total per rule)
+
+### What is NOT sent
+
+- Commands, file paths, or arguments
+- User identity, IP addresses, or session data
+- Project names or repository information
+
+### Disable telemetry
+
+Add to your `clawguard.yaml`:
+
+```yaml
+reputation:
+  opt_in: false
+```
 
 ## Project Structure
 
@@ -179,7 +214,7 @@ packages/
 ├── adapter-claude/ Claude Code PreToolUse hook
 ├── adapter-codex/  Codex approval policy extension
 ├── adapter-mcp/    MCP JSON-RPC proxy
-├── billing/        License manager, feature gate
+├── billing/        Feature configuration (all features unlocked)
 ├── feed/           Signed daily feed client
 ├── enrichment/     npm registry, CVE lookup
 ├── memory/         SQLite decision store
@@ -190,7 +225,7 @@ packages/
 ├── team/           Organization policy & member management
 ├── web-ui/         React dashboard
 ├── lp/             Landing page (EN + JP)
-├── webhook/        Stripe webhook (Cloudflare Worker)
+├── webhook/        Webhook handlers (Cloudflare Worker)
 ├── docker/         3-container reference implementation
 ├── api/            REST API server
 ├── sdk/            Embedded SDK for integrations

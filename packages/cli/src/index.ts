@@ -86,7 +86,7 @@ program
 	.option("--repo <repo>", "Repository identifier")
 	.option("--badge", "Show badge Markdown snippet")
 	.option("--publish", "Publish passport to ClawGuard API")
-	.option("--key <key>", "License key for publishing")
+	.option("--key <key>", "API key for publishing")
 	.action(passportCommand);
 
 program

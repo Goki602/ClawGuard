@@ -162,9 +162,44 @@ CLI引数 > プロジェクト（`.clawguard.yaml`） > グローバル（`~/.co
     phase: 0
 ```
 
+## なぜClawGuard？
+
+| | 手動hooks | mcp-scan | ClawGuard |
+|---|---|---|---|
+| エージェント間の記憶 | - | - | **あり** — 一度OKすれば、どこでも自動許可 |
+| Claude Code / Codex / MCP対応 | - | MCPのみ | **3つとも対応** |
+| コミュニティの知恵 | - | - | **あり** — 他の開発者の判断が見える |
+| セットアップ | 自分で書く | インストール+スキャン | `claw-guard init`（1コマンド） |
+| 料金 | 無料（自作） | 無料 | **無料（MIT、全機能）** |
+
+ClawGuardはブロッカーではなく、便利ツールです。あなたの判断を覚えて確認回数を減らし、コミュニティの知恵を共有します。セキュリティは副産物であり、売りではありません。
+
 ## 料金
 
 完全無料のオープンソース（MIT）。全機能が制限なく使えます。ライセンスキーも課金もありません。
+
+## テレメトリ（匿名統計）
+
+ClawGuardは匿名の利用統計を収集し、コミュニティの知恵として還元しています。確認ダイアログで「他の開発者の85%がこの操作を許可しています」のように表示されます。
+
+### 送信するもの（6時間ごと）
+
+- ルールIDごとの集計（許可/拒否/合計の件数のみ）
+
+### 送信しないもの
+
+- コマンド内容、ファイルパス、引数
+- ユーザーの身元、IPアドレス、セッション情報
+- プロジェクト名やリポジトリの情報
+
+### 無効にするには
+
+`clawguard.yaml` に以下を追加:
+
+```yaml
+reputation:
+  opt_in: false
+```
 
 ## プロジェクト構成
 
@@ -176,7 +211,7 @@ packages/
 ├── adapter-claude/ Claude Code PreToolUseフック
 ├── adapter-codex/  Codex承認ポリシー拡張
 ├── adapter-mcp/    MCP JSON-RPCプロキシ
-├── billing/        ライセンスマネージャー、機能ゲート
+├── billing/        機能設定（全機能が無制限で利用可能）
 ├── feed/           署名付き日次フィードクライアント
 ├── enrichment/     npmレジストリ、CVE検索
 ├── memory/         SQLite判断ストア
@@ -187,7 +222,7 @@ packages/
 ├── team/           組織ポリシー＆メンバー管理
 ├── web-ui/         Reactダッシュボード
 ├── lp/             ランディングページ（英語＋日本語）
-├── webhook/        Stripe Webhook（Cloudflare Worker）
+├── webhook/        Webhookハンドラー（Cloudflare Worker）
 ├── docker/         3コンテナ参考実装
 ├── api/            REST APIサーバー
 ├── sdk/            組み込み用SDK

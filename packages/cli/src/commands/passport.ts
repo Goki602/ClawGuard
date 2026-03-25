@@ -31,7 +31,7 @@ const MSG = {
 		publishing: "パスポートを公開中...",
 		published: "パスポートを公開しました",
 		publishFailed: "公開に失敗しました",
-		noLicenseKey: "ライセンスキーが必要です。--key オプションで指定してください。",
+		noApiKey: "APIキーが必要です。--key オプションで指定してください。",
 	},
 	en: {
 		generating: "Generating security passport...",
@@ -58,7 +58,7 @@ const MSG = {
 		publishing: "Publishing passport...",
 		published: "Passport published",
 		publishFailed: "Failed to publish",
-		noLicenseKey: "License key required. Use --key option.",
+		noApiKey: "API key required. Use --key option.",
 	},
 };
 
@@ -80,7 +80,7 @@ export async function passportCommand(options: {
 			return;
 		}
 		if (!options.key) {
-			console.log(chalk.red(m.noLicenseKey));
+			console.log(chalk.red(m.noApiKey));
 			return;
 		}
 		console.log(m.publishing);
