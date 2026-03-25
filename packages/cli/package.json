@@ -16,6 +16,7 @@
 		"clean": "rm -rf dist rules"
 	},
 	"keywords": ["ai", "security", "claude", "claude-code", "agent", "hooks", "audit", "ai-agent-security", "codex", "mcp", "ai-guardrails", "prompt-injection", "open-source", "free"],
+	"homepage": "https://github.com/Goki602/ClawGuard#readme",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Goki602/ClawGuard.git",

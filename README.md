@@ -1,6 +1,10 @@
 # ClawGuard
 
-> AI Agent Memory — Fewer Prompts, Smarter Decisions
+> AI Agent Memory for Claude Code — Fewer Prompts, Smarter Decisions
+
+Stop confirmation fatigue. ClawGuard hooks into Claude Code's PreToolUse event to remember your trust decisions across sessions and agents.
+
+<!-- keywords: Claude Code hooks, PreToolUse hook, confirmation fatigue, AI agent memory, cross-agent memory, claude code security, ai guardrails -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-380%20passing-brightgreen)]()
@@ -175,7 +179,9 @@ ClawGuard silently catches dangerous operations. You don't need to configure any
 | Setup | Write your own | Install + scan | `claw-guard init` (one command) |
 | Price | Free (DIY) | Free | **Free (MIT, all features)** |
 
-ClawGuard is not a blocker — it's a convenience layer. It reduces confirm fatigue by remembering your trust decisions and sharing community intelligence. Security is a side effect, not the sales pitch.
+**If you're using Claude Code and tired of approving the same operations repeatedly**, ClawGuard installs as a PreToolUse hook and auto-allows operations you've already approved.
+
+ClawGuard is not a blocker — it's a convenience layer. It reduces confirmation fatigue by remembering your trust decisions and sharing community intelligence. Security is a side effect, not the sales pitch.
 
 ## Pricing
 
