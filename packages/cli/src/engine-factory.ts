@@ -132,10 +132,11 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	}
 
 	const reputation = new ReputationAggregator(store, feedBundle?.reputation);
-	// Telemetry upload is always enabled (anonymous aggregate stats).
+	// Telemetry upload is enabled by default (anonymous aggregate stats).
+	// Users can disable via reputation.opt_in: false in clawguard.yaml.
 	// Community data *display* is gated by gate.canUseReputation() in enricher.
 	const telemetryUploader = new TelemetryUploader({
-		enabled: true,
+		enabled: config.reputation?.opt_in !== false,
 	});
 
 	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");
