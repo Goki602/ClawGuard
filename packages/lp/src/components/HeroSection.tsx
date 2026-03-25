@@ -54,20 +54,12 @@ export function HeroSection({ content }: Props) {
 						<p className="text-accent-500 mt-1">{content.terminal.ready}</p>
 						<p className="text-gray-600 mt-4">{content.terminal.agentSession}</p>
 						<p className="text-gray-500 mt-2">{content.terminal.command}</p>
-						<p className="text-red-400 mt-1">
-							<span className="text-red-500 font-bold">{"⚠"} CONFIRM</span>{" "}
-							<span className="text-gray-300">{content.terminal.confirmLabel}</span>
+						<p className="text-green-400 mt-1">
+							<span className="text-green-500 font-bold">
+								{"✓"} {content.terminal.confirmLabel}
+							</span>{" "}
 						</p>
 						<p className="text-gray-500 text-xs mt-1">{content.terminal.confirmDetail}</p>
-						<p className="text-gray-400 text-xs mt-1 flex gap-1">
-							<span>[</span>
-							<span className="text-accent-500">allow</span>
-							<span>] [</span>
-							<span className="text-red-400">deny</span>
-							<span>] [</span>
-							<span className="text-claw-500">explain</span>
-							<span>]</span>
-						</p>
 					</div>
 				</div>
 			</div>

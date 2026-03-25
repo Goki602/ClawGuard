@@ -15,14 +15,14 @@
     alternatives:
       - "`pip show <pkg>` で先にパッケージ情報を確認する"
       - "PyPI でパッケージの信頼性を確認する"
-    simple:
-      doing: "新しいPythonパッケージをインストールしようとしています"
-      safe_points: ["有名なパッケージなら通常は安全です"]
-      warning_points: ["偽パッケージに注意が必要です"]
-      one_check: "パッケージ名は正しい？"
   meta:
     author: "clawguard"
     pack: "core"
     version: "1.0.0"
     tags: ["package", "supply-chain"]
     phase: 1
+    marketplace:
+      status: "active"
+      downloads: 0
+      rating: 0.0
+      override_rate: 0.0

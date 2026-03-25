@@ -1,81 +1,62 @@
 import type { LicenseInfo } from "@clawguard/core";
 
+// All features unlocked — ClawGuard is 100% free
 export class FeatureGate {
-	private license: LicenseInfo;
-
-	constructor(license: LicenseInfo) {
-		this.license = license;
-	}
+	// biome-ignore lint/complexity/noUselessConstructor: maintains API contract for future license gating
+	constructor(_license: LicenseInfo) {}
 
 	canLoadPhase2Rules(): boolean {
-		return this.license.plan === "pro" || this.license.plan === "max";
+		return true;
 	}
-
 	canUseFeed(): boolean {
 		return true;
 	}
-
 	canUseDailyFeed(): boolean {
-		return this.license.features.feed_interval === "daily";
+		return true;
 	}
-
 	canUseReputation(): boolean {
-		return this.license.features.reputation_network;
+		return true;
 	}
-
 	canUseMarketplace(): boolean {
-		return this.license.features.marketplace;
+		return true;
 	}
-
 	getMaxRules(): number {
-		return this.license.features.max_rules;
+		return Number.MAX_SAFE_INTEGER;
 	}
-
 	getPlan(): string {
-		return this.license.plan;
+		return "free";
 	}
-
 	canUsePassport(): boolean {
-		return this.license.plan === "pro" || this.license.plan === "max";
+		return true;
 	}
-
 	canUseOrgPassport(): boolean {
-		return this.license.plan === "max";
+		return true;
 	}
-
 	canUseFullReplay(): boolean {
-		return this.license.plan === "pro" || this.license.plan === "max";
+		return true;
 	}
-
 	canUseCausalChain(): boolean {
-		return this.license.plan === "pro" || this.license.plan === "max";
+		return true;
 	}
-
 	canExportReplay(): boolean {
-		return this.license.plan === "pro" || this.license.plan === "max";
+		return true;
 	}
-
 	getReplayRetentionDays(): number {
-		return this.license.plan === "free" ? 1 : -1;
+		return -1;
 	}
-
 	canUseSkillsAV(): boolean {
-		return this.license.features.team || this.license.plan === "pro" || this.license.plan === "max";
+		return true;
 	}
-
 	canUseTeam(): boolean {
-		return this.license.features.team;
+		return true;
 	}
-
 	canUseTeamAdmin(): boolean {
-		return this.license.features.team_admin;
+		return true;
 	}
-
 	canUseCentralizedAudit(): boolean {
-		return this.license.plan === "max";
+		return true;
 	}
-
 	canUseCrossTeamMemory(): boolean {
-		return this.license.plan === "max";
+		return true;
 	}
 }

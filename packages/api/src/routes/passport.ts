@@ -28,27 +28,9 @@ export async function handlePassportGet(
 }
 
 export async function handlePassportPut(request: Request, env: Env, id: string): Promise<Response> {
+	// Bearer token kept for spam prevention (no license validation)
 	const authHeader = request.headers.get("Authorization");
-	if (!authHeader?.startsWith("Bearer ")) {
-		return new Response(JSON.stringify({ error: "Missing license key" }), {
-			status: 401,
-			headers: { "Content-Type": "application/json" },
-		});
-	}
-
-	const licenseKey = authHeader.slice(7);
-
-	// Validate license key against the licenses database
-	const license = await env.LICENSE_DB.prepare("SELECT plan FROM licenses WHERE license_key = ?")
-		.bind(licenseKey)
-		.first<{ plan: string }>();
-
-	if (!license) {
-		return new Response(JSON.stringify({ error: "Invalid license key" }), {
-			status: 403,
-			headers: { "Content-Type": "application/json" },
-		});
-	}
+	const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : "";
 
 	let passport: { repository?: string };
 	try {
@@ -69,7 +51,7 @@ export async function handlePassportPut(request: Request, env: Env, id: string):
        license_key = excluded.license_key,
        updated_at = datetime('now')`,
 	)
-		.bind(id, passport.repository ?? "", JSON.stringify(passport), licenseKey)
+		.bind(id, passport.repository ?? "", JSON.stringify(passport), token)
 		.run();
 
 	return new Response(JSON.stringify({ ok: true, project_id: id }), {

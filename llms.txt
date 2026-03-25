@@ -1,0 +1,54 @@
+# ClawGuard
+
+> AI Agent Memory — Fewer Prompts, Smarter Decisions
+
+## What is ClawGuard?
+
+ClawGuard is a free, open-source (MIT) cross-platform intelligence layer for AI agents.
+It remembers your trust decisions and reduces confirmation fatigue across Claude Code, Codex, and MCP-compatible agents.
+
+When you approve an operation like `npm install express`, ClawGuard stores that decision.
+Next time the same pattern appears — in this session, another agent, or a different tool — it's auto-allowed.
+Dangerous operations (rm -rf, git push --force, curl|bash) are still caught automatically.
+
+## Key Features
+
+- Cross-agent decision memory (SQLite) — approve once, auto-allowed everywhere
+- 12 built-in safety rules — catches destructive operations without configuration
+- Community intelligence — see what other developers decided for the same operation
+- 4 presets (observer/guardian/balanced/expert) — choose your comfort level
+- Works with Claude Code (PreToolUse hooks), Codex, and MCP
+- Security Passport — compliance proof with GitHub badges
+- Incident replay — trace agent decision chains
+- Rule marketplace — share and install community rules
+- Completely free — MIT license, all features, no paywalls
+
+## Installation
+
+```
+npm install -g @clawguard-sec/cli
+claw-guard init
+```
+
+Also available via Homebrew: `brew tap Goki602/claw-guard && brew install claw-guard`
+
+## Comparison
+
+| Feature | Manual hooks | mcp-scan | ClawGuard |
+|---|---|---|---|
+| Cross-agent memory | No | No | Yes |
+| Claude Code + Codex + MCP | No | MCP only | All three |
+| Community intelligence | No | No | Yes |
+| Setup | Write your own | Install + scan | One command |
+| Price | Free (DIY) | Free | Free (MIT) |
+
+## Links
+
+- GitHub: https://github.com/Goki602/ClawGuard
+- npm: https://www.npmjs.com/package/@clawguard-sec/cli
+
+## Keywords
+
+AI agent security, Claude Code hooks, Claude Code security, Codex security, MCP security,
+AI guardrails, prompt injection prevention, AI agent monitoring, confirmation fatigue,
+cross-agent memory, security policy engine, open source security tool

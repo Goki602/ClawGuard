@@ -24,7 +24,6 @@ const MSG = {
 	ja: {
 		engineOk: (ms: number) => `Policy Engine: OK (${ms}ms)`,
 		rulesLoaded: (n: number) => `ルール: ${n} 件`,
-		plan: (name: string) => `プラン: ${name}`,
 		preset: (name: string) => `プリセット: ${name}`,
 		auditLog: (dir: string) => `監査ログ: ${dir}`,
 		testTitle: "テスト判定:",
@@ -32,7 +31,6 @@ const MSG = {
 	en: {
 		engineOk: (ms: number) => `Policy Engine: OK (${ms}ms)`,
 		rulesLoaded: (n: number) => `Rules: ${n} loaded`,
-		plan: (name: string) => `Plan: ${name}`,
 		preset: (name: string) => `Preset: ${name}`,
 		auditLog: (dir: string) => `Audit log: ${dir}`,
 		testTitle: "Test results:",
@@ -72,7 +70,6 @@ export async function testCommand(): Promise<void> {
 
 	console.log(`${chalk.green("✓")} ${m.engineOk(engineTime)}`);
 	console.log(`${chalk.green("✓")} ${m.rulesLoaded(rules.length)}`);
-	console.log(`${chalk.green("✓")} ${m.plan(license.plan.toUpperCase())}`);
 	console.log(`${chalk.green("✓")} ${m.preset(config.profile)}`);
 	console.log(`${chalk.green("✓")} ${m.auditLog(getLogDir())}`);
 

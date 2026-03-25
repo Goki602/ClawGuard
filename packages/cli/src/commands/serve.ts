@@ -15,6 +15,7 @@ import { createEngineContext, evaluateHookRequestAsync } from "../engine-factory
 import { detectLocale } from "../locale.js";
 
 const DEFAULT_PORT = 19280;
+const MAX_BODY_SIZE = 1024 * 1024; // 1MB
 
 const MSG = {
 	ja: {
@@ -23,7 +24,6 @@ const MSG = {
 		preset: (name: string) => `プリセット: ${name}`,
 		port: (p: number) => `ポート: ${p}`,
 		memory: (on: boolean) => `記憶: ${on ? "有効" : "無効"}`,
-		plan: (name: string) => `プラン: ${name}`,
 		feed: (on: boolean) => `フィード: ${on ? "有効" : "無効"}`,
 		enrichment: "エンリッチメント: 有効",
 		listening: (url: string) => `リッスン中: ${url}`,
@@ -37,7 +37,6 @@ const MSG = {
 		preset: (name: string) => `Preset: ${name}`,
 		port: (p: number) => `Port: ${p}`,
 		memory: (on: boolean) => `Memory: ${on ? "enabled" : "disabled"}`,
-		plan: (name: string) => `Plan: ${name}`,
 		feed: (on: boolean) => `Feed: ${on ? "enabled" : "disabled"}`,
 		enrichment: "Enrichment: enabled",
 		listening: (url: string) => `Listening on ${url}`,
@@ -47,16 +46,24 @@ const MSG = {
 	},
 };
 
-function corsHeaders(): Record<string, string> {
+function corsHeaders(req?: IncomingMessage): Record<string, string> {
+	const origin = req?.headers.origin;
+	const allowed =
+		!origin || origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1");
 	return {
-		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Origin": allowed ? (origin ?? "http://localhost") : "",
 		"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 		"Access-Control-Allow-Headers": "Content-Type",
 	};
 }
 
-function jsonResponse(res: ServerResponse, status: number, data: unknown): void {
-	res.writeHead(status, { "Content-Type": "application/json", ...corsHeaders() });
+function jsonResponse(
+	res: ServerResponse,
+	status: number,
+	data: unknown,
+	req?: IncomingMessage,
+): void {
+	res.writeHead(status, { "Content-Type": "application/json", ...corsHeaders(req) });
 	res.end(JSON.stringify(data));
 }
 
@@ -83,19 +90,16 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	ctx.reportGenerator = reportGenerator;
 	ctx.passportGenerator = passportGenerator;
 
-	// Team stores (Max tier only, always initialized for API but gated)
+	// Team stores
 	let teamMemberStore: MemberStore | undefined;
 	let teamAuditStore: TeamAuditStore | undefined;
 	let teamMemoryStore: TeamMemoryStore | undefined;
-	const isMaxTier = ctx.gate?.canUseTeamAdmin();
-	if (isMaxTier) {
-		try {
-			teamMemberStore = new MemberStore();
-			teamAuditStore = new TeamAuditStore();
-			teamMemoryStore = new TeamMemoryStore();
-		} catch {
-			// Team DB init failure is non-fatal
-		}
+	try {
+		teamMemberStore = new MemberStore();
+		teamAuditStore = new TeamAuditStore();
+		teamMemoryStore = new TeamMemoryStore();
+	} catch {
+		// Team DB init failure is non-fatal
 	}
 
 	// Telemetry auto-submission (every 6 hours)
@@ -120,7 +124,6 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	console.log(`  ${m.preset(ctx.engine.getPreset().name)}`);
 	console.log(`  ${m.port(port)}`);
 	console.log(`  ${m.memory(Boolean(ctx.store))}`);
-	console.log(`  ${m.plan(ctx.license?.plan ?? "free")}`);
 	console.log(`  ${m.feed(Boolean(ctx.feedClient))}`);
 	console.log(`  ${m.enrichment}`);
 	console.log(`  Hook:      POST http://localhost:${port}/hook`);
@@ -128,14 +131,16 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 	console.log("");
 
 	const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+		const json = (status: number, data: unknown) => jsonResponse(res, status, data, req);
+
 		if (req.method === "OPTIONS") {
-			res.writeHead(204, corsHeaders());
+			res.writeHead(204, corsHeaders(req));
 			res.end();
 			return;
 		}
 
 		if (req.method === "GET" && req.url === "/health") {
-			jsonResponse(res, 200, {
+			json(200, {
 				status: "ok",
 				rules: ctx.rulesCount,
 				memory: Boolean(ctx.store),
@@ -146,7 +151,7 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 
 		if (req.method === "GET" && req.url === "/api/logs/today") {
 			const entries = reader.readToday();
-			jsonResponse(res, 200, { entries });
+			json(200, { entries });
 			return;
 		}
 
@@ -158,13 +163,13 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 				risk: r.risk,
 				title: r.explain?.title ?? "",
 			}));
-			jsonResponse(res, 200, { rules });
+			json(200, { rules });
 			return;
 		}
 
 		if (req.method === "GET" && req.url === "/api/stats") {
 			if (!ctx.store) {
-				jsonResponse(res, 200, { stats: [] });
+				json(200, { stats: [] });
 				return;
 			}
 			const ruleIds = ctx.engine.getRules().map((r) => r.id);
@@ -173,7 +178,7 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 				rule_id: id,
 				...store?.getStats(id),
 			}));
-			jsonResponse(res, 200, { stats });
+			json(200, { stats });
 			return;
 		}
 
@@ -181,9 +186,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const ruleId = decodeURIComponent(req.url.slice("/api/reputation/".length));
 			if (ctx.reputation) {
 				const rep = ctx.reputation.getReputation(ruleId);
-				jsonResponse(res, 200, rep);
+				json(200, rep);
 			} else {
-				jsonResponse(res, 200, {
+				json(200, {
 					rule_id: ruleId,
 					community_total: 0,
 					community_allowed: 0,
@@ -196,16 +201,16 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 		}
 
 		if (req.method === "GET" && req.url === "/api/license") {
-			jsonResponse(res, 200, { license: ctx.license ?? { plan: "free" } });
+			json(200, { license: ctx.license ?? { plan: "free" } });
 			return;
 		}
 
 		if (req.method === "GET" && req.url === "/api/feed/status") {
 			if (ctx.feedClient) {
 				const status = ctx.feedClient.getStatus();
-				jsonResponse(res, 200, status);
+				json(200, status);
 			} else {
-				jsonResponse(res, 200, { status: "none" });
+				json(200, { status: "none" });
 			}
 			return;
 		}
@@ -216,16 +221,16 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 					.fetchLatest()
 					.then((bundle) => {
 						if (bundle) {
-							jsonResponse(res, 200, { success: true, version: bundle.manifest.version });
+							json(200, { success: true, version: bundle.manifest.version });
 						} else {
-							jsonResponse(res, 200, { success: false, error: "Feed fetch failed" });
+							json(200, { success: false, error: "Feed fetch failed" });
 						}
 					})
 					.catch((err) => {
-						jsonResponse(res, 500, { success: false, error: String(err) });
+						json(500, { success: false, error: String(err) });
 					});
 			} else {
-				jsonResponse(res, 200, { success: false, error: "Feed not configured" });
+				json(200, { success: false, error: "Feed not configured" });
 			}
 			return;
 		}
@@ -233,19 +238,26 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 		if (req.method === "GET" && req.url === "/api/passport") {
 			const passport = passportGenerator.load();
 			if (passport) {
-				jsonResponse(res, 200, passport);
+				json(200, passport);
 			} else {
-				jsonResponse(res, 200, { error: "No passport found" });
+				json(200, { error: "No passport found" });
 			}
 			return;
 		}
 
 		if (req.method === "POST" && req.url === "/api/passport/generate") {
 			let body = "";
+			let aborted = false;
 			req.on("data", (chunk: Buffer) => {
 				body += chunk.toString();
+				if (body.length > MAX_BODY_SIZE) {
+					aborted = true;
+					json(413, { error: "Request body too large" });
+					req.destroy();
+				}
 			});
 			req.on("end", () => {
+				if (aborted) return;
 				try {
 					const opts = JSON.parse(body || "{}");
 					const passport = passportGenerator.generate({
@@ -253,9 +265,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 						feedVersion: ctx.feedClient?.getStatus()?.version ?? undefined,
 					});
 					passportGenerator.save(passport);
-					jsonResponse(res, 200, passport);
+					json(200, passport);
 				} catch (err) {
-					jsonResponse(res, 500, { error: String(err) });
+					json(500, { error: String(err) });
 				}
 			});
 			return;
@@ -265,10 +277,10 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const passport = passportGenerator.load();
 			if (passport) {
 				const svg = badgeGenerator.generateSvg(passport);
-				res.writeHead(200, { "Content-Type": "image/svg+xml", ...corsHeaders() });
+				res.writeHead(200, { "Content-Type": "image/svg+xml", ...corsHeaders(req) });
 				res.end(svg);
 			} else {
-				jsonResponse(res, 404, { error: "No passport found" });
+				json(404, { error: "No passport found" });
 			}
 			return;
 		}
@@ -277,7 +289,7 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const urlObj = new URL(req.url, "http://localhost");
 			const date = urlObj.searchParams.get("date") ?? new Date().toISOString().split("T")[0];
 			const sessions = sessionBuilder.listSessions(date);
-			jsonResponse(res, 200, { sessions });
+			json(200, { sessions });
 			return;
 		}
 
@@ -286,9 +298,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const timeline = sessionBuilder.buildForSession(id);
 			if (timeline) {
 				timeline.causal_chains = causalAnalyzer.analyze(timeline.events);
-				jsonResponse(res, 200, timeline);
+				json(200, timeline);
 			} else {
-				jsonResponse(res, 404, { error: "Session not found" });
+				json(404, { error: "Session not found" });
 			}
 			return;
 		}
@@ -297,9 +309,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const id = decodeURIComponent(req.url.split("/")[4]);
 			const timeline = sessionBuilder.buildForSession(id);
 			if (timeline) {
-				jsonResponse(res, 200, timeline);
+				json(200, timeline);
 			} else {
-				jsonResponse(res, 404, { error: "Session not found" });
+				json(404, { error: "Session not found" });
 			}
 			return;
 		}
@@ -308,7 +320,7 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const urlObj = new URL(req.url, "http://localhost");
 			const offset = Number.parseInt(urlObj.searchParams.get("offset") ?? "0", 10);
 			const report = reportGenerator.generateWeekly(Number.isNaN(offset) ? 0 : offset);
-			jsonResponse(res, 200, report);
+			json(200, report);
 			return;
 		}
 
@@ -318,9 +330,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 				const skillsDir = resolve(homedir(), ".claude", "skills");
 				const scanner = new SkillsScanner(skillsDir);
 				const results = scanner.scanAllSkills(skillsDir);
-				jsonResponse(res, 200, { results });
+				json(200, { results });
 			} catch {
-				jsonResponse(res, 200, { results: [] });
+				json(200, { results: [] });
 			}
 			return;
 		}
@@ -329,9 +341,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			try {
 				const manager = new ManifestManager(homedir());
 				const manifest = manager.load();
-				jsonResponse(res, 200, { manifest });
+				json(200, { manifest });
 			} catch {
-				jsonResponse(res, 200, { manifest: null });
+				json(200, { manifest: null });
 			}
 			return;
 		}
@@ -345,9 +357,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 					.map((d) => resolve(skillsDir, d.name));
 				const manifest = manager.buildManifest(dirs);
 				manager.save(manifest);
-				jsonResponse(res, 200, { success: true, manifest });
+				json(200, { success: true, manifest });
 			} catch (err) {
-				jsonResponse(res, 500, { success: false, error: String(err) });
+				json(500, { success: false, error: String(err) });
 			}
 			return;
 		}
@@ -356,9 +368,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 		if (req.method === "GET" && req.url === "/api/monitor/alerts") {
 			if (fpMonitor) {
 				const alerts = fpMonitor.analyze();
-				jsonResponse(res, 200, { alerts });
+				json(200, { alerts });
 			} else {
-				jsonResponse(res, 200, { alerts: [] });
+				json(200, { alerts: [] });
 			}
 			return;
 		}
@@ -366,9 +378,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 		if (req.method === "GET" && req.url === "/api/monitor/stats") {
 			if (fpMonitor) {
 				const stats = fpMonitor.getDetailedStats();
-				jsonResponse(res, 200, { stats });
+				json(200, { stats });
 			} else {
-				jsonResponse(res, 200, { stats: [] });
+				json(200, { stats: [] });
 			}
 			return;
 		}
@@ -378,7 +390,7 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 			const urlObj = new URL(req.url, "http://localhost");
 			const offset = Number.parseInt(urlObj.searchParams.get("offset") ?? "0", 10);
 			const publicReport = reportGenerator.generatePublic(Number.isNaN(offset) ? 0 : offset);
-			jsonResponse(res, 200, publicReport);
+			json(200, publicReport);
 			return;
 		}
 
@@ -388,9 +400,9 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 				const marketplace = new MarketplaceClient();
 				const curator = new RuleCurator(marketplace, ctx.store);
 				const result = curator.evaluate();
-				jsonResponse(res, 200, result);
+				json(200, result);
 			} else {
-				jsonResponse(res, 200, {
+				json(200, {
 					evaluated_at: new Date().toISOString(),
 					tasks: [],
 					promoted: [],
@@ -407,13 +419,13 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 				const curator = new RuleCurator(marketplace, ctx.store);
 				const result = curator.evaluate();
 				const applied = curator.applyPromotions(result);
-				jsonResponse(res, 200, {
+				json(200, {
 					applied,
 					promoted: result.promoted,
 					deprecated: result.deprecated,
 				});
 			} else {
-				jsonResponse(res, 200, { applied: 0, promoted: [], deprecated: [] });
+				json(200, { applied: 0, promoted: [], deprecated: [] });
 			}
 			return;
 		}
@@ -421,11 +433,11 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 		// --- Team endpoints ---
 		if (req.method === "GET" && req.url === "/api/team/status") {
 			if (!teamMemberStore) {
-				jsonResponse(res, 200, { connected: false });
+				json(200, { connected: false });
 				return;
 			}
 			const members = teamMemberStore.listMembers();
-			jsonResponse(res, 200, {
+			json(200, {
 				connected: true,
 				member_count: members.length,
 				policy: { profile: ctx.engine.getPreset().name, enforce: true },
@@ -435,59 +447,66 @@ export async function serveCommand(options: { port?: string; host?: string }): P
 
 		if (req.method === "GET" && req.url === "/api/team/members") {
 			if (!teamMemberStore) {
-				jsonResponse(res, 200, { members: [] });
+				json(200, { members: [] });
 				return;
 			}
 			const members = teamMemberStore.listMembers();
-			jsonResponse(res, 200, { members });
+			json(200, { members });
 			return;
 		}
 
 		if (req.method === "GET" && req.url === "/api/team/memory/stats") {
 			if (!teamMemoryStore) {
-				jsonResponse(res, 200, { stats: [] });
+				json(200, { stats: [] });
 				return;
 			}
 			const stats = teamMemoryStore.getTeamStats();
-			jsonResponse(res, 200, { stats });
+			json(200, { stats });
 			return;
 		}
 
 		if (req.method === "GET" && req.url?.startsWith("/api/team/audit/summary")) {
 			if (!teamAuditStore) {
-				jsonResponse(res, 200, { total: 0, by_rule: {}, by_member: {}, by_action: {} });
+				json(200, { total: 0, by_rule: {}, by_member: {}, by_action: {} });
 				return;
 			}
 			const urlObj = new URL(req.url, "http://localhost");
 			const since = urlObj.searchParams.get("since") ?? undefined;
 			const summary = teamAuditStore.getSummary(since);
-			jsonResponse(res, 200, summary);
+			json(200, summary);
 			return;
 		}
 
 		if (req.method === "POST" && req.url === "/hook") {
 			let body = "";
+			let aborted = false;
 			req.on("data", (chunk: Buffer) => {
 				body += chunk.toString();
+				if (body.length > MAX_BODY_SIZE) {
+					aborted = true;
+					json(413, { error: "Request body too large" });
+					req.destroy();
+				}
 			});
 			req.on("end", () => {
+				if (aborted) return;
 				evaluateHookRequestAsync(body, ctx)
 					.then(({ output, skipped }) => {
 						if (skipped || !output) {
-							jsonResponse(res, 200, {});
+							json(200, {});
 						} else {
-							jsonResponse(res, 200, output);
+							json(200, output);
 						}
 					})
 					.catch((err) => {
 						console.error("Evaluation error:", err);
-						jsonResponse(res, 200, {});
+						json(200, {});
 					});
 			});
 			return;
 		}
 
-		jsonResponse(res, 404, { error: "Not found" });
+		json(404, { error: "Not found" });
 	});
 
 	server.listen(port, host, () => {

@@ -41,29 +41,39 @@ describe("LicenseManager", () => {
 		rmSync(tmpDir, { recursive: true, force: true });
 	});
 
-	it("returns free license when no key exists", () => {
+	it("returns free license with all features unlocked when no key exists", () => {
 		const license = manager.getCurrentLicense();
 		expect(license.plan).toBe("free");
-		expect(license.features.max_rules).toBe(12);
-		expect(license.features.reputation_network).toBe(false);
+		expect(license.features.max_rules).toBe(Number.MAX_SAFE_INTEGER);
+		expect(license.features.feed_interval).toBe("daily");
+		expect(license.features.reputation_network).toBe(true);
+		expect(license.features.marketplace).toBe(true);
+		expect(license.features.team).toBe(true);
+		expect(license.features.team_admin).toBe(true);
 	});
 
-	it("validates and saves pro key", () => {
+	it("validates and saves pro key with all features unlocked", () => {
 		const key = "cg_pro_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4";
 		const license = manager.saveLicense(key);
 		expect(license.plan).toBe("pro");
 		expect(license.key).toBe(key);
+		expect(license.features.max_rules).toBe(Number.MAX_SAFE_INTEGER);
 		expect(license.features.reputation_network).toBe(true);
 		expect(license.features.marketplace).toBe(true);
 		expect(license.features.feed_interval).toBe("daily");
+		expect(license.features.team).toBe(true);
+		expect(license.features.team_admin).toBe(true);
 	});
 
-	it("reads saved license", () => {
+	it("reads saved license with all features unlocked", () => {
 		const key = "cg_max_00000000000000000000000000000000";
 		manager.saveLicense(key);
 		const license = manager.getCurrentLicense();
 		expect(license.plan).toBe("max");
 		expect(license.features.max_rules).toBe(Number.MAX_SAFE_INTEGER);
+		expect(license.features.reputation_network).toBe(true);
+		expect(license.features.marketplace).toBe(true);
+		expect(license.features.team).toBe(true);
 	});
 
 	it("returns free for invalid saved key", () => {

@@ -48,17 +48,19 @@ describe("shouldIntervene", () => {
 });
 
 describe("buildHookOutput", () => {
-	it("returns null for allow", () => {
+	it("returns explicit allow for allow action", () => {
 		const decision: PolicyDecision = {
 			action: "allow",
 			risk: "low",
 			rule_id: "NO_MATCH",
 			feed_version: "0.1.0",
 		};
-		expect(buildHookOutput(decision)).toBeNull();
+		const output = buildHookOutput(decision);
+		expect(output).not.toBeNull();
+		expect(output?.hookSpecificOutput.permissionDecision).toBe("allow");
 	});
 
-	it("returns null for log", () => {
+	it("returns null for log (observer mode)", () => {
 		const decision: PolicyDecision = {
 			action: "log",
 			risk: "high",
@@ -81,7 +83,7 @@ describe("buildHookOutput", () => {
 				check: ["パスは正しい？"],
 			},
 		};
-		const output = buildHookOutput(decision, "ja", false);
+		const output = buildHookOutput(decision, "ja");
 		expect(output).not.toBeNull();
 		expect(output?.hookSpecificOutput.permissionDecision).toBe("ask");
 		expect(output?.hookSpecificOutput.permissionDecisionReason).toContain("大量削除");
@@ -103,65 +105,6 @@ describe("buildHookOutput", () => {
 		const output = buildHookOutput(decision);
 		expect(output).not.toBeNull();
 		expect(output?.hookSpecificOutput.permissionDecision).toBe("deny");
-	});
-
-	it("returns deny for high-risk confirm when vsCodeCompat is true", () => {
-		const decision: PolicyDecision = {
-			action: "confirm",
-			risk: "high",
-			rule_id: "BASH.RM_RISK",
-			feed_version: "0.1.0",
-			explain: {
-				title: "大量削除の可能性",
-				what: "ファイルをまとめて削除",
-				why: ["元に戻せません"],
-				check: ["パスは正しい？"],
-			},
-		};
-		const output = buildHookOutput(decision, "ja", true);
-		expect(output).not.toBeNull();
-		expect(output?.hookSpecificOutput.permissionDecision).toBe("deny");
-		expect(output?.hookSpecificOutput.permissionDecisionReason).toContain("大量削除");
-		expect(output?.hookSpecificOutput.permissionDecisionReason).toContain("ブロックされました");
-		expect(output?.hookSpecificOutput.permissionDecisionReason).toContain(
-			"claw-guard init --profile expert",
-		);
-	});
-
-	it("returns ask for medium-risk confirm when vsCodeCompat is true", () => {
-		const decision: PolicyDecision = {
-			action: "confirm",
-			risk: "medium",
-			rule_id: "BASH.NPM_INSTALL",
-			feed_version: "0.1.0",
-			explain: {
-				title: "パッケージ追加",
-				what: "パッケージをインストール",
-				why: ["不明なコードが実行される可能性"],
-				check: ["信頼できるパッケージ？"],
-			},
-		};
-		const output = buildHookOutput(decision, "ja", true);
-		expect(output).not.toBeNull();
-		expect(output?.hookSpecificOutput.permissionDecision).toBe("ask");
-	});
-
-	it("returns ask for high-risk confirm when vsCodeCompat is false", () => {
-		const decision: PolicyDecision = {
-			action: "confirm",
-			risk: "high",
-			rule_id: "BASH.RM_RISK",
-			feed_version: "0.1.0",
-			explain: {
-				title: "大量削除の可能性",
-				what: "ファイルをまとめて削除",
-				why: ["元に戻せません"],
-				check: ["パスは正しい？"],
-			},
-		};
-		const output = buildHookOutput(decision, "ja", false);
-		expect(output).not.toBeNull();
-		expect(output?.hookSpecificOutput.permissionDecision).toBe("ask");
 	});
 
 	it("output has correct hookEventName", () => {

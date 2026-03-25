@@ -28,6 +28,11 @@ import type { PassportGenerator } from "@clawguard/passport";
 import type { ReportGenerator, SessionBuilder } from "@clawguard/replay";
 import { ReputationAggregator, TelemetryUploader } from "@clawguard/reputation";
 
+const RETRY_HINT = {
+	ja: "\n\n🔄 上記のリスクをユーザーに説明し、実行してよいか確認してください。許可された場合のみ、コマンドを変更せずに再実行してください。",
+	en: "\n\n🔄 Explain the above risks to the user and ask for permission. Only retry the command without modification if the user approves.",
+} as const;
+
 export function findRulesDir(): string {
 	const coreBundled = getCoreRulesDir();
 	const repoRoot = resolve(process.cwd(), "rules/core");
@@ -80,7 +85,6 @@ export interface EngineContext {
 	teamClient?: unknown;
 	skillsScanner?: unknown;
 	teamMemoryStore?: unknown;
-	vsCodeCompat?: boolean;
 }
 
 export function createEngineContext(overrideLang?: Lang): EngineContext {
@@ -95,15 +99,13 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 	const license = licenseManager.getCurrentLicense();
 	const gate = new FeatureGate(license);
 
-	// Core rules (always loaded)
+	// Core rules
 	let rules = loadRulesFromDir(findRulesDir());
 
-	// Phase 2 rules (pro/max only)
-	if (gate.canLoadPhase2Rules()) {
-		const phase2Dir = findPhase2RulesDir();
-		if (phase2Dir) {
-			rules = [...rules, ...loadRulesFromDir(phase2Dir)];
-		}
+	// Phase 2 rules
+	const phase2Dir = findPhase2RulesDir();
+	if (phase2Dir) {
+		rules = [...rules, ...loadRulesFromDir(phase2Dir)];
 	}
 
 	// Feed rules (overlay)
@@ -116,30 +118,28 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 		rules = mergeRules(rules, feedCompiled);
 	}
 
-	// Marketplace packs (pro/max only)
-	if (gate.canUseMarketplace()) {
-		const marketplace = new MarketplaceClient();
-		rules = [...rules, ...marketplace.loadInstalledRules()];
-	}
-
-	// Free plan: only phase 0 rules
-	if (!gate.canLoadPhase2Rules()) {
-		rules = rules.filter((r) => (r.meta?.phase ?? 0) === 0);
-	}
+	// Marketplace packs
+	const marketplace = new MarketplaceClient();
+	rules = [...rules, ...marketplace.loadInstalledRules()];
 
 	const engine = new PolicyEngine(rules, preset, feedVersion, config.project_overrides);
 	const writer = new AuditWriter();
 	const store = new DecisionStore();
+	try {
+		store.cleanExpiredSessions(24);
+	} catch {
+		/* non-fatal */
+	}
 
 	const reputation = new ReputationAggregator(store, feedBundle?.reputation);
-	// Telemetry upload is always enabled (anonymous aggregate stats).
+	// Telemetry upload is enabled by default (anonymous aggregate stats).
+	// Users can disable via reputation.opt_in: false in clawguard.yaml.
 	// Community data *display* is gated by gate.canUseReputation() in enricher.
 	const telemetryUploader = new TelemetryUploader({
-		enabled: true,
+		enabled: config.reputation?.opt_in !== false,
 	});
 
 	const lang: Lang = overrideLang ?? (config.lang === "en" ? "en" : "ja");
-	const vsCodeCompat = config.vscode_compat;
 	return {
 		engine,
 		writer,
@@ -151,7 +151,6 @@ export function createEngineContext(overrideLang?: Lang): EngineContext {
 		license,
 		gate,
 		feedClient,
-		vsCodeCompat,
 	};
 }
 
@@ -170,20 +169,61 @@ export function evaluateHookRequest(rawInput: string, ctx: EngineContext): EvalR
 	const request = mapToToolRequest(hookInput);
 	const decision = ctx.engine.evaluate(request);
 
+	const contentHash = DecisionStore.hashContent(request.content);
+	let autoAllowReason: string | undefined;
+
+	// Auto-allow: session allowlist (same session, same content, same rule)
+	if (decision.action === "confirm" && ctx.store) {
+		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
+			decision.action = "allow";
+			autoAllowReason = "session";
+		}
+	}
+
+	// Auto-allow: cross-session historical memory (confirmed 2+ times for same content+rule)
+	if (decision.action === "confirm" && ctx.store) {
+		const minCount = decision.risk === "high" ? 5 : 2;
+		if (ctx.store.isHistoricallyAllowed(contentHash, decision.rule_id, minCount)) {
+			decision.action = "allow";
+			autoAllowReason = "historical";
+		}
+	}
+
+	const output = buildHookOutput(decision, ctx.lang);
+
 	const event = createOcsfEvent(request, decision);
+	if (autoAllowReason) {
+		event.enrichments.push({ name: "auto_allow_reason", value: autoAllowReason });
+	}
 	ctx.writer.write(event);
 
 	if (ctx.store) {
 		ctx.store.record({
 			rule_id: decision.rule_id,
 			action: decision.action,
-			content_hash: DecisionStore.hashContent(request.content),
+			content_hash: contentHash,
 			agent: request.context.agent,
 			session_id: request.context.session_id,
 		});
 	}
 
-	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
+	// Confirm: pre-register session allowlist, return deny with retry hint
+	// (deny reason is shown to Claude, who relays explanation to user then retries)
+	if (decision.action === "confirm" && ctx.store && output) {
+		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
+		const reason = output.hookSpecificOutput.permissionDecisionReason ?? "";
+		return {
+			output: {
+				hookSpecificOutput: {
+					hookEventName: "PreToolUse",
+					permissionDecision: "deny",
+					permissionDecisionReason: reason + RETRY_HINT[ctx.lang],
+				},
+			},
+			skipped: false,
+		};
+	}
+
 	return { output, skipped: false };
 }
 
@@ -200,6 +240,8 @@ export async function evaluateHookRequestAsync(
 	const request = mapToToolRequest(hookInput);
 	let decision = ctx.engine.evaluate(request);
 
+	const contentHash = DecisionStore.hashContent(request.content);
+
 	if (ctx.enricher && decision.action !== "allow") {
 		try {
 			decision = await ctx.enricher.enrich(decision, request);
@@ -208,19 +250,58 @@ export async function evaluateHookRequestAsync(
 		}
 	}
 
+	let autoAllowReason: string | undefined;
+
+	// Auto-allow: session allowlist (same session, same content, same rule)
+	if (decision.action === "confirm" && ctx.store) {
+		if (ctx.store.isSessionAllowed(request.context.session_id, contentHash, decision.rule_id)) {
+			decision.action = "allow";
+			autoAllowReason = "session";
+		}
+	}
+
+	// Auto-allow: cross-session historical memory (confirmed 2+ times for same content+rule)
+	if (decision.action === "confirm" && ctx.store) {
+		const minCount = decision.risk === "high" ? 5 : 2;
+		if (ctx.store.isHistoricallyAllowed(contentHash, decision.rule_id, minCount)) {
+			decision.action = "allow";
+			autoAllowReason = "historical";
+		}
+	}
+
+	const output = buildHookOutput(decision, ctx.lang);
+
 	const event = createOcsfEvent(request, decision);
+	if (autoAllowReason) {
+		event.enrichments.push({ name: "auto_allow_reason", value: autoAllowReason });
+	}
 	ctx.writer.write(event);
 
 	if (ctx.store) {
 		ctx.store.record({
 			rule_id: decision.rule_id,
 			action: decision.action,
-			content_hash: DecisionStore.hashContent(request.content),
+			content_hash: contentHash,
 			agent: request.context.agent,
 			session_id: request.context.session_id,
 		});
 	}
 
-	const output = buildHookOutput(decision, ctx.lang, ctx.vsCodeCompat);
+	// Confirm: pre-register session allowlist, return deny with retry hint
+	if (decision.action === "confirm" && ctx.store && output) {
+		ctx.store.recordSessionAllow(request.context.session_id, contentHash, decision.rule_id);
+		const reason = output.hookSpecificOutput.permissionDecisionReason ?? "";
+		return {
+			output: {
+				hookSpecificOutput: {
+					hookEventName: "PreToolUse",
+					permissionDecision: "deny",
+					permissionDecisionReason: reason + RETRY_HINT[ctx.lang],
+				},
+			},
+			skipped: false,
+		};
+	}
+
 	return { output, skipped: false };
 }

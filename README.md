@@ -1,20 +1,20 @@
 # ClawGuard
 
-> AI Agent Security Companion — Defend, Audit, Update
+> AI Agent Memory — Fewer Prompts, Smarter Decisions
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-375%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-380%20passing-brightgreen)]()
 [![Node](https://img.shields.io/badge/node-%3E%3D20-green)]()
 
 [日本語版はこちら](README.ja.md)
 
 ## What is ClawGuard?
 
-ClawGuard is a real-time security layer for AI coding agents. It intercepts tool calls (shell commands, file writes, network access) before execution, evaluates risk using policy rules, and returns allow/confirm/deny decisions — all in under 100ms.
+AI agents ask too many questions. Every `npm install`, every `git push` — confirm, confirm, confirm. You said yes 5 minutes ago; now it's asking again.
 
-It works across AI agent platforms: Claude Code, Codex, MCP, and any agent supporting hook-based interception. Decision data is stored locally and can be enriched with community reputation data via signed threat feeds.
+ClawGuard remembers. When you approve an operation, it's stored. Next time the same pattern appears — in this session, another agent, or a different tool — auto-allowed. Your trust decisions travel across Claude Code and other hook-compatible agents.
 
-ClawGuard doesn't promise "complete security." It reduces probability of damage, limits blast radius, and makes every AI agent session auditable and replayable.
+Dangerous operations (`rm -rf`, `git push --force`, `curl|bash`) are still caught automatically. But that's not why you install ClawGuard — you install it because your agents get faster and quieter.
 
 ## Quick Start
 
@@ -32,64 +32,26 @@ claw-guard test
 ## How It Works
 
 ```
-AI Agent Tool Call
-    │
-    ▼
-┌─────────────┐
-│  ClawGuard   │
-│  Hook Layer  │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐     ┌──────────┐
-│   Policy     │────▶│  Rules   │  12 core + community
-│   Engine     │     └──────────┘
-└──────┬──────┘
-       │
-   ┌───┼───┐
-   ▼   ▼   ▼
- allow confirm deny
-       │
-       ▼
-  ExplainRisk
-  (data-backed reason)
+First time:     Agent tries `npm install foo`
+                    → ClawGuard asks → You allow → Remembered ✓
+
+Second time:    Agent tries `npm install foo`
+                    → Auto-allowed (no interruption) ✓
+
+Dangerous:      Agent tries `rm -rf /`
+                    → Caught, explained, requires your OK ✗
 ```
 
-## Architecture
+## Choose How Quiet
 
-### 2-Layer Design
+Pick a preset that matches your comfort level — from maximum visibility to near-silence:
 
-**Layer 1 — Runtime Defense** (hooks-based, no Docker required)
-- Adapter → Policy Engine → allow/confirm/deny
-- Reputation data (local + feed) in confirm dialogs
-- Cross-agent decision memory (SQLite)
-- Security Passport for compliance proof
-
-**Layer 2 — Infrastructure Isolation** (Docker, Pro/Max)
-- 3 containers: gateway / fetcher / agent
-- Network segmentation (agent cannot reach external)
-
-## CLI Commands
-
-| Command | Description |
-|---|---|
-| `claw-guard init` | Set up for your AI agent environment |
-| `claw-guard evaluate --json` | Evaluate a tool request (hook entry point) |
-| `claw-guard test` | Validate rules, engine, and configuration |
-| `claw-guard serve` | HTTP hook server (1-3ms latency) |
-| `claw-guard log` | View audit log |
-| `claw-guard dashboard` | Open web dashboard |
-| `claw-guard feed` | Manage threat feed (`--update`, `--status`) |
-| `claw-guard marketplace` | Manage rule packs (`installed`, `install`, `remove`) |
-| `claw-guard upgrade` | License management (`--key`, `--remove`) |
-| `claw-guard passport` | Security passport & GitHub badges |
-| `claw-guard replay` | Incident replay & causal analysis |
-| `claw-guard report` | Weekly safety report |
-| `claw-guard monitor` | False positive monitoring |
-| `claw-guard docker` | Docker deployment (`init`, `up`, `down`) |
-| `claw-guard skills` | Skills AV scanning |
-
-## Configuration
+| Preset | Style | Low Risk | Medium Risk | High Risk |
+|---|---|---|---|---|
+| `observer` | Watch only | log | log | log |
+| `guardian` | Asks often | allow | confirm | deny |
+| `balanced` | **Recommended** | allow | confirm | confirm |
+| `expert` | Almost silent | allow | allow | confirm |
 
 Minimum config — just one line in `clawguard.yaml`:
 
@@ -97,20 +59,28 @@ Minimum config — just one line in `clawguard.yaml`:
 profile: balanced
 ```
 
-### Presets
-
-| Preset | Low Risk | Medium Risk | High Risk |
-|---|---|---|---|
-| `observer` | log | log | log |
-| `guardian` | allow | confirm | deny |
-| `balanced` | allow | confirm | confirm |
-| `expert` | allow | allow | confirm |
-
 ### Priority
 
 CLI args > Project (`.clawguard.yaml`) > Global (`~/.config/clawguard/`) > Default (`balanced`)
 
-## Security Rules
+## Architecture
+
+### 2-Layer Design
+
+**Layer 1 — Smart Approval** (hooks-based, no Docker required)
+- Cross-agent decision memory (SQLite) — remembers what you approved
+- Community reputation data in confirm dialogs (coming soon)
+- Adapter → Policy Engine → allow/confirm/deny (under 100ms)
+- Security Passport for compliance proof
+
+**Layer 2 — Infrastructure Isolation** (Docker, optional reference implementation)
+- `claw-guard docker init` to get docker-compose templates
+- 3 containers: gateway / fetcher / agent
+- Network segmentation (agent cannot reach external)
+
+## Built-in Safety Net
+
+ClawGuard silently catches dangerous operations. You don't need to configure anything — 12 rules ship by default.
 
 ### Core Rules (12)
 
@@ -124,10 +94,50 @@ CLI args > Project (`.clawguard.yaml`) > Global (`~/.config/clawguard/`) > Defau
 | `BASH.ROOT_PATH_OP` | bash | high | Operations targeting `/` |
 | `BASH.PIPE_EXEC_001` | bash | high | `curl \| bash` pipe execution |
 | `BASH.PIPE_EXEC_002` | bash | high | `wget \| sh` pipe execution |
-| `BASH.SSH_KEY_READ` | bash | medium | SSH key file access |
+| `BASH.SSH_KEY_READ` | bash | high | SSH key file access |
 | `BASH.ENV_FILE_READ` | bash | medium | `.env` file access |
 | `BASH.NPM_INSTALL` | bash | medium | `npm install <package>` |
 | `BASH.PIP_INSTALL` | bash | medium | `pip install <package>` |
+
+### When Does ClawGuard Ask?
+
+| Condition | What happens | Example |
+|---|---|---|
+| Already approved (same session/history) | **Silent — auto-allowed** | `npm install express` (approved before) |
+| No rule matched | **Silent — proceeds normally** | `git status`, `ls`, `npm test` |
+| Rule matched + preset = **confirm** | Asks with data-backed explanation | `npm install unknown-pkg` |
+| Rule matched + preset = **deny** | Blocked with explanation | `rm -rf /` in `guardian` mode |
+
+### Important Limitations
+
+| Condition | Why ClawGuard Cannot Intervene |
+|---|---|
+| AI agent refuses the command on its own | The tool call never happens, so the PreToolUse hook never fires. This is defense-in-depth — the agent's own safety layer acts upstream of ClawGuard. |
+| Running in `bypassPermissions` or `dontAsk` mode | ClawGuard skips evaluation in these permission modes. |
+| Hook not installed | Run `claw-guard init` to register the PreToolUse hook. |
+
+> **Note:** To verify ClawGuard's rule matching directly, use `claw-guard test` or pipe JSON to `claw-guard evaluate --json`.
+
+## CLI Commands
+
+| Command | Description |
+|---|---|
+| `claw-guard init` | Set up for your AI agent environment |
+| `claw-guard evaluate --json` | Evaluate a tool request (hook entry point) |
+| `claw-guard test` | Validate rules, engine, and configuration |
+| `claw-guard stats` | View auto-allow count and decision summary |
+| `claw-guard serve` | HTTP hook server (low-latency) |
+| `claw-guard log` | View audit log |
+| `claw-guard dashboard` | Open web dashboard |
+| `claw-guard feed` | Manage threat feed (`--update`, `--status`) |
+| `claw-guard marketplace` | Manage rule packs (`installed`, `install`, `remove`) |
+| `claw-guard passport` | Security passport & GitHub badges |
+| `claw-guard replay` | Incident replay & causal analysis |
+| `claw-guard report` | Weekly safety report |
+| `claw-guard monitor` | False positive monitoring |
+| `claw-guard docker` | Docker deployment (`init`, `up`, `down`) |
+| `claw-guard skills` | Skills AV scanning |
+| `claw-guard team` | Team management (serve/add/list/remove/policy) |
 
 ### Rule Format (YAML)
 
@@ -155,13 +165,44 @@ CLI args > Project (`.clawguard.yaml`) > Global (`~/.config/clawguard/`) > Defau
     phase: 0
 ```
 
+## Why ClawGuard?
+
+| | Manual hooks | mcp-scan | ClawGuard |
+|---|---|---|---|
+| Cross-agent memory | - | - | **Yes** — approve once, auto-allowed everywhere |
+| Works across Claude Code, Codex, MCP | - | MCP only | **All three** |
+| Community intelligence | - | - | **Yes** — see what other devs decided |
+| Setup | Write your own | Install + scan | `claw-guard init` (one command) |
+| Price | Free (DIY) | Free | **Free (MIT, all features)** |
+
+ClawGuard is not a blocker — it's a convenience layer. It reduces confirm fatigue by remembering your trust decisions and sharing community intelligence. Security is a side effect, not the sales pitch.
+
 ## Pricing
 
-| Plan | Price | Key Features |
-|---|---|---|
-| **Free** | $0 | 8 core rules, weekly feed, basic replay (24h) |
-| **Pro** | $12/mo | All rules, daily feed, passport, marketplace, Skills AV |
-| **Max** | $39/mo | Team management, cross-team memory, org passport |
+Completely free and open source (MIT). All features available to everyone — no license key, no paywalls.
+
+## Telemetry
+
+ClawGuard collects anonymous, aggregated usage statistics to power community intelligence — showing you what other developers decided for the same operation (e.g., "85% of users allowed this").
+
+### What is sent (every 6 hours)
+
+- Rule IDs and aggregate counts (allowed / denied / total per rule)
+
+### What is NOT sent
+
+- Commands, file paths, or arguments
+- User identity, IP addresses, or session data
+- Project names or repository information
+
+### Disable telemetry
+
+Add to your `clawguard.yaml`:
+
+```yaml
+reputation:
+  opt_in: false
+```
 
 ## Project Structure
 
@@ -173,7 +214,7 @@ packages/
 ├── adapter-claude/ Claude Code PreToolUse hook
 ├── adapter-codex/  Codex approval policy extension
 ├── adapter-mcp/    MCP JSON-RPC proxy
-├── billing/        License manager, feature gate
+├── billing/        Feature configuration (all features unlocked)
 ├── feed/           Signed daily feed client
 ├── enrichment/     npm registry, CVE lookup
 ├── memory/         SQLite decision store
@@ -184,11 +225,14 @@ packages/
 ├── team/           Organization policy & member management
 ├── web-ui/         React dashboard
 ├── lp/             Landing page (EN + JP)
-├── webhook/        Stripe webhook (Cloudflare Worker)
-└── docker/         3-container reference implementation
+├── webhook/        Webhook handlers (Cloudflare Worker)
+├── docker/         3-container reference implementation
+├── api/            REST API server
+├── sdk/            Embedded SDK for integrations
+└── siem/           SIEM connector
 rules/
 ├── core/           12 core rules (Phase 0-1)
-└── phase2/         15 additional rules (Pro/Max)
+└── phase2/         15 additional rules
 ```
 
 ## Development
@@ -200,7 +244,7 @@ npm install
 # Build all packages
 npm run build
 
-# Run tests (375 tests)
+# Run tests (380 tests)
 npm test
 
 # Lint

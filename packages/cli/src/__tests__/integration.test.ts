@@ -74,7 +74,6 @@ function createIsolatedContext(): EngineContext & { tmpDir: string } {
 		rulesCount: rules.length,
 		lang: "ja" as const,
 		store,
-		vsCodeCompat: false,
 		tmpDir,
 	};
 }
@@ -132,16 +131,17 @@ describe("Integration: Evaluate Pipeline", () => {
 		rmSync(ctx.tmpDir, { recursive: true, force: true });
 	});
 
-	it("rm -rf → non-null output with confirm", () => {
+	it("rm -rf → non-null output with deny (deny+retry for explanation visibility)", () => {
 		const result = evaluateHookRequest(hookInput("rm -rf /tmp/test"), ctx);
 		expect(result.output).not.toBeNull();
-		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("ask");
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("deny");
 		expect(result.skipped).toBe(false);
 	});
 
-	it("git status → null output (allow)", () => {
+	it("git status → explicit allow (suppress Claude dialog)", () => {
 		const result = evaluateHookRequest(hookInput("git status"), ctx);
-		expect(result.output).toBeNull();
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
 		expect(result.skipped).toBe(false);
 	});
 
@@ -156,8 +156,10 @@ describe("Integration: Evaluate Pipeline", () => {
 		const hasEnvRule = ctx.engine.getRules().some((r) => r.id === "BASH.ENV_FILE_READ");
 		if (hasEnvRule) {
 			expect(result.output).not.toBeNull();
+			expect(result.output?.hookSpecificOutput.permissionDecision).not.toBe("allow");
 		} else {
-			expect(result.output).toBeNull();
+			expect(result.output).not.toBeNull();
+			expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
 		}
 	});
 
@@ -167,9 +169,10 @@ describe("Integration: Evaluate Pipeline", () => {
 		expect(result.skipped).toBe(true);
 	});
 
-	it("unknown tool → allow", () => {
+	it("unknown tool → explicit allow", () => {
 		const result = evaluateHookRequest(hookInputTool("CustomTool", { data: "test" }), ctx);
-		expect(result.output).toBeNull();
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
 		expect(result.skipped).toBe(false);
 	});
 });
@@ -317,17 +320,18 @@ describe("Integration: HTTP Server", () => {
 		});
 		const data = await res.json();
 		expect(data.hookSpecificOutput).toBeDefined();
-		expect(data.hookSpecificOutput.permissionDecision).toBe("ask");
+		expect(data.hookSpecificOutput.permissionDecision).toBe("deny");
 	});
 
-	it("POST /hook with safe command returns empty object", async () => {
+	it("POST /hook with safe command returns explicit allow", async () => {
 		const res = await fetch(`${baseUrl}/hook`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: hookInput("git status"),
 		});
 		const data = await res.json();
-		expect(data).toEqual({});
+		expect(data.hookSpecificOutput).toBeDefined();
+		expect(data.hookSpecificOutput.permissionDecision).toBe("allow");
 	});
 
 	it("GET /health returns status ok and rules count", async () => {
@@ -371,5 +375,101 @@ describe("Integration: HTTP Server", () => {
 		const res = await fetch(`${baseUrl}/health`, { method: "OPTIONS" });
 		expect(res.status).toBe(204);
 		expect(res.headers.get("access-control-allow-origin")).toBe("*");
+	});
+});
+
+// ====================================================================
+// Group 5: Historical Auto-Allow (Cross-Session Memory)
+// ====================================================================
+
+describe("Integration: Historical Auto-Allow", () => {
+	let ctx: EngineContext & { tmpDir: string };
+
+	beforeAll(() => {
+		ctx = createIsolatedContext();
+	});
+
+	afterAll(() => {
+		ctx.store?.close();
+		rmSync(ctx.tmpDir, { recursive: true, force: true });
+	});
+
+	// Use CHMOD_777 (medium, bundled) and RM_RISK (high, bundled) with unique paths per test
+	// to avoid session allowlist contamination between tests
+
+	it("auto-allows medium-risk operation after 2 historical confirms", () => {
+		const cmd = "chmod 777 /tmp/hist-test-1";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		store.record({
+			rule_id: "BASH.CHMOD_777",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-1",
+		});
+		store.record({
+			rule_id: "BASH.CHMOD_777",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-2",
+		});
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
+	});
+
+	it("does NOT auto-allow high-risk operation with only 2 confirms (needs 5)", () => {
+		const cmd = "rm -rf /tmp/hist-test-2";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		store.record({
+			rule_id: "BASH.RM_RISK",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-1",
+		});
+		store.record({
+			rule_id: "BASH.RM_RISK",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-2",
+		});
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("deny");
+	});
+
+	it("auto-allows high-risk operation after 5 historical confirms", () => {
+		const cmd = "rm -rf /tmp/hist-test-3";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		for (let i = 1; i <= 5; i++) {
+			store.record({
+				rule_id: "BASH.RM_RISK",
+				action: "confirm",
+				content_hash: contentHash,
+				session_id: `past-${i}`,
+			});
+		}
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output).not.toBeNull();
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("allow");
+	});
+
+	it("does NOT auto-allow with only 1 confirm (below threshold)", () => {
+		const cmd = "chmod 777 /tmp/hist-test-4";
+		const contentHash = DecisionStore.hashContent(cmd);
+		const store = ctx.store as DecisionStore;
+		store.record({
+			rule_id: "BASH.CHMOD_777",
+			action: "confirm",
+			content_hash: contentHash,
+			session_id: "past-1",
+		});
+
+		const result = evaluateHookRequest(hookInput(cmd), ctx);
+		expect(result.output?.hookSpecificOutput.permissionDecision).toBe("deny");
 	});
 });

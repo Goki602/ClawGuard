@@ -1,13 +1,13 @@
 {
 	"name": "@clawguard-sec/cli",
 	"version": "0.1.0",
-	"description": "AI agent security companion — defend, audit, update",
+	"description": "AI agent memory — fewer prompts, smarter decisions",
 	"type": "module",
 	"license": "MIT",
 	"bin": {
 		"claw-guard": "./dist/index.js"
 	},
-	"files": ["dist", "rules"],
+	"files": ["dist", "rules", "docker"],
 	"publishConfig": {
 		"access": "public"
 	},
@@ -15,7 +15,7 @@
 		"build": "node build.mjs",
 		"clean": "rm -rf dist rules"
 	},
-	"keywords": ["ai", "security", "claude", "agent", "hooks", "audit"],
+	"keywords": ["ai", "security", "claude", "claude-code", "agent", "hooks", "audit", "ai-agent-security", "codex", "mcp", "ai-guardrails", "prompt-injection", "open-source", "free"],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Goki602/ClawGuard.git",

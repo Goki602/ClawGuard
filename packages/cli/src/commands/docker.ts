@@ -37,7 +37,10 @@ const MSG = {
 };
 
 function getTemplateDir(): string {
-	const candidates = [resolve(import.meta.dirname, "../../../docker")];
+	const candidates = [
+		resolve(import.meta.dirname, "../docker"), // npm installed (dist/../docker)
+		resolve(import.meta.dirname, "../../../docker"), // dev (packages/cli/src → packages/docker)
+	];
 	for (const c of candidates) {
 		if (existsSync(c)) return c;
 	}

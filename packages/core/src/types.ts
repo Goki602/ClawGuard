@@ -184,7 +184,6 @@ export interface ClawGuardConfig {
 	marketplace?: {
 		packs?: string[];
 	};
-	vscode_compat?: boolean;
 }
 
 export interface ProjectOverride {

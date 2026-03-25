@@ -13,15 +13,15 @@ import { replayCommand } from "./commands/replay.js";
 import { reportCommand } from "./commands/report.js";
 import { serveCommand } from "./commands/serve.js";
 import { skillsCommand } from "./commands/skills.js";
+import { statsCommand } from "./commands/stats.js";
 import { teamCommand } from "./commands/team.js";
 import { testCommand } from "./commands/test.js";
-import { upgradeCommand } from "./commands/upgrade.js";
 
 const program = new Command();
 
 program
 	.name("claw-guard")
-	.description("AI agent security companion — defend, audit, update")
+	.description("AI agent memory — fewer prompts, smarter decisions")
 	.version("0.1.0");
 
 program
@@ -41,6 +41,11 @@ program
 	.command("test")
 	.description("Validate rules, engine, and configuration")
 	.action(testCommand);
+
+program
+	.command("stats")
+	.description("View auto-allow count and decision summary")
+	.action(statsCommand);
 
 program
 	.command("log")
@@ -75,20 +80,13 @@ program
 	.action(marketplaceCommand);
 
 program
-	.command("upgrade [plan]")
-	.description("Manage your ClawGuard license")
-	.option("--key <key>", "License key")
-	.option("--remove", "Remove license key")
-	.action(upgradeCommand);
-
-program
 	.command("passport")
 	.description("Manage your security passport")
 	.option("--generate", "Generate or update the passport")
 	.option("--repo <repo>", "Repository identifier")
 	.option("--badge", "Show badge Markdown snippet")
 	.option("--publish", "Publish passport to ClawGuard API")
-	.option("--key <key>", "License key for publishing")
+	.option("--key <key>", "API key for publishing")
 	.action(passportCommand);
 
 program

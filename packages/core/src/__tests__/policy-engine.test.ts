@@ -55,9 +55,15 @@ describe("PolicyEngine", () => {
 			["npm i express", "BASH.NPM_INSTALL"],
 			["npm add react", "BASH.NPM_INSTALL"],
 			["echo x && npm install axios", "BASH.NPM_INSTALL"],
+			["npm install --ignore-scripts lodash", "BASH.NPM_INSTALL"],
+			["npm i --save-dev jest", "BASH.NPM_INSTALL"],
+			["npm i -g typescript", "BASH.NPM_INSTALL"],
+			["npm i -D lodash", "BASH.NPM_INSTALL"],
 			["pip install requests", "BASH.PIP_INSTALL"],
 			["pip3 install flask", "BASH.PIP_INSTALL"],
 			["echo x && pip install numpy", "BASH.PIP_INSTALL"],
+			["pip install --no-deps requests", "BASH.PIP_INSTALL"],
+			["pip install --upgrade pip", "BASH.PIP_INSTALL"],
 		];
 
 		for (const [cmd, expectedRule] of dangerousCases) {
@@ -95,12 +101,9 @@ describe("PolicyEngine", () => {
 			"cat .envrc",
 			"cat environment.ts",
 			"npm install",
-			"npm i -g typescript",
-			"npm i --save-dev jest",
 			"npm run build",
 			"pip install -r requirements.txt",
 			"pip install -e .",
-			"pip install --upgrade pip",
 			"pip freeze",
 		];
 

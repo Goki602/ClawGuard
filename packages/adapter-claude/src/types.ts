@@ -22,11 +22,3 @@ const NON_INTERVENTION_MODES = new Set(["bypassPermissions", "dontAsk"]);
 export function shouldIntervene(permissionMode: string): boolean {
 	return !NON_INTERVENTION_MODES.has(permissionMode);
 }
-
-export function isVscodeEnvironment(): boolean {
-	return !!(
-		process.env.VSCODE_PID ||
-		process.env.VSCODE_CLI ||
-		process.env.TERM_PROGRAM === "vscode"
-	);
-}
